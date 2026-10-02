@@ -1,1 +1,7 @@
-test_command: python -m unittest discover -s tests -p "test_*.py"
+version: 1
+project: {name: job_finder}
+toolchain: {profiles: [python]}
+commands:
+  build: "python -m compileall -q models tests"
+  test: "python -m unittest discover -s tests -v"
+quality_gate: {build: true, tests: true, full_suite: true}

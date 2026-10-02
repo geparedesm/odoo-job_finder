@@ -7,6 +7,16 @@ import xml.etree.ElementTree as ET
 
 
 MODULE_ROOT = Path(__file__).resolve().parent.parent
+# Odoo installs the module under its folder name, which must be a valid Python identifier.
+MODULE_NAME = MODULE_ROOT.name
+REFERENCE_ATTRIBUTES = ("id", "ref", "parent", "action", "inherit_id", "groups")
+
+
+def module_files(pattern):
+    """Module files only: not Git metadata or platform folders such as .hermes."""
+    for path in sorted(MODULE_ROOT.rglob(pattern)):
+        if not any(part.startswith(".") for part in path.relative_to(MODULE_ROOT).parts):
+            yield path
 
 
 class TestModuleStructure(unittest.TestCase):
@@ -39,15 +49,40 @@ class TestModuleStructure(unittest.TestCase):
                     self.assertTrue((MODULE_ROOT / path).is_file())
 
     def test_xml_files_parse(self):
-        for path in sorted(MODULE_ROOT.rglob("*.xml")):
+        for path in module_files("*.xml"):
             with self.subTest(path=str(path.relative_to(MODULE_ROOT))):
                 ET.parse(path)
 
     def test_python_files_parse(self):
-        for path in sorted(MODULE_ROOT.rglob("*.py")):
+        for path in module_files("*.py"):
             with self.subTest(path=str(path.relative_to(MODULE_ROOT))):
                 # Bytes let Python honor source encoding declarations.
                 ast.parse(path.read_bytes(), filename=str(path))
+
+    def test_module_folder_is_a_valid_module_name(self):
+        self.assertTrue(MODULE_NAME.isidentifier(), f"Odoo refuses the module folder name {MODULE_NAME!r}")
+
+    def test_xml_ids_belong_to_this_module_or_a_dependency(self):
+        # Odoo refuses data that names another module's ID unless that module is installed.
+        allowed = {MODULE_NAME, *self.load_manifest().get("depends", [])}
+        for path in module_files("*.xml"):
+            for element in ET.parse(path).iter():
+                for attribute in REFERENCE_ATTRIBUTES:
+                    for value in (element.get(attribute) or "").split(","):
+                        prefix = value.strip().split(".", 1)[0] if "." in value else None
+                        if prefix is not None:
+                            with self.subTest(path=path.name, value=value.strip()):
+                                self.assertIn(prefix, allowed)
+
+    def test_env_ref_names_this_module_or_a_dependency(self):
+        allowed = {MODULE_NAME, *self.load_manifest().get("depends", [])}
+        for path in module_files("*.py"):
+            for node in ast.walk(ast.parse(path.read_bytes())):
+                if (isinstance(node, ast.Call) and getattr(node.func, "attr", None) == "ref" and node.args
+                        and isinstance(node.args[0], ast.Constant) and isinstance(node.args[0].value, str)
+                        and "." in node.args[0].value):
+                    with self.subTest(path=path.name, ref=node.args[0].value):
+                        self.assertIn(node.args[0].value.split(".", 1)[0], allowed)
 
 
 if __name__ == "__main__":

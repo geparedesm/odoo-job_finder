@@ -43,7 +43,7 @@ class JobProfile(models.Model):
         profile = self.search([("user_id", "=", self.env.uid)], limit=1)
         if not profile:
             profile = self.create({"user_id": self.env.uid})
-        action = self.env.ref("job_profile.action_my_profile").read()[0]
+        action = self.env.ref("job_finder.action_my_profile").read()[0]
         action.update(res_id=profile.id, views=[(False, "form")])
         return action
 

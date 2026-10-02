@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="job_profile.view_form" model="ir.ui.view">
+        <field name="name">job.profile.form</field>
+        <field name="model">job.profile</field>
+        <field name="arch" type="xml">
+            <form string="Mi Perfil">
+                <header>
+                    <button name="action_parse_cv" type="object" string="Analizar CV"
+                            class="oe_highlight" invisible="not cv_file"/>
+                </header>
+                <sheet>
+                    <group string="Currículum">
+                        <field name="cv_file" filename="cv_filename"/>
+                        <field name="cv_filename" invisible="True"/>
+                        <field name="cv_parsed_date" readonly="True"/>
+                    </group>
+                    <group string="Datos de contacto">
+                        <group>
+                            <field name="full_name"/>
+                            <field name="headline"/>
+                            <field name="email"/>
+                        </group>
+                        <group>
+                            <field name="phone"/>
+                            <field name="location"/>
+                            <field name="linkedin"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Resumen"><field name="summary"/></page>
+                        <page string="Habilidades"><field name="skills"/></page>
+                        <page string="Experiencia"><field name="experience"/></page>
+                        <page string="Educación"><field name="education"/></page>
+                        <page string="Certificaciones"><field name="certifications"/></page>
+                        <page string="Idiomas"><field name="languages"/></page>
+                        <page string="Información adicional"><field name="extra_info"/></page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="job_profile.view_list" model="ir.ui.view">
+        <field name="name">job.profile.list</field>
+        <field name="model">job.profile</field>
+        <field name="arch" type="xml">
+            <list string="Perfiles">
+                <field name="full_name"/>
+                <field name="headline"/>
+                <field name="email"/>
+            </list>
+        </field>
+    </record>
+</odoo>

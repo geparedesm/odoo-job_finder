@@ -8,6 +8,8 @@
     "data": [
         "security/ir.model.access.csv",
         "security/job_profile_security.xml",
+        "views/job_profile_views.xml",
+        "views/job_profile_menus.xml",
     ],
     "installable": True,
     "application": True,

@@ -51,9 +51,27 @@ Someone • someone@example.com • +61412345678
                 self.assertEqual(len(result), 12)
                 self.assertTrue(all(value == "" for value in result.values()))
 
+    def test_reference_pdf_concatenated_experience_heading(self):
+        # The reference PDF extracts this heading without an inter-word space.
+        result = parser.parse_cv_text(
+            "Gabriel Paredes Mendoza\nFULL STACK DEVELOPER\n"
+            "PERSONAL ATTRIBUTES\n•Strong analytical skills.\n"
+            "PROFESSIONALEXPERIENCE\nDeveloper • 2020 - 2025\n"
+            "Second role • 2018 - 2020\nEDUCATION\nMechatronic Engineering"
+        )
+        self.assertEqual(result["summary"], "•Strong analytical skills.")
+        self.assertEqual(
+            result["experience"],
+            "Developer • 2020 - 2025\nSecond role • 2018 - 2020",
+        )
+        self.assertEqual(result["education"], "Mechatronic Engineering")
+
     def test_variants_and_repeated_sections(self):
-        for heading in ("SUMMARY", "Profile", "personal   attributes:"):
-            for experience in ("EXPERIENCE", "work experience", "Professional Experience:"):
+        for heading in ("SUMMARY", "Profile", "personal   attributes:", "PERSONALATTRIBUTES"):
+            for experience in (
+                "EXPERIENCE", "work experience", "Professional Experience:",
+                "PROFESSIONALEXPERIENCE", "WorkExperience:",
+            ):
                 result = parser.parse_cv_text(
                     f"Jane Doe\nDeveloper\n{heading}\nAbout me\n{experience}\nJob\n"
                     "certifications:\nAward\nLanguages\nEnglish\nSkills\nPython\nSKILLS\nSQL"

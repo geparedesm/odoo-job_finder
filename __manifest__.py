@@ -4,6 +4,7 @@
     "version": "19.0.1.0.0",
     "category": "Human Resources",
     "depends": ["base"],
+    "external_dependencies": {"python": ["pypdf"]},
     "data": [],
     "installable": True,
     "application": True,

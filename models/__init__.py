@@ -1,1 +1,1 @@
-"""Import future Job Finder models here."""
+from . import job_profile

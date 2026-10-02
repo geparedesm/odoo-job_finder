@@ -5,7 +5,10 @@
     "category": "Human Resources",
     "depends": ["base"],
     "external_dependencies": {"python": ["pypdf"]},
-    "data": [],
+    "data": [
+        "security/ir.model.access.csv",
+        "security/job_profile_security.xml",
+    ],
     "installable": True,
     "application": True,
     "license": "LGPL-3",

@@ -78,7 +78,7 @@ class TestModuleStructure(unittest.TestCase):
         allowed = {MODULE_NAME, *self.load_manifest().get("depends", [])}
         for path in module_files("*.py"):
             for node in ast.walk(ast.parse(path.read_bytes())):
-                if (isinstance(node, ast.Call) and getattr(node.func, "attr", None) == "ref" and node.args
+                if (isinstance(node, ast.Call) and getattr(node.func, "attr", None) in ("ref", "_for_xml_id") and node.args
                         and isinstance(node.args[0], ast.Constant) and isinstance(node.args[0].value, str)
                         and "." in node.args[0].value):
                     with self.subTest(path=path.name, ref=node.args[0].value):

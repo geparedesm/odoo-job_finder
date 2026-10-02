@@ -39,6 +39,14 @@ class JobProfile(models.Model):
     cv_raw_text = fields.Text(string="Texto extraído del CV", readonly=True)
     cv_parsed_date = fields.Datetime(string="Fecha de análisis", readonly=True)
 
+    def action_open_my_profile(self):
+        profile = self.search([("user_id", "=", self.env.uid)], limit=1)
+        if not profile:
+            profile = self.create({"user_id": self.env.uid})
+        action = self.env.ref("job_profile.action_my_profile").read()[0]
+        action.update(res_id=profile.id, views=[(False, "form")])
+        return action
+
     def action_parse_cv(self):
         try:
             import pypdf

@@ -1,4 +1,4 @@
-"""The profile screen inside a running Odoo (odoo -i job_finder --test-enable); skipped by plain unittest."""
+"""Profile actions, access, views and uniqueness in Odoo; skipped by plain unittest."""
 
 import unittest
 
@@ -23,10 +23,13 @@ class TestProfileScreen(TransactionCase):
 
     def test_user_uniq_rejects_a_second_profile_for_the_same_user(self):
         profiles = self.env["job.profile"]
-        profiles.create({"user_id": self.user.id})
+        profile = profiles.create({"user_id": self.user.id})
+        self.env.flush_all()
+        # Roll back the rejected insert before checking the surviving profile.
         with self.assertRaises((IntegrityError, ValidationError)), self.cr.savepoint():
             profiles.create({"user_id": self.user.id})
             self.env.flush_all()
+        self.assertEqual(profiles.search([("user_id", "=", self.user.id)]), profile)
 
     def test_user_uniq_allows_profiles_for_distinct_users(self):
         profiles = self.env["job.profile"]

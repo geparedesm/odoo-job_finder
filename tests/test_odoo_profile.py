@@ -1,4 +1,4 @@
-"""The profile screen inside a running Odoo (odoo -i job_finder --test-enable); skipped by plain unittest."""
+"""Profile actions, access, views and uniqueness in Odoo; skipped by plain unittest."""
 
 import unittest
 
@@ -6,6 +6,10 @@ try:
     from odoo.tests import TransactionCase, tagged
 except ImportError:  # plain `python -m unittest`: these need Odoo
     raise unittest.SkipTest("needs a running Odoo (--test-enable)")
+
+from psycopg2 import IntegrityError
+
+from odoo.exceptions import ValidationError
 
 
 @tagged("post_install", "-at_install")
@@ -16,6 +20,25 @@ class TestProfileScreen(TransactionCase):
         internal = [(6, 0, [cls.env.ref("base.group_user").id])]
         cls.user = cls.env["res.users"].create({"name": "Job Seeker", "login": "job-seeker", "group_ids": internal})
         cls.other = cls.env["res.users"].create({"name": "Other Seeker", "login": "other-seeker", "group_ids": internal})
+
+    def test_user_uniq_rejects_a_second_profile_for_the_same_user(self):
+        profiles = self.env["job.profile"]
+        profile = profiles.create({"user_id": self.user.id})
+        self.env.flush_all()
+        # Roll back the rejected insert before checking the surviving profile.
+        with self.assertRaises((IntegrityError, ValidationError)), self.cr.savepoint():
+            profiles.create({"user_id": self.user.id})
+            self.env.flush_all()
+        self.assertEqual(profiles.search([("user_id", "=", self.user.id)]), profile)
+
+    def test_user_uniq_allows_profiles_for_distinct_users(self):
+        profiles = self.env["job.profile"]
+        mine = profiles.create({"user_id": self.user.id})
+        other = profiles.create({"user_id": self.other.id})
+        self.env.flush_all()
+        self.assertNotEqual(mine.id, other.id)
+        self.assertEqual(mine.user_id, self.user)
+        self.assertEqual(other.user_id, self.other)
 
     def open_profile(self, user):
         return self.env.ref("job_finder.action_open_my_profile").with_user(user).run()

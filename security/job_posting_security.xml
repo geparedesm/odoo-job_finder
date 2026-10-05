@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Postings are a shared catalog; mutation rights are granted by ACLs. -->
+    <!-- Las ofertas son un catálogo compartido; los permisos de modificación se conceden mediante ACL. -->
     <record id="job_posting_rule_user" model="ir.rule">
         <field name="name">Catálogo de ofertas para usuarios</field>
         <field name="model_id" ref="model_job_posting"/>

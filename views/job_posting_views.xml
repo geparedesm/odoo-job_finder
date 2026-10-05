@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_job_posting_list" model="ir.ui.view">
+        <field name="name">job.posting.list</field>
+        <field name="model">job.posting</field>
+        <field name="arch" type="xml">
+            <list string="Ofertas de empleo" default_order="id">
+                <field name="title"/>
+                <field name="company"/>
+                <field name="location"/>
+                <field name="date_posted"/>
+                <field name="source_url" widget="url" optional="hide"/>
+                <field name="description" optional="hide"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_job_posting_form" model="ir.ui.view">
+        <field name="name">job.posting.form</field>
+        <field name="model">job.posting</field>
+        <field name="arch" type="xml">
+            <form string="Oferta de empleo">
+                <header>
+                    <button name="action_adapt_cv" type="object" string="Adaptar CV"
+                            class="oe_highlight"/>
+                </header>
+                <sheet>
+                    <group string="Datos de la oferta">
+                        <group>
+                            <field name="title"/>
+                            <field name="company"/>
+                            <field name="location"/>
+                        </group>
+                        <group>
+                            <field name="date_posted"/>
+                            <field name="source_url" widget="url"/>
+                        </group>
+                    </group>
+                    <group string="Descripción"><field name="description"/></group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

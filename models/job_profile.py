@@ -7,6 +7,7 @@ from odoo import fields, models
 from odoo.exceptions import UserError
 
 from .cv_parser import parse_cv_text
+from .job_matcher import score_job
 
 
 class JobProfile(models.Model):
@@ -34,6 +35,8 @@ class JobProfile(models.Model):
     certifications = fields.Text(string="Certificaciones")
     languages = fields.Text(string="Idiomas")
     extra_info = fields.Text(string="Información adicional")
+    adapted_summary = fields.Text(string="Resumen adaptado", readonly=True)
+    adapted_skills = fields.Text(string="Habilidades adaptadas", readonly=True)
     cv_file = fields.Binary(string="CV en PDF")
     cv_filename = fields.Char(string="Nombre del archivo")
     cv_raw_text = fields.Text(string="Texto extraído del CV", readonly=True)
@@ -83,3 +86,19 @@ class JobProfile(models.Model):
                 cv_raw_text=text, cv_parsed_date=fields.Datetime.now(),
             )
             profile.write(values)
+
+    def action_search_related_jobs(self):
+        self.ensure_one()
+        profile = {name: self[name] for name in ("summary", "skills", "experience")}
+        postings = self.env["job.posting"].search([])
+        ordered_ids = postings.sorted(
+            key=lambda posting: score_job(
+                profile, "\n".join((posting.title or "", posting.description or "")),
+            ), reverse=True,
+        ).ids
+        action = self.env["ir.actions.act_window"]._for_xml_id("job_finder.action_job_postings")
+        action.update(
+            domain=[("id", "in", ordered_ids)],
+            context=dict(self.env.context, related_job_ids=ordered_ids),
+        )
+        return action

@@ -3,6 +3,7 @@
 import unittest
 
 try:
+    from odoo.exceptions import UserError
     from odoo.tests import TransactionCase, tagged
 except ImportError:  # plain `python -m unittest`: these need Odoo
     raise unittest.SkipTest("needs a running Odoo (--test-enable)")
@@ -36,3 +37,39 @@ class TestProfileScreen(TransactionCase):
     def test_form_view_loads_for_an_internal_user(self):
         views = self.env["job.profile"].with_user(self.user).get_views([(False, "form")])
         self.assertIn("cv_file", views["models"]["job.profile"]["fields"])
+
+    def test_related_jobs_are_ranked_before_pagination(self):
+        profile = self.env["job.profile"].browse(self.open_profile(self.user)["res_id"])
+        profile.write({"skills": "Python SQL"})
+        postings = self.env["job.posting"].create([
+            {"title": "Sin coincidencias"},
+            {"title": "Python", "description": "SQL"},
+            {"title": "Python"},
+        ])
+        action = profile.with_user(self.user).action_search_related_jobs()
+        catalog = self.env["job.posting"].with_user(self.user).with_context(action["context"])
+        # Include only our fixtures so pre-existing catalog data cannot affect assertions.
+        domain = action["domain"] + [("id", "in", postings.ids)]
+        self.assertEqual(catalog.search(domain, limit=1).id, postings[1].id)
+        self.assertEqual(catalog.search(domain, offset=1, limit=1).id, postings[2].id)
+        self.assertEqual(catalog.search(domain).ids, [postings[1].id, postings[2].id, postings[0].id])
+        self.assertEqual(catalog.search(domain, order="id desc").ids, list(reversed(postings.ids)))
+
+    def test_adapt_cv_updates_only_current_users_draft(self):
+        mine = self.env["job.profile"].browse(self.open_profile(self.user)["res_id"])
+        other = self.env["job.profile"].browse(self.open_profile(self.other)["res_id"])
+        mine.write({"summary": "Python developer", "skills": "SQL, Python"})
+        posting = self.env["job.posting"].create({"title": "Developer", "description": "Python"})
+        action = posting.with_user(self.user).action_adapt_cv()
+        self.assertEqual(action["res_id"], mine.id)
+        self.assertEqual(mine.adapted_skills, "Python\nSQL")
+        self.assertTrue(mine.adapted_summary)
+        self.assertEqual((mine.summary, mine.skills), ("Python developer", "SQL, Python"))
+        self.assertFalse(other.adapted_summary)
+        self.assertFalse(other.adapted_skills)
+
+    def test_adapt_cv_requires_an_existing_profile(self):
+        posting = self.env["job.posting"].create({"description": "Python"})
+        with self.assertRaisesRegex(UserError, "Cree su perfil profesional"):
+            posting.with_user(self.user).action_adapt_cv()
+        self.assertFalse(self.env["job.profile"].search([("user_id", "=", self.user.id)]))

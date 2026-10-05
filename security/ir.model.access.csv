@@ -1,3 +1,5 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_job_profile_user,job.profile user,model_job_profile,base.group_user,1,1,1,1
 access_job_profile_system,job.profile system,model_job_profile,base.group_system,1,1,1,1
+access_job_posting_user,job.posting user,model_job_posting,base.group_user,1,0,0,0
+access_job_posting_system,job.posting system,model_job_posting,base.group_system,1,1,1,1

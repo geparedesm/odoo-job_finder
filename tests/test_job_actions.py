@@ -1,6 +1,7 @@
 """Exercise action wiring without an Odoo installation."""
 
 import importlib.util
+from contextlib import nullcontext
 from pathlib import Path
 import sys
 from types import ModuleType, SimpleNamespace
@@ -116,6 +117,70 @@ class TestJobActions(unittest.TestCase):
                 Record(env=env, description="Python", ensure_one=Mock()),
             )
         self.profiles.create.assert_not_called()
+
+    def run_online(self, results, existing=(), race=False):
+        class UniqueViolation(Exception):
+            pass
+        errors = ModuleType("psycopg2.errors")
+        errors.UniqueViolation = UniqueViolation
+        profile = Record(skills="Python and SQL", headline="", summary="", experience="", location="Berlin")
+        job = Record(id=8, source="arbeitnow", external_id="1", title="Python", description="SQL", write=Mock())
+        self.catalog.sudo.return_value = self.catalog
+        self.catalog.search.side_effect = [Postings(existing), job] if race else [Postings(existing)]
+        self.catalog.create.side_effect = UniqueViolation() if race else None
+        self.catalog.create.return_value = job
+        self.catalog.browse.return_value = Postings([job]) if results else Postings()
+        config = Mock()
+        env = type("Env", (dict,), {"uid": 42, "context": {}, "cr": SimpleNamespace(savepoint=Mock(side_effect=nullcontext))})(dict(self.env, **{"ir.config_parameter": config}))
+        record = Record(env=env, search=Mock(return_value=profile))
+        with patch.dict(sys.modules, {"psycopg2": ModuleType("psycopg2"), "psycopg2.errors": errors}), patch.object(self.models["job_profile"], "fetch_jobs", return_value=results) as fetch:
+            action = self.models["job_profile"].JobProfile.action_search_online_jobs(record)
+        record.search.assert_called_once_with([("user_id", "=", 42)], limit=1)
+        fetch.assert_called_once_with(config.sudo.return_value, "python sql", "Berlin")
+        return action, job, env
+
+    def test_online_creates_once_for_duplicate_provider_rows(self):
+        row = dict(source="arbeitnow", external_id="1", title="Python", description="SQL")
+        action, job, env = self.run_online([row, row])
+        self.catalog.create.assert_called_once_with(row)
+        env.cr.savepoint.assert_called_once()
+        self.assertEqual(action["context"]["related_job_ids"], [8])
+        self.assertEqual(action["domain"], [("id", "in", [8])])
+
+    def test_online_updates_existing_source_id_pair(self):
+        row = dict(source="arbeitnow", external_id="1", title="Updated")
+        existing = Record(id=8, source="arbeitnow", external_id="1", write=Mock())
+        self.run_online([row], [existing])
+        existing.write.assert_called_once_with(row)
+        self.catalog.create.assert_not_called()
+        self.catalog.search.assert_called_once_with([("source", "in", ["arbeitnow"]), ("external_id", "in", ["1"])])
+
+    def test_online_concurrent_insert_retries_after_savepoint(self):
+        row = dict(source="arbeitnow", external_id="1", title="Python")
+        action, job, env = self.run_online([row], race=True)
+        env.cr.savepoint.assert_called_once()
+        job.write.assert_called_once_with(row)
+        self.assertEqual(self.catalog.search.call_args.args[0], [("source", "=", "arbeitnow"), ("external_id", "=", "1")])
+
+    def test_posting_online_button_delegates_to_profile(self):
+        self.profiles.action_search_online_jobs.return_value = {"domain": []}
+        action = self.models["job_posting"].JobPosting.action_search_online_jobs(Record(env=self.env))
+        self.assertEqual(action, {"domain": []})
+        self.profiles.action_search_online_jobs.assert_called_once_with()
+
+    def test_online_missing_profile_is_friendly(self):
+        record = Record(env=SimpleNamespace(uid=42), search=Mock(return_value=False))
+        errors = ModuleType("psycopg2.errors")
+        errors.UniqueViolation = type("UniqueViolation", (Exception,), {})
+        with patch.dict(sys.modules, {"psycopg2": ModuleType("psycopg2"), "psycopg2.errors": errors}):
+            with self.assertRaisesRegex(UserError, "Cree su perfil profesional"):
+                self.models["job_profile"].JobProfile.action_search_online_jobs(record)
+
+    def test_online_empty_results(self):
+        action, job, env = self.run_online([])
+        self.assertEqual(action["domain"], [("id", "in", [])])
+        self.catalog.create.assert_not_called()
+        self.catalog.search.assert_not_called()
 
     def test_ranking_uses_parameterized_sql_before_pagination(self):
         module = self.models["job_posting"]

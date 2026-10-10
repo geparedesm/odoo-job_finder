@@ -50,6 +50,9 @@ class JobPosting(models.Model):
             )
         return super()._order_to_sql(order, query, alias=alias, reverse=reverse)
 
+    def action_search_online_jobs(self):
+        return self.env["job.profile"].action_search_online_jobs()
+
     def action_adapt_cv(self):
         self.ensure_one()
         profile = self.env["job.profile"].search([("user_id", "=", self.env.uid)], limit=1)

@@ -8,7 +8,7 @@ from odoo.exceptions import UserError
 
 from .cv_parser import parse_cv_text
 from .job_matcher import score_job
-from .job_board_connector import CONNECTORS
+from .job_board_connector import fetch_jobs, search_query
 
 
 class JobProfile(models.Model):
@@ -111,32 +111,35 @@ class JobProfile(models.Model):
         profile = self.search([("user_id", "=", self.env.uid)], limit=1)
         if not profile:
             raise UserError("Cree su perfil profesional antes de buscar ofertas.")
-        query = profile.skills or profile.headline or profile.summary or ""
+        query = search_query(profile.skills or profile.headline or profile.summary or "")
         config = self.env["ir.config_parameter"].sudo()
         # Users cannot edit the catalog; only normalized HTTP results are elevated.
         postings = self.env["job.posting"].sudo()
         ids = set()
-        for connector_class in CONNECTORS:
-            for values in connector_class(config).fetch(query, profile.location or ""):
-                posting = postings.search([
-                    ("source", "=", values["source"]),
-                    ("external_id", "=", values["external_id"]),
-                ], limit=1)
-                if posting:
+        results = fetch_jobs(config, query, profile.location or "")
+        # Collapse duplicate feed rows and prefetch existing records in one query.
+        values_by_key = {(row["source"], row["external_id"]): row for row in results}
+        existing = postings.search([
+            ("source", "in", list({key[0] for key in values_by_key})),
+            ("external_id", "in", list({key[1] for key in values_by_key})),
+        ]) if values_by_key else []
+        by_key = {(job.source, job.external_id): job for job in existing}
+        for key, values in values_by_key.items():
+            posting = by_key.get(key)
+            if posting:
+                posting.write(values)
+            else:
+                try:
+                    with self.env.cr.savepoint():
+                        posting = postings.create(values)
+                except UniqueViolation:
+                    posting = postings.search([
+                        ("source", "=", key[0]), ("external_id", "=", key[1]),
+                    ], limit=1)
+                    if not posting:
+                        raise
                     posting.write(values)
-                else:
-                    try:
-                        with self.env.cr.savepoint():
-                            posting = postings.create(values)
-                    except UniqueViolation:
-                        posting = postings.search([
-                            ("source", "=", values["source"]),
-                            ("external_id", "=", values["external_id"]),
-                        ], limit=1)
-                        if not posting:
-                            raise
-                        posting.write(values)
-                ids.add(posting.id)
+            ids.add(posting.id)
         profile_values = {name: profile[name] for name in ("summary", "skills", "experience")}
         records = self.env["job.posting"].browse(sorted(ids))
         ordered_ids = records.sorted(key=lambda job: score_job(

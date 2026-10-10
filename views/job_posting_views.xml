@@ -22,6 +22,7 @@
         <field name="arch" type="xml">
             <form string="Oferta de empleo">
                 <header>
+                    <button name="action_search_online_jobs" type="object" string="Buscar ofertas online"/>
                     <button name="action_adapt_cv" type="object" string="Adaptar CV"
                             class="oe_highlight"/>
                 </header>

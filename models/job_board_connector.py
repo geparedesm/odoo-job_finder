@@ -2,11 +2,34 @@
 
 from datetime import datetime, timezone
 import re
-
-import requests
+import logging
+from concurrent.futures import ThreadPoolExecutor
 
 
 TIMEOUT = 5
+_logger = logging.getLogger(__name__)
+STOPWORDS = set("and or the a an of in for with to de del la las el los en con y o un una para por experiencia experience skills habilidades developer desarrollador".split())
+
+
+def search_query(value):
+    """Keep a bounded set of meaningful terms, preserving technical punctuation."""
+    words = re.findall(r"[\w]+(?:[+#]+)?", (value or "").casefold())
+    terms = list(dict.fromkeys(word for word in words if word not in STOPWORDS))[:12]
+    while terms and len(" ".join(terms)) > 200:
+        terms.pop()
+    return " ".join(terms)
+
+
+def fetch_jobs(config, query, location):
+    # Read ORM configuration on the request thread; workers only perform HTTP.
+    parameters = {name: config.get_param(name, default) for name, default in (
+        ("adzuna_app_id", ""), ("adzuna_app_key", ""),
+        ("adzuna_country", "gb"), ("jooble_api_key", ""),
+    )}
+    connectors = [provider(parameters) for provider in CONNECTORS]
+    with ThreadPoolExecutor(max_workers=len(connectors)) as executor:
+        batches = executor.map(lambda provider: provider.fetch(query, location), connectors)
+        return [posting for batch in batches for posting in batch]
 
 
 def _date(value):
@@ -25,14 +48,23 @@ class JobBoardConnector:
         self.config = config
 
     def _parameter(self, name, default=""):
+        if isinstance(self.config, dict):
+            return self.config.get(name, default)
         return self.config.get_param(name, default) if self.config is not None else default
 
     def _request(self, method, url, **kwargs):
         try:
+            import requests
+        except ImportError:
+            _logger.warning("Job provider %s unavailable: install requests", self.source)
+            return None
+        try:
             response = requests.request(method, url, timeout=TIMEOUT, **kwargs)
             response.raise_for_status()
             return response.json()
-        except (requests.RequestException, ValueError):
+        except (requests.RequestException, ValueError) as exc:
+            # Exception messages and URLs can contain API credentials.
+            _logger.warning("Job provider %s failed (%s)", self.source, type(exc).__name__)
             return None
 
     def _normalize_rows(self, rows, query="", location="", filter_feed=False):
@@ -52,8 +84,8 @@ class JobBoardConnector:
                 text = " ".join(str(row.get(key) or "") for key in (
                     "title", "position", "description", "tags",
                 )).casefold()
-                keywords = re.findall(r"[\w+#]+", query.casefold())
-                if keywords and not any(word in text for word in keywords):
+                keywords = search_query(query).split()
+                if keywords and not any(word in re.findall(r"[\w]+(?:[+#]+)?", text) for word in keywords):
                     continue
                 place = posting["location"].casefold()
                 if location and location.casefold() not in place and not row.get("remote") and self.source != "remoteok":
@@ -79,7 +111,7 @@ class AdzunaConnector(JobBoardConnector):
         if country not in {"at", "au", "be", "br", "ca", "ch", "de", "es", "fr", "gb", "in", "it", "mx", "nl", "nz", "pl", "sg", "us", "za"}:
             country = "gb"
         data = self._request("GET", f"https://api.adzuna.com/v1/api/jobs/{country}/search/1",
-                             params=dict(app_id=app_id, app_key=app_key, what=query,
+                             params=dict(app_id=app_id, app_key=app_key, what=search_query(query),
                                          where=location, results_per_page=50))
         return self._normalize_rows(data.get("results") if isinstance(data, dict) else [])
 
@@ -98,7 +130,7 @@ class JoobleConnector(JobBoardConnector):
         if not key:
             return []
         data = self._request("POST", f"https://jooble.org/api/{key}",
-                             json=dict(keywords=query, location=location))
+                             json=dict(keywords=search_query(query), location=location))
         return self._normalize_rows(data.get("jobs") if isinstance(data, dict) else [])
 
     def normalize(self, row):

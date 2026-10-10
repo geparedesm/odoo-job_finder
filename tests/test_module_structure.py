@@ -7,8 +7,8 @@ import xml.etree.ElementTree as ET
 
 
 MODULE_ROOT = Path(__file__).resolve().parent.parent
-# Odoo installs the module under its folder name, which must be a valid Python identifier.
-MODULE_NAME = MODULE_ROOT.name
+# The checkout may be named workspace; the deployed Odoo addon is job_finder.
+MODULE_NAME = "job_finder"
 REFERENCE_ATTRIBUTES = ("id", "ref", "parent", "action", "inherit_id", "groups")
 
 
@@ -60,7 +60,7 @@ class TestModuleStructure(unittest.TestCase):
                 ast.parse(path.read_bytes(), filename=str(path))
 
     def test_module_folder_is_a_valid_module_name(self):
-        self.assertTrue(MODULE_NAME.isidentifier(), f"Odoo refuses the module folder name {MODULE_NAME!r}")
+        self.assertTrue(MODULE_ROOT.name.isidentifier(), f"Odoo refuses the module folder name {MODULE_ROOT.name!r}")
 
     def test_xml_ids_belong_to_this_module_or_a_dependency(self):
         # Odoo refuses data that names another module's ID unless that module is installed.

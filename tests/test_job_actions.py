@@ -35,8 +35,10 @@ class TestJobActions(unittest.TestCase):
         package.__path__ = [str(ROOT / "models")]
         odoo = ModuleType("odoo")
         odoo.fields = SimpleNamespace(**{
-            name: Mock() for name in ("Char", "Text", "Date", "Datetime", "Binary", "Many2one")
+            name: Mock() for name in ("Integer", "Char", "Text", "Date", "Datetime", "Binary", "Many2one")
         })
+        odoo.api = SimpleNamespace(depends=lambda *args: lambda fn: fn,
+                                   depends_context=lambda *args: lambda fn: fn)
         odoo.models = SimpleNamespace(Model=object)
         exceptions = ModuleType("odoo.exceptions")
         exceptions.UserError = UserError

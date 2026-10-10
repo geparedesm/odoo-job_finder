@@ -1,10 +1,11 @@
 """Job postings collected from external sources."""
 
-from odoo import fields, models
+from odoo import api, fields, models
 from odoo.exceptions import UserError
 from odoo.tools import SQL
 
 from .cv_adapter import adapt_profile
+from .job_matcher import score_job
 
 
 class JobPosting(models.Model):
@@ -18,6 +19,24 @@ class JobPosting(models.Model):
     location = fields.Char(string="Ubicación")
     source_url = fields.Char(string="URL de origen")
     date_posted = fields.Date(string="Fecha de publicación")
+
+    source = fields.Char(string="Proveedor", index=True)
+    external_id = fields.Char(string="ID externo", index=True)
+    url = fields.Char(related="source_url", readonly=False)
+    posted_date = fields.Date(related="date_posted", readonly=False)
+    match_score = fields.Integer(string="Coincidencia", compute="_compute_match_score")
+
+    _sql_constraints = [
+        ("source_external_uniq", "unique(source, external_id)", "La oferta ya existe."),
+    ]
+
+    @api.depends("title", "description")
+    @api.depends_context("uid")
+    def _compute_match_score(self):
+        profile = self.env["job.profile"].search([("user_id", "=", self.env.uid)], limit=1)
+        values = {name: profile[name] for name in ("summary", "skills", "experience")} if profile else {}
+        for posting in self:
+            posting.match_score = score_job(values, "\n".join((posting.title or "", posting.description or "")))
 
     def _order_to_sql(self, order, query, alias=None, reverse=False):
         ordered_ids = self.env.context.get("related_job_ids")

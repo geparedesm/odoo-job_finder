@@ -7,6 +7,8 @@
             <list string="Ofertas de empleo" default_order="id">
                 <field name="title"/>
                 <field name="company"/>
+                <field name="source"/>
+                <field name="match_score"/>
                 <field name="location"/>
                 <field name="date_posted"/>
                 <field name="source_url" widget="url" optional="hide"/>

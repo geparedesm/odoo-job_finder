@@ -8,6 +8,7 @@ from odoo.exceptions import UserError
 
 from .cv_parser import parse_cv_text
 from .job_matcher import score_job
+from .job_board_connector import CONNECTORS
 
 
 class JobProfile(models.Model):
@@ -101,4 +102,47 @@ class JobProfile(models.Model):
             domain=[("id", "in", ordered_ids)],
             context=dict(self.env.context, related_job_ids=ordered_ids),
         )
+        return action
+
+    def action_search_online_jobs(self):
+        """Import trusted provider data into the shared, read-only user catalog."""
+        from psycopg2.errors import UniqueViolation
+
+        profile = self.search([("user_id", "=", self.env.uid)], limit=1)
+        if not profile:
+            raise UserError("Cree su perfil profesional antes de buscar ofertas.")
+        query = profile.skills or profile.headline or profile.summary or ""
+        config = self.env["ir.config_parameter"].sudo()
+        # Users cannot edit the catalog; only normalized HTTP results are elevated.
+        postings = self.env["job.posting"].sudo()
+        ids = set()
+        for connector_class in CONNECTORS:
+            for values in connector_class(config).fetch(query, profile.location or ""):
+                posting = postings.search([
+                    ("source", "=", values["source"]),
+                    ("external_id", "=", values["external_id"]),
+                ], limit=1)
+                if posting:
+                    posting.write(values)
+                else:
+                    try:
+                        with self.env.cr.savepoint():
+                            posting = postings.create(values)
+                    except UniqueViolation:
+                        posting = postings.search([
+                            ("source", "=", values["source"]),
+                            ("external_id", "=", values["external_id"]),
+                        ], limit=1)
+                        if not posting:
+                            raise
+                        posting.write(values)
+                ids.add(posting.id)
+        profile_values = {name: profile[name] for name in ("summary", "skills", "experience")}
+        records = self.env["job.posting"].browse(sorted(ids))
+        ordered_ids = records.sorted(key=lambda job: score_job(
+            profile_values, "\n".join((job.title or "", job.description or "")),
+        ), reverse=True).ids
+        action = self.env["ir.actions.act_window"]._for_xml_id("job_finder.action_job_postings")
+        action.update(domain=[("id", "in", ordered_ids)],
+                      context=dict(self.env.context, related_job_ids=ordered_ids))
         return action

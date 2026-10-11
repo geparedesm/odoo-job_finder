@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Las ofertas son un catálogo compartido; los permisos de modificación se conceden mediante ACL. -->
+    <record id="job_posting_rule_user" model="ir.rule">
+        <field name="name">Catálogo de ofertas para usuarios</field>
+        <field name="model_id" ref="model_job_posting"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+    <record id="job_posting_rule_system" model="ir.rule">
+        <field name="name">Todas las ofertas para administradores</field>
+        <field name="model_id" ref="model_job_posting"/>
+        <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+</odoo>

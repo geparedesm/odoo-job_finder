@@ -6,6 +6,9 @@
         <field name="arch" type="xml">
             <form string="Mi Perfil">
                 <header>
+                    <button name="action_search_online_jobs" type="object"
+                            string="Buscar ofertas online"
+                            invisible="not skills and not summary and not experience"/>
                     <button name="action_parse_cv" type="object" string="Analizar CV"
                             class="oe_highlight" invisible="not cv_file"/>
                 </header>
@@ -28,6 +31,12 @@
                         </group>
                     </group>
                     <notebook>
+                        <page string="CV Adaptado" invisible="not adapted_summary and not adapted_skills">
+                            <group>
+                                <field name="adapted_summary" readonly="True"/>
+                                <field name="adapted_skills" readonly="True"/>
+                            </group>
+                        </page>
                         <page string="Resumen"><field name="summary"/></page>
                         <page string="Habilidades"><field name="skills"/></page>
                         <page string="Experiencia"><field name="experience"/></page>

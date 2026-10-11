@@ -7,3 +7,5 @@ except ImportError:  # plain unittest discovers the standard-library tests itsel
 else:
     from . import test_odoo_profile  # noqa: F401
     from . import test_odoo_posting_security  # noqa: F401
+    from . import test_odoo_online_jobs  # noqa: F401
+    from . import test_odoo_profile_security  # noqa: F401

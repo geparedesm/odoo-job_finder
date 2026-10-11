@@ -48,6 +48,38 @@ class TestModuleStructure(unittest.TestCase):
                     self.assertIsInstance(path, str)
                     self.assertTrue((MODULE_ROOT / path).is_file())
 
+    def test_connector_python_dependencies(self):
+        dependencies = self.load_manifest()["external_dependencies"]["python"]
+        for dependency in ("pypdf", "requests"):
+            with self.subTest(dependency=dependency):
+                self.assertEqual(dependencies.count(dependency), 1)
+
+    def test_posting_and_connector_data_registered_once(self):
+        data = self.load_manifest()["data"]
+        markers = ("job.posting", "model_job_posting", "adzuna_", "jooble_")
+        relevant_files = [
+            path.relative_to(MODULE_ROOT).as_posix()
+            for pattern in ("*.xml", "*.csv")
+            for path in module_files(pattern)
+            if any(marker in path.read_text(encoding="utf-8") for marker in markers)
+        ]
+        self.assertTrue(relevant_files)
+        for path in relevant_files:
+            with self.subTest(path=path):
+                self.assertEqual(data.count(path), 1)
+
+    def test_manifest_security_and_view_load_order(self):
+        data = self.load_manifest()["data"]
+        security = [index for index, path in enumerate(data) if path.startswith("security/")]
+        views = [index for index, path in enumerate(data) if path.startswith("views/")]
+        self.assertTrue(security)
+        self.assertTrue(views)
+        self.assertLess(max(security), min(views))
+        menus_index = data.index("views/job_profile_menus.xml")
+        for path in ("views/job_profile_views.xml", "views/job_posting_views.xml"):
+            with self.subTest(path=path):
+                self.assertLess(data.index(path), menus_index)
+
     def test_xml_files_parse(self):
         for path in module_files("*.xml"):
             with self.subTest(path=str(path.relative_to(MODULE_ROOT))):

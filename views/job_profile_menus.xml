@@ -17,4 +17,13 @@
     <menuitem id="menu_my_profile" name="Mi Perfil"
               parent="menu_root" action="action_open_my_profile"
               sequence="10"/>
+    <record id="action_job_postings" model="ir.actions.act_window">
+        <field name="name">Ofertas de empleo</field>
+        <field name="res_model">job.posting</field>
+        <field name="view_mode">list,form</field>
+        <field name="target">current</field>
+    </record>
+    <menuitem id="menu_job_postings" name="Ofertas de empleo"
+              parent="menu_root" action="action_job_postings"
+              groups="base.group_user" sequence="20"/>
 </odoo>

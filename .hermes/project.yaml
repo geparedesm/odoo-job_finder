@@ -1,7 +1,13 @@
+# hermes-orchestrator configuration of the job_finder module (an odoo-base module).
 version: 1
 project: {name: job_finder}
-toolchain: {profiles: [python]}
+toolchain: {profiles: [odoo]}
 commands:
   build: "python -m compileall -q models tests"
-  test: "python -m unittest discover -s tests -v"
+  # Standard-library tests first (no Odoo), then the module installed and tested in a real Odoo 19.
+  test: "/usr/bin/python3 -m unittest discover -s tests -v && ho-odoo-test job_finder"
+test_environment:
+  compose_files: [.hermes/test-services.yaml]
+  services: [postgres]
+  startup_timeout_seconds: 180
 quality_gate: {build: true, tests: true, full_suite: true}

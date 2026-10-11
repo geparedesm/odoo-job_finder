@@ -9,7 +9,7 @@ except ImportError:  # plain `python -m unittest`: these need Odoo
 
 from psycopg2 import IntegrityError
 
-from odoo.exceptions import ValidationError
+from odoo.tools import mute_logger
 
 
 @tagged("post_install", "-at_install")
@@ -26,7 +26,7 @@ class TestProfileScreen(TransactionCase):
         profile = profiles.create({"user_id": self.user.id})
         self.env.flush_all()
         # Roll back the rejected insert before checking the surviving profile.
-        with self.assertRaises((IntegrityError, ValidationError)), self.cr.savepoint():
+        with self.assertRaises(IntegrityError), mute_logger("odoo.sql_db"), self.cr.savepoint():
             profiles.create({"user_id": self.user.id})
             self.env.flush_all()
         self.assertEqual(profiles.search([("user_id", "=", self.user.id)]), profile)

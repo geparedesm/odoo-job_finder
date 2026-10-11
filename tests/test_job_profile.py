@@ -26,7 +26,7 @@ class TestJobProfile(unittest.TestCase):
         )
         odoo = ModuleType("odoo")
         odoo.fields = fields
-        odoo.models = SimpleNamespace(Model=object)
+        odoo.models = SimpleNamespace(Model=object, Constraint=lambda *args: None)
         exceptions = ModuleType("odoo.exceptions")
         exceptions.UserError = UserError
         self.modules = patch.dict(sys.modules, {

@@ -23,7 +23,7 @@ class TestJobProfileOpen(unittest.TestCase):
             Char=Mock(), Text=Mock(), Binary=Mock(), Many2one=Mock(),
             Datetime=Mock(),
         )
-        odoo = SimpleNamespace(fields=fields, models=SimpleNamespace(Model=object))
+        odoo = SimpleNamespace(fields=fields, models=SimpleNamespace(Model=object, Constraint=lambda *args: None))
         exceptions = ModuleType("odoo.exceptions")
         exceptions.UserError = UserError
         self.modules = patch.dict(sys.modules, {

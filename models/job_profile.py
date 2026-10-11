@@ -13,9 +13,8 @@ class JobProfile(models.Model):
     _name = "job.profile"
     _description = "Perfil profesional"
 
-    _sql_constraints = [
-        ("user_uniq", "unique(user_id)", "Ya existe un perfil para este usuario."),
-    ]
+    # Odoo 19 declares table constraints as models.Constraint; _sql_constraints is no longer applied.
+    _user_uniq = models.Constraint("UNIQUE (user_id)", "A profile already exists for this user.")
 
     user_id = fields.Many2one(
         "res.users", string="Usuario", required=True,

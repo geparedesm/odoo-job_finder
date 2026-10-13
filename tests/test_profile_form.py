@@ -28,21 +28,25 @@ class TestGuidedProfileForm(HttpCase):
         form = etree.fromstring(views["views"]["form"]["arch"].encode())
         fields = views["models"]["job.profile"]["fields"]
         expected = [
-            "summary", "skills", "experience", "volunteering", "projects",
-            "education", "trainings", "certifications", "languages", "extra_info",
+            "summary", "skills", "experience", "education", "volunteering",
+            "projects", "trainings", "certifications", "languages", "extra_info",
         ]
         self.assertEqual(
             form.xpath("./sheet/notebook/page/field/@name"), expected,
         )
         for field in expected:
+            self.assertTrue(form.xpath(f".//field[@name='{field}']/@placeholder"))
             self.assertIn(field, fields)
             self.assertEqual(len(form.xpath(f".//field[@name='{field}']")), 1)
         sheet = form.find("sheet")
-        self.assertEqual([node.get("name") for node in list(sheet)[:3]], [
-            "cv_guidance", "contact_details", "cv_upload",
+        self.assertEqual([node.get("name") for node in list(sheet)[:2]], [
+            "contact_details", "cv_upload",
         ])
-        self.assertIn("Upload your PDF CV", " ".join(sheet[0].itertext()))
-        self.assertIn("Review the extracted details", " ".join(sheet[0].itertext()))
+        guidance = form.xpath(".//group[@name='cv_upload']/div[@name='cv_guidance']")[0]
+        self.assertEqual(sheet[1][0], guidance)
+        self.assertEqual(guidance.get("colspan"), "2")
+        self.assertIn("Upload your PDF CV", " ".join(guidance.itertext()))
+        self.assertIn("Review the extracted details", " ".join(guidance.itertext()))
         self.assertEqual(form.xpath(
             ".//group[@name='professional_identity']/field/@name",
         ), ["full_name", "headline", "location"])
@@ -52,6 +56,8 @@ class TestGuidedProfileForm(HttpCase):
         button = form.xpath(".//group[@name='cv_upload']/button")[0]
         self.assertEqual(button.get("name"), "action_parse_cv")
         self.assertEqual(button.get("type"), "object")
+        self.assertEqual(button.get("string"), "Analyze CV")
+        self.assertIn(button.get("string"), " ".join(guidance.itertext()))
         self.assertEqual(button.get("invisible"), "not cv_file")
         self.assertEqual(form.xpath(".//field[@name='cv_file']/@filename"), ["cv_filename"])
         self.assertEqual(form.xpath(".//field[@name='cv_parsed_date']/@readonly"), ["True"])

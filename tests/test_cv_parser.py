@@ -88,7 +88,6 @@ Someone • someone@example.com
             **EMPTY_RESULT,
             "full_name": "Gabriel Paredes Mendoza",
             "headline": "SOFTWARE DEVELOPMENT | ICT | MECHATRONICS",
-            "location": "SOFTWARE DEVELOPMENT",
             "summary": "Multidisciplinary professional.",
             "skills": "Languages: Dart, Python, JavaScript.",
             "experience": "Full Stack Developer\nProduction operations",
@@ -96,6 +95,86 @@ Someone • someone@example.com
             "volunteering": "Community training",
             "trainings": "Technical training",
         })
+
+    def test_topic_headline_before_contact_line(self):
+        result = parser.parse_cv_text("""
+Gabriel Paredes Mendoza
+SOFTWARE DEVELOPMENT | ICT | MECHATRONICS
+Perth, Australia | +61 415 530 419 | gabrielparedesmendoza@gmail.com
+linkedin.com/in/geparedesm | gp-developer.com | github.com/geparedesm
+PROFESSIONAL PROFILE
+Multidisciplinary professional.
+""")
+        self.assertEqual(result["location"], "Perth, Australia")
+        self.assertEqual(result["headline"], "SOFTWARE DEVELOPMENT | ICT | MECHATRONICS")
+
+    def test_running_headers_and_footers(self):
+        result = parser.parse_cv_text("""
+Gabriel Paredes Mendoza
+SOFTWARE DEVELOPMENT | ICT | MECHATRONICS
+PROFESSIONAL PROFILE
+Multidisciplinary professional.
+Gabriel Paredes Mendoza 1 / 6
+Gabriel Paredes Mendoza
+PROFESSIONAL CV
+TECHNICAL SKILLS
+Python
+PROFESSIONAL EXPERIENCE - SOFTWARE DEVELOPMENT
+Full Stack Developer
+Gabriel Paredes Mendoza 2/6
+GABRIEL PAREDES MENDOZA
+PROFESSIONAL CV
+Developed ERP modules.
+Gabriel Paredes Mendoza
+2 / 6
+Gabriel Paredes Mendoza
+ACADEMIC RESEARCH - MECHATRONICS
+Passive exoskeleton development
+EDUCATION
+Mechatronics Engineering
+Gabriel Paredes Mendoza 3 / 6
+Gabriel Paredes Mendoza
+PROFESSIONAL CV
+Degree completed.
+ACADEMIC PROJECTS - ICT ANALYSIS AND NETWORKS
+Network design
+Gabriel Paredes Mendoza 4 / 6
+Gabriel Paredes Mendoza
+CAREER OVERVIEW
+PROFESSIONAL EXPERIENCE - PRODUCTION AND HOSPITALITY
+Fencing Production Operator
+Bartender
+Gabriel Paredes Mendoza 5 / 6
+Gabriel Paredes Mendoza
+LEADERSHIP AND VOLUNTEERING
+Community workshops
+TRAINING AND CREDENTIALS
+Forklift Licence
+Gabriel Paredes Mendoza
+REFERENCES
+Private reference details
+Gabriel Paredes Mendoza 6 / 6
+""")
+        self.assertEqual(result, {
+            **EMPTY_RESULT,
+            "full_name": "Gabriel Paredes Mendoza",
+            "headline": "SOFTWARE DEVELOPMENT | ICT | MECHATRONICS",
+            "summary": "Multidisciplinary professional.",
+            "skills": "Python",
+            "experience": "Full Stack Developer\nDeveloped ERP modules.\nFencing Production Operator\nBartender",
+            "education": "Mechatronics Engineering\nDegree completed.",
+            "projects": "Passive exoskeleton development\nNetwork design",
+            "volunteering": "Community workshops",
+            "trainings": "Forklift Licence",
+        })
+
+    def test_running_name_preserves_substantive_following_line(self):
+        for content in ("Completed 2025", "A" * 61):
+            with self.subTest(content=content):
+                result = parser.parse_cv_text(
+                    "Jane Doe\nDeveloper\nEDUCATION\nJane Doe\n" + content
+                )
+                self.assertEqual(result["education"], content)
 
     def test_heading_qualifiers_do_not_match_body_prefixes(self):
         for separator in (" - ", " – ", " — "):

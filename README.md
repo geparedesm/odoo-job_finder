@@ -7,6 +7,8 @@ Repeated sections accumulate in document order, including separate experience an
 academic project blocks. Leadership and volunteering, academic research and
 projects, and training and credentials populate the `volunteering`, `projects`,
 and `trainings` profile fields. References stop section content collection.
+Location is extracted from delimited contact lines. Repeated name/subtitle page
+headers and name/page-count footers are excluded from section content.
 Empty parsed fields preserve existing profile values.
 
 ## Profile form

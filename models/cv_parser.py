@@ -6,8 +6,16 @@ import re
 _FIELDS = (
     "full_name", "headline", "email", "phone", "location", "linkedin",
     "summary", "skills", "experience", "education", "certifications", "languages",
+    "volunteering", "projects", "trainings",
 )
 _SECTIONS = {
+    "technicalskills": "skills",
+    "professionalprofile": "summary",
+    "academicresearch": "projects",
+    "academicprojects": "projects",
+    "leadershipandvolunteering": "volunteering",
+    "leadership&volunteeringexperience": "volunteering",
+    "trainingandcredentials": "trainings",
     "skills": "skills",
     "summary": "summary",
     "profile": "summary",
@@ -20,7 +28,7 @@ _SECTIONS = {
     "certifications": "certifications",
     "languages": "languages",
 }
-_BOUNDARIES = {"references", "leadership&volunteeringexperience"}
+_BOUNDARIES = {"references"}
 _EMAIL = re.compile(r"[\w.+-]+@[\w.-]+\.[a-zA-Z]{2,}")
 _LINKEDIN = re.compile(
     r"(?:https?://)?(?:www\.)?linkedin\.com/(?:in|pub)/[^\s•|,;]+",
@@ -31,7 +39,8 @@ _PHONE = re.compile(r"(?<!\w)(?:\(\+?\d{1,4}\)|\+?\d)[\d ().-]*\d(?!\w)")
 
 def _heading(line):
     # PDF text extraction can omit spaces between words in condensed headings.
-    return "".join(line.rstrip(":").split()).casefold()
+    base = re.split(r"\s+[-–—]\s+", line, maxsplit=1)[0]
+    return "".join(base.rstrip(":").split()).casefold()
 
 
 def parse_cv_text(text: str) -> dict:

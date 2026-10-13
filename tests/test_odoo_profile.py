@@ -1,6 +1,8 @@
 """Profile actions, access, views and uniqueness in Odoo; skipped by plain unittest."""
 
+import base64
 import unittest
+from unittest.mock import patch
 
 try:
     from odoo.tests import TransactionCase, tagged
@@ -20,6 +22,25 @@ class TestProfileScreen(TransactionCase):
         internal = [(6, 0, [cls.env.ref("base.group_user").id])]
         cls.user = cls.env["res.users"].create({"name": "Job Seeker", "login": "job-seeker", "group_ids": internal})
         cls.other = cls.env["res.users"].create({"name": "Other Seeker", "login": "other-seeker", "group_ids": internal})
+
+    def test_parse_cv_writes_new_sections_and_preserves_empty_values(self):
+        profile = self.env["job.profile"].with_user(self.user).create({
+            "cv_file": base64.b64encode(b"Invalid PDF"),
+            "projects": "Existing project",
+        })
+        with patch(
+            "odoo.addons.job_finder.models.job_profile.parse_cv_text",
+            return_value={
+                "volunteering": "Mentoring", "projects": "", "trainings": "Workshop",
+                "extra_info": "Must not import", "user_id": self.other.id,
+            },
+        ):
+            profile.action_parse_cv()
+        self.assertEqual(profile.volunteering, "Mentoring")
+        self.assertEqual(profile.projects, "Existing project")
+        self.assertEqual(profile.trainings, "Workshop")
+        self.assertFalse(profile.extra_info)
+        self.assertEqual(profile.user_id, self.user)
 
     def test_user_uniq_rejects_a_second_profile_for_the_same_user(self):
         profiles = self.env["job.profile"]

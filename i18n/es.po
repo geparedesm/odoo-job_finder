@@ -1,0 +1,41 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# * job_finder
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_profile__volunteering
+msgid "Volunteering"
+msgstr "Voluntariado"
+
+#. module: job_finder
+#: model:ir.model.fields,help:job_finder.field_job_profile__volunteering
+msgid "Leadership and volunteering experience from the CV."
+msgstr "Experiencia de liderazgo y voluntariado del CV."
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_profile__projects
+msgid "Projects"
+msgstr "Proyectos"
+
+#. module: job_finder
+#: model:ir.model.fields,help:job_finder.field_job_profile__projects
+msgid "Academic research and projects from the CV."
+msgstr "Investigación y proyectos académicos del CV."
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_profile__trainings
+msgid "Trainings"
+msgstr "Formación"
+
+#. module: job_finder
+#: model:ir.model.fields,help:job_finder.field_job_profile__trainings
+msgid "Training and credentials from the CV."
+msgstr "Formación y credenciales del CV."

@@ -16,6 +16,7 @@ spec.loader.exec_module(parser)
 EMPTY_RESULT = dict.fromkeys((
     "full_name", "headline", "email", "phone", "location", "linkedin",
     "summary", "skills", "experience", "education", "certifications", "languages",
+    "volunteering", "projects", "trainings",
 ), "")
 
 
@@ -55,7 +56,59 @@ Someone • someone@example.com • +61412345678
             experience="GP-Developer, Ecuador • Full Stack Developer • 01/02/2020 - 01/12/2021\nProject: GP-Security",
             education="2014 – 2019 – Mechatronic Engineering – Universidad Técnica del Norte, Ecuador",
             certifications="CCNA Switching & Routing – CISCO - EEUU 2016", languages="",
+            volunteering="Volunteer", projects="", trainings="",
         ))
+
+    def test_complete_reference_compound_headings(self):
+        # Abbreviated from Gabriel_Paredes_CV_completo.pdf; preserve its
+        # headings, separate experience blocks and representative content.
+        result = parser.parse_cv_text("""
+Gabriel Paredes Mendoza
+SOFTWARE DEVELOPMENT | ICT | MECHATRONICS
+PROFESSIONAL PROFILE
+Multidisciplinary professional.
+TECHNICAL SKILLS
+Languages: Dart, Python, JavaScript.
+PROFESSIONAL EXPERIENCE - SOFTWARE DEVELOPMENT
+Full Stack Developer
+ACADEMIC RESEARCH - MECHATRONICS
+IoT systems
+ACADEMIC PROJECTS - ICT ANALYSIS AND NETWORKS
+Network design
+PROFESSIONAL EXPERIENCE - PRODUCTION AND HOSPITALITY
+Production operations
+LEADERSHIP AND VOLUNTEERING
+Community training
+TRAINING AND CREDENTIALS
+Technical training
+REFERENCES
+Someone • someone@example.com
+""")
+        self.assertEqual(result, {
+            **EMPTY_RESULT,
+            "full_name": "Gabriel Paredes Mendoza",
+            "headline": "SOFTWARE DEVELOPMENT | ICT | MECHATRONICS",
+            "location": "SOFTWARE DEVELOPMENT",
+            "summary": "Multidisciplinary professional.",
+            "skills": "Languages: Dart, Python, JavaScript.",
+            "experience": "Full Stack Developer\nProduction operations",
+            "projects": "IoT systems\nNetwork design",
+            "volunteering": "Community training",
+            "trainings": "Technical training",
+        })
+
+    def test_heading_qualifiers_do_not_match_body_prefixes(self):
+        for separator in (" - ", " – ", " — "):
+            with self.subTest(separator=separator):
+                result = parser.parse_cv_text(
+                    f"TECHNICAL SKILLS{separator}PROGRAMMING\nPython\n"
+                    "Skills include teamwork\nProfessional experience with Python\n"
+                    f"REFERENCES{separator}AVAILABLE ON REQUEST\nPrivate details"
+                )
+                self.assertEqual(result, {
+                    **EMPTY_RESULT,
+                    "skills": "Python\nSkills include teamwork\nProfessional experience with Python",
+                })
 
     def test_empty_and_unrecognized(self):
         for text in (

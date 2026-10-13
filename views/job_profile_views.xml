@@ -6,35 +6,44 @@
         <field name="arch" type="xml">
             <form string="Mi Perfil">
                 <header>
-                    <button name="action_parse_cv" type="object" string="Analizar CV"
+                    <button name="action_parse_cv" type="object" string="Analyze CV"
                             class="oe_highlight" invisible="not cv_file"/>
+                    <button name="%(action_report_job_profile)d" type="action"
+                            string="Download complete CV"/>
                 </header>
                 <sheet>
-                    <group string="Currículum">
+                    <group string="Contact details" name="contact_details">
+                        <group string="Professional identity" name="professional_identity">
+                            <field name="full_name"/>
+                            <field name="headline" placeholder="Your role or professional headline"/>
+                            <field name="location"/>
+                        </group>
+                        <group string="Ways to reach you" name="contact_channels">
+                            <field name="email"/>
+                            <field name="phone"/>
+                            <field name="linkedin" placeholder="https://www.linkedin.com/in/your-profile"/>
+                        </group>
+                    </group>
+                    <group string="CV upload" name="cv_upload">
+                        <div class="alert alert-info" role="status" name="cv_guidance" colspan="2">
+                            <strong>Start with your CV</strong>
+                            <p>Upload your PDF CV, then click Analyze CV to fill in your profile. Review the extracted details in each tab and complete any missing information.</p>
+                        </div>
                         <field name="cv_file" filename="cv_filename"/>
                         <field name="cv_filename" invisible="True"/>
                         <field name="cv_parsed_date" readonly="True"/>
                     </group>
-                    <group string="Datos de contacto">
-                        <group>
-                            <field name="full_name"/>
-                            <field name="headline"/>
-                            <field name="email"/>
-                        </group>
-                        <group>
-                            <field name="phone"/>
-                            <field name="location"/>
-                            <field name="linkedin"/>
-                        </group>
-                    </group>
                     <notebook>
-                        <page string="Resumen"><field name="summary"/></page>
-                        <page string="Habilidades"><field name="skills"/></page>
-                        <page string="Experiencia"><field name="experience"/></page>
-                        <page string="Educación"><field name="education"/></page>
-                        <page string="Certificaciones"><field name="certifications"/></page>
-                        <page string="Idiomas"><field name="languages"/></page>
-                        <page string="Información adicional"><field name="extra_info"/></page>
+                        <page string="Resumen"><field name="summary" placeholder="Describe your professional background and career goals."/></page>
+                        <page string="Habilidades"><field name="skills" placeholder="List your technical and interpersonal skills."/></page>
+                        <page string="Experiencia"><field name="experience" placeholder="Describe your roles, employers, dates, and achievements."/></page>
+                        <page string="Educación"><field name="education" placeholder="List your degrees, institutions, and study dates."/></page>
+                        <page string="Volunteering" name="volunteering"><field name="volunteering" placeholder="Include community work, mentoring, and leadership roles."/></page>
+                        <page string="Projects" name="projects"><field name="projects" placeholder="Describe relevant projects, your contribution, and results."/></page>
+                        <page string="Trainings" name="trainings"><field name="trainings" placeholder="List courses and workshops with providers and dates."/></page>
+                        <page string="Certificaciones"><field name="certifications" placeholder="List your certifications, issuers, and dates."/></page>
+                        <page string="Idiomas"><field name="languages" placeholder="List the languages you speak and your proficiency levels."/></page>
+                        <page string="Información adicional"><field name="extra_info" placeholder="Add other relevant details, such as availability or interests."/></page>
                     </notebook>
                 </sheet>
             </form>

@@ -6,8 +6,16 @@ import re
 _FIELDS = (
     "full_name", "headline", "email", "phone", "location", "linkedin",
     "summary", "skills", "experience", "education", "certifications", "languages",
+    "volunteering", "projects", "trainings",
 )
 _SECTIONS = {
+    "technicalskills": "skills",
+    "professionalprofile": "summary",
+    "academicresearch": "projects",
+    "academicprojects": "projects",
+    "leadershipandvolunteering": "volunteering",
+    "leadership&volunteeringexperience": "volunteering",
+    "trainingandcredentials": "trainings",
     "skills": "skills",
     "summary": "summary",
     "profile": "summary",
@@ -20,7 +28,7 @@ _SECTIONS = {
     "certifications": "certifications",
     "languages": "languages",
 }
-_BOUNDARIES = {"references", "leadership&volunteeringexperience"}
+_BOUNDARIES = {"references"}
 _EMAIL = re.compile(r"[\w.+-]+@[\w.-]+\.[a-zA-Z]{2,}")
 _LINKEDIN = re.compile(
     r"(?:https?://)?(?:www\.)?linkedin\.com/(?:in|pub)/[^\s•|,;]+",
@@ -31,7 +39,8 @@ _PHONE = re.compile(r"(?<!\w)(?:\(\+?\d{1,4}\)|\+?\d)[\d ().-]*\d(?!\w)")
 
 def _heading(line):
     # PDF text extraction can omit spaces between words in condensed headings.
-    return "".join(line.rstrip(":").split()).casefold()
+    base = re.split(r"\s+[-–—]\s+", line, maxsplit=1)[0]
+    return "".join(base.rstrip(":").split()).casefold()
 
 
 def parse_cv_text(text: str) -> dict:
@@ -72,9 +81,11 @@ def parse_cv_text(text: str) -> dict:
             result["phone"] = candidate
             break
 
-    # The sample CV puts the location first on a bullet-separated contact line.
+    # Location comes first on a delimited contact line, not a topic headline.
     for line in header[:10]:
-        if "•" in line or "|" in line:
+        if ("•" in line or "|" in line) and any(
+            pattern.search(line) for pattern in (_EMAIL, _PHONE, _LINKEDIN)
+        ):
             candidate = re.split(r"[•|]", line)[0].strip()
             if candidate and not any(
                 pattern.search(candidate) for pattern in (_EMAIL, _PHONE, _LINKEDIN)
@@ -84,8 +95,29 @@ def parse_cv_text(text: str) -> dict:
 
     bodies = {field: [] for field in set(_SECTIONS.values())}
     active = None
+    full_name = result["full_name"].casefold()
+    footer = re.compile(
+        rf"^{re.escape(result['full_name'])} +\d+ */ *\d+$", re.IGNORECASE,
+    ) if full_name else None
+    after_name = False
     for line in lines[first_section:]:
         heading = _heading(line)
+        is_boundary = heading in _SECTIONS or heading in _BOUNDARIES
+        if not is_boundary and full_name:
+            if line.casefold() == full_name:
+                after_name = True
+                continue
+            if footer.fullmatch(line):
+                after_name = False
+                continue
+            if after_name:
+                after_name = False
+                # Some PDF extractors put the footer's page count on its own line.
+                if re.fullmatch(r"\d+ */ *\d+", line) or (
+                    len(line) <= 60 and not re.search(r"\d", line)
+                ):
+                    continue
+        after_name = False
         if heading in _SECTIONS:
             active = _SECTIONS[heading]
         elif heading in _BOUNDARIES:

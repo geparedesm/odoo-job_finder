@@ -16,6 +16,7 @@ spec.loader.exec_module(parser)
 EMPTY_RESULT = dict.fromkeys((
     "full_name", "headline", "email", "phone", "location", "linkedin",
     "summary", "skills", "experience", "education", "certifications", "languages",
+    "volunteering", "projects", "trainings",
 ), "")
 
 
@@ -55,7 +56,138 @@ Someone • someone@example.com • +61412345678
             experience="GP-Developer, Ecuador • Full Stack Developer • 01/02/2020 - 01/12/2021\nProject: GP-Security",
             education="2014 – 2019 – Mechatronic Engineering – Universidad Técnica del Norte, Ecuador",
             certifications="CCNA Switching & Routing – CISCO - EEUU 2016", languages="",
+            volunteering="Volunteer", projects="", trainings="",
         ))
+
+    def test_complete_reference_compound_headings(self):
+        # Abbreviated from Gabriel_Paredes_CV_completo.pdf; preserve its
+        # headings, separate experience blocks and representative content.
+        result = parser.parse_cv_text("""
+Gabriel Paredes Mendoza
+SOFTWARE DEVELOPMENT | ICT | MECHATRONICS
+PROFESSIONAL PROFILE
+Multidisciplinary professional.
+TECHNICAL SKILLS
+Languages: Dart, Python, JavaScript.
+PROFESSIONAL EXPERIENCE - SOFTWARE DEVELOPMENT
+Full Stack Developer
+ACADEMIC RESEARCH - MECHATRONICS
+IoT systems
+ACADEMIC PROJECTS - ICT ANALYSIS AND NETWORKS
+Network design
+PROFESSIONAL EXPERIENCE - PRODUCTION AND HOSPITALITY
+Production operations
+LEADERSHIP AND VOLUNTEERING
+Community training
+TRAINING AND CREDENTIALS
+Technical training
+REFERENCES
+Someone • someone@example.com
+""")
+        self.assertEqual(result, {
+            **EMPTY_RESULT,
+            "full_name": "Gabriel Paredes Mendoza",
+            "headline": "SOFTWARE DEVELOPMENT | ICT | MECHATRONICS",
+            "summary": "Multidisciplinary professional.",
+            "skills": "Languages: Dart, Python, JavaScript.",
+            "experience": "Full Stack Developer\nProduction operations",
+            "projects": "IoT systems\nNetwork design",
+            "volunteering": "Community training",
+            "trainings": "Technical training",
+        })
+
+    def test_topic_headline_before_contact_line(self):
+        result = parser.parse_cv_text("""
+Gabriel Paredes Mendoza
+SOFTWARE DEVELOPMENT | ICT | MECHATRONICS
+Perth, Australia | +61 415 530 419 | gabrielparedesmendoza@gmail.com
+linkedin.com/in/geparedesm | gp-developer.com | github.com/geparedesm
+PROFESSIONAL PROFILE
+Multidisciplinary professional.
+""")
+        self.assertEqual(result["location"], "Perth, Australia")
+        self.assertEqual(result["headline"], "SOFTWARE DEVELOPMENT | ICT | MECHATRONICS")
+
+    def test_running_headers_and_footers(self):
+        result = parser.parse_cv_text("""
+Gabriel Paredes Mendoza
+SOFTWARE DEVELOPMENT | ICT | MECHATRONICS
+PROFESSIONAL PROFILE
+Multidisciplinary professional.
+Gabriel Paredes Mendoza 1 / 6
+Gabriel Paredes Mendoza
+PROFESSIONAL CV
+TECHNICAL SKILLS
+Python
+PROFESSIONAL EXPERIENCE - SOFTWARE DEVELOPMENT
+Full Stack Developer
+Gabriel Paredes Mendoza 2/6
+GABRIEL PAREDES MENDOZA
+PROFESSIONAL CV
+Developed ERP modules.
+Gabriel Paredes Mendoza
+2 / 6
+Gabriel Paredes Mendoza
+ACADEMIC RESEARCH - MECHATRONICS
+Passive exoskeleton development
+EDUCATION
+Mechatronics Engineering
+Gabriel Paredes Mendoza 3 / 6
+Gabriel Paredes Mendoza
+PROFESSIONAL CV
+Degree completed.
+ACADEMIC PROJECTS - ICT ANALYSIS AND NETWORKS
+Network design
+Gabriel Paredes Mendoza 4 / 6
+Gabriel Paredes Mendoza
+CAREER OVERVIEW
+PROFESSIONAL EXPERIENCE - PRODUCTION AND HOSPITALITY
+Fencing Production Operator
+Bartender
+Gabriel Paredes Mendoza 5 / 6
+Gabriel Paredes Mendoza
+LEADERSHIP AND VOLUNTEERING
+Community workshops
+TRAINING AND CREDENTIALS
+Forklift Licence
+Gabriel Paredes Mendoza
+REFERENCES
+Private reference details
+Gabriel Paredes Mendoza 6 / 6
+""")
+        self.assertEqual(result, {
+            **EMPTY_RESULT,
+            "full_name": "Gabriel Paredes Mendoza",
+            "headline": "SOFTWARE DEVELOPMENT | ICT | MECHATRONICS",
+            "summary": "Multidisciplinary professional.",
+            "skills": "Python",
+            "experience": "Full Stack Developer\nDeveloped ERP modules.\nFencing Production Operator\nBartender",
+            "education": "Mechatronics Engineering\nDegree completed.",
+            "projects": "Passive exoskeleton development\nNetwork design",
+            "volunteering": "Community workshops",
+            "trainings": "Forklift Licence",
+        })
+
+    def test_running_name_preserves_substantive_following_line(self):
+        for content in ("Completed 2025", "A" * 61):
+            with self.subTest(content=content):
+                result = parser.parse_cv_text(
+                    "Jane Doe\nDeveloper\nEDUCATION\nJane Doe\n" + content
+                )
+                self.assertEqual(result["education"], content)
+
+    def test_heading_qualifiers_do_not_match_body_prefixes(self):
+        for separator in (" - ", " – ", " — "):
+            with self.subTest(separator=separator):
+                result = parser.parse_cv_text(
+                    f"TECHNICAL SKILLS{separator}PROGRAMMING\nPython\n"
+                    "Skills include teamwork\nProfessional experience with Python\n"
+                    f"REFERENCES{separator}AVAILABLE ON REQUEST\nPrivate details"
+                )
+                self.assertEqual(result, {
+                    **EMPTY_RESULT,
+                    "skills": "Python\nSkills include teamwork\nProfessional experience with Python",
+                })
 
     def test_empty_and_unrecognized(self):
         for text in (

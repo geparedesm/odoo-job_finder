@@ -11,10 +11,24 @@ Empty parsed fields preserve existing profile values.
 
 ## Profile form
 
-The guided form starts with contact details, followed by PDF upload instructions.
+The guided form starts with contact details, followed by PDF upload instructions. The header provides the analysis and download actions.
 Upload your CV, then click **Analyze CV** (**Analizar CV** in Spanish). Review and
 edit the extracted content in the tabs: summary, skills, experience, education,
 volunteering, projects, trainings, certifications, languages, and additional information.
 Each tab includes a placeholder suggesting which details to include.
 The parser behavior and three dedicated fields described above shipped in T-56-1;
 this form layout adds guidance and makes those fields available for review.
+
+## Download the complete CV
+
+Save your profile edits, then click **Download complete CV** in the form header
+(**Descargar CV completo** in Spanish), or select **Complete CV** from the Print menu.
+The PDF includes your current name, headline, contact data, summary, skills,
+experience, education, volunteering, projects, trainings, certifications, languages,
+and additional information. Multiline entries retain their line breaks; empty sections
+are omitted. You can download a manually completed profile without uploading a PDF.
+
+Downloads are generated afresh from saved profile values, including additions made
+after parsing. The original uploaded file and parser diagnostics remain available in
+Odoo; they are not appended to the professional CV. Existing profile access rules also
+apply to downloads, so users can only download profiles they are allowed to read.

@@ -5,6 +5,12 @@
         <field name="model">job.profile</field>
         <field name="arch" type="xml">
             <form string="Mi Perfil">
+                <header>
+                    <button name="action_parse_cv" type="object" string="Analyze CV"
+                            class="oe_highlight" invisible="not cv_file"/>
+                    <button name="%(action_report_job_profile)d" type="action"
+                            string="Download complete CV"/>
+                </header>
                 <sheet>
                     <group string="Contact details" name="contact_details">
                         <group string="Professional identity" name="professional_identity">
@@ -26,8 +32,6 @@
                         <field name="cv_file" filename="cv_filename"/>
                         <field name="cv_filename" invisible="True"/>
                         <field name="cv_parsed_date" readonly="True"/>
-                        <button name="action_parse_cv" type="object" string="Analyze CV"
-                                class="oe_highlight" invisible="not cv_file"/>
                     </group>
                     <notebook>
                         <page string="Resumen"><field name="summary" placeholder="Describe your professional background and career goals."/></page>

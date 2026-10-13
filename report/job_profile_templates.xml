@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_job_profile">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="profile">
+                <t t-call="web.basic_layout">
+                    <div class="page">
+                        <h1>Complete CV</h1>
+                        <h2 t-if="profile.full_name" t-field="profile.full_name"/>
+                        <p t-if="profile.headline" t-field="profile.headline"/>
+                        <h2>Contact details</h2>
+                        <p t-if="profile.email"><strong><span>Email</span>: </strong><span t-field="profile.email"/></p>
+                        <p t-if="profile.phone"><strong><span>Phone</span>: </strong><span t-field="profile.phone"/></p>
+                        <p t-if="profile.location"><strong><span>Location</span>: </strong><span t-field="profile.location"/></p>
+                        <p t-if="profile.linkedin"><strong><span>LinkedIn</span>: </strong><span t-field="profile.linkedin"/></p>
+                        <div t-if="profile.summary">
+                            <h2>Summary</h2>
+                            <div t-field="profile.summary" style="white-space: pre-wrap; overflow-wrap: break-word;"/>
+                        </div>
+                        <div t-if="profile.skills">
+                            <h2>Skills</h2>
+                            <div t-field="profile.skills" style="white-space: pre-wrap; overflow-wrap: break-word;"/>
+                        </div>
+                        <div t-if="profile.experience">
+                            <h2>Experience</h2>
+                            <div t-field="profile.experience" style="white-space: pre-wrap; overflow-wrap: break-word;"/>
+                        </div>
+                        <div t-if="profile.education">
+                            <h2>Education</h2>
+                            <div t-field="profile.education" style="white-space: pre-wrap; overflow-wrap: break-word;"/>
+                        </div>
+                        <div t-if="profile.volunteering">
+                            <h2>Volunteering</h2>
+                            <div t-field="profile.volunteering" style="white-space: pre-wrap; overflow-wrap: break-word;"/>
+                        </div>
+                        <div t-if="profile.projects">
+                            <h2>Projects</h2>
+                            <div t-field="profile.projects" style="white-space: pre-wrap; overflow-wrap: break-word;"/>
+                        </div>
+                        <div t-if="profile.trainings">
+                            <h2>Trainings</h2>
+                            <div t-field="profile.trainings" style="white-space: pre-wrap; overflow-wrap: break-word;"/>
+                        </div>
+                        <div t-if="profile.certifications">
+                            <h2>Certifications</h2>
+                            <div t-field="profile.certifications" style="white-space: pre-wrap; overflow-wrap: break-word;"/>
+                        </div>
+                        <div t-if="profile.languages">
+                            <h2>Languages</h2>
+                            <div t-field="profile.languages" style="white-space: pre-wrap; overflow-wrap: break-word;"/>
+                        </div>
+                        <div t-if="profile.extra_info">
+                            <h2>Additional information</h2>
+                            <div t-field="profile.extra_info" style="white-space: pre-wrap; overflow-wrap: break-word;"/>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

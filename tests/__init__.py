@@ -6,3 +6,4 @@ except ImportError:  # plain unittest discovers the standard-library tests itsel
     pass
 else:
     from . import test_odoo_profile  # noqa: F401
+    from . import test_profile_form  # noqa: F401

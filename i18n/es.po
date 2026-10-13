@@ -12,6 +12,7 @@ msgstr ""
 
 #. module: job_finder
 #: model:ir.model.fields,field_description:job_finder.field_job_profile__volunteering
+#: model_terms:ir.ui.view,arch_db:job_finder.view_form
 msgid "Volunteering"
 msgstr "Voluntariado"
 
@@ -22,6 +23,7 @@ msgstr "Experiencia de liderazgo y voluntariado del CV."
 
 #. module: job_finder
 #: model:ir.model.fields,field_description:job_finder.field_job_profile__projects
+#: model_terms:ir.ui.view,arch_db:job_finder.view_form
 msgid "Projects"
 msgstr "Proyectos"
 
@@ -32,6 +34,7 @@ msgstr "Investigación y proyectos académicos del CV."
 
 #. module: job_finder
 #: model:ir.model.fields,field_description:job_finder.field_job_profile__trainings
+#: model_terms:ir.ui.view,arch_db:job_finder.view_form
 msgid "Trainings"
 msgstr "Formación"
 
@@ -39,3 +42,63 @@ msgstr "Formación"
 #: model:ir.model.fields,help:job_finder.field_job_profile__trainings
 msgid "Training and credentials from the CV."
 msgstr "Formación y credenciales del CV."
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.view_form
+msgid "Start with your CV"
+msgstr "Empieza con tu CV"
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.view_form
+msgid "Upload your PDF CV, then click Analyze CV to fill in your profile. Review the extracted details in each tab and complete any missing information."
+msgstr "Sube tu CV en PDF y haz clic en Analizar CV para completar tu perfil. Revisa los datos extraídos en cada pestaña y completa la información que falte."
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.view_form
+msgid "Contact details"
+msgstr "Datos de contacto"
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.view_form
+msgid "Professional identity"
+msgstr "Identidad profesional"
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.view_form
+msgid "Ways to reach you"
+msgstr "Medios de contacto"
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.view_form
+msgid "Your role or professional headline"
+msgstr "Tu cargo o título profesional"
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.view_form
+msgid "https://www.linkedin.com/in/your-profile"
+msgstr "https://www.linkedin.com/in/tu-perfil"
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.view_form
+msgid "CV upload"
+msgstr "Carga del CV"
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.view_form
+msgid "Describe your professional background and career goals."
+msgstr "Describe tu trayectoria profesional y tus objetivos laborales."
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.view_form
+msgid "Include community work, mentoring, and leadership roles."
+msgstr "Incluye trabajo comunitario, mentoría y roles de liderazgo."
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.view_form
+msgid "Describe relevant projects, your contribution, and results."
+msgstr "Describe proyectos relevantes, tu contribución y los resultados."
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.view_form
+msgid "List courses and workshops with providers and dates."
+msgstr "Enumera cursos y talleres con sus entidades y fechas."

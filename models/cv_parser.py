@@ -6,7 +6,7 @@ import re
 _FIELDS = (
     "full_name", "headline", "email", "phone", "location", "linkedin",
     "summary", "skills", "experience", "education", "certifications", "languages",
-    "volunteering", "projects", "trainings",
+    "volunteering", "projects", "trainings", "extra_info",
 )
 _SECTIONS = {
     "technicalskills": "skills",
@@ -27,6 +27,7 @@ _SECTIONS = {
     "certification": "certifications",
     "certifications": "certifications",
     "languages": "languages",
+    "language": "languages",
 }
 _BOUNDARIES = {"references"}
 _EMAIL = re.compile(r"[\w.+-]+@[\w.-]+\.[a-zA-Z]{2,}")
@@ -35,6 +36,11 @@ _LINKEDIN = re.compile(
     re.IGNORECASE,
 )
 _PHONE = re.compile(r"(?<!\w)(?:\(\+?\d{1,4}\)|\+?\d)[\d ().-]*\d(?!\w)")
+_WEB_LINK = re.compile(
+    r"(?<![\w@.-])(?:https?://)?(?:www\.)?[a-zA-Z0-9-]+"
+    r"(?:\.[a-zA-Z0-9-]+)*\.[a-zA-Z]{2,}(?:/[^\s•|,;]*)?(?![\w@.-])"
+)
+_CREDENTIAL = re.compile(r"\b(?:certificate|licen[cs]e)\b", re.IGNORECASE)
 
 
 def _heading(line):
@@ -75,6 +81,10 @@ def parse_cv_text(text: str) -> dict:
         match = pattern.search(contact)
         if match:
             result[field] = match.group().rstrip(".)")
+    result["extra_info"] = "\n".join(
+        match.group().rstrip(".)") for match in _WEB_LINK.finditer(contact)
+        if not _LINKEDIN.fullmatch(match.group())
+    )
     for match in _PHONE.finditer(contact):
         candidate = match.group().strip()
         if 7 <= len(re.sub(r"\D", "", candidate)) <= 15:
@@ -113,9 +123,9 @@ def parse_cv_text(text: str) -> dict:
             if after_name:
                 after_name = False
                 # Some PDF extractors put the footer's page count on its own line.
-                if re.fullmatch(r"\d+ */ *\d+", line) or (
-                    len(line) <= 60 and not re.search(r"\d", line)
-                ):
+                if re.fullmatch(r"\d+ */ *\d+", line) or line.casefold() in {
+                    result["headline"].casefold(), "professional cv", "career overview",
+                }:
                     continue
         after_name = False
         if heading in _SECTIONS:
@@ -123,7 +133,14 @@ def parse_cv_text(text: str) -> dict:
         elif heading in _BOUNDARIES:
             active = None
         elif active:
-            bodies[active].append(line)
+            spoken = re.fullmatch(r"Languages spoken:\s*(.+)", line, re.IGNORECASE)
+            if active == "skills" and spoken:
+                bodies["languages"].append(spoken.group(1))
+            else:
+                bodies[active].append(line)
+                if active == "trainings" and _CREDENTIAL.search(line):
+                    # Copy explicit labels only, retaining the source's stated status.
+                    bodies["certifications"].append(line)
     for field, body in bodies.items():
         result[field] = "\n".join(body)
     return result

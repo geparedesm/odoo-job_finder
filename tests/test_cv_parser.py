@@ -1,6 +1,7 @@
 """Exercise the parser through its standalone import contract."""
 
 import importlib.util
+import json
 from pathlib import Path
 import unittest
 
@@ -16,11 +17,30 @@ spec.loader.exec_module(parser)
 EMPTY_RESULT = dict.fromkeys((
     "full_name", "headline", "email", "phone", "location", "linkedin",
     "summary", "skills", "experience", "education", "certifications", "languages",
-    "volunteering", "projects", "trainings",
+    "volunteering", "projects", "trainings", "extra_info",
 ), "")
 
 
 class TestCVParser(unittest.TestCase):
+    def test_complete_six_page_reference(self):
+        fixtures = Path(__file__).parent / "fixtures"
+        text = (fixtures / "gabriel_paredes_cv.txt").read_text()
+        expected = json.loads((fixtures / "gabriel_paredes_fields.json").read_text())
+        self.assertEqual(len(text.split("\f")), 6)
+        self.assertEqual(parser.parse_cv_text(text), expected)
+
+    def test_header_links_leave_linkedin_separate(self):
+        result = parser.parse_cv_text(
+            "Gabriel Paredes Mendoza\nSOFTWARE DEVELOPMENT | ICT | MECHATRONICS\n"
+            "linkedin.com/in/geparedesm | https://gp-developer.com | "
+            "https://github.com/geparedesm\nTECHNICAL SKILLS\nLanguages: Dart, Python."
+        )
+        self.assertEqual(result["extra_info"],
+                         "https://gp-developer.com\nhttps://github.com/geparedesm")
+        self.assertEqual(result["linkedin"], "linkedin.com/in/geparedesm")
+        self.assertEqual(result["skills"], "Languages: Dart, Python.")
+        self.assertEqual(result["languages"], "")
+
     def test_sample_format(self):
         # Abbreviated from ATS-Resume-FullStack-17-04-2025.pdf; keep its
         # first two lines, contact line, headings and representative content.
@@ -51,11 +71,12 @@ Someone • someone@example.com • +61412345678
             full_name="Gabriel Paredes Mendoza", headline="FULL STACK DEVELOPER",
             location="Perth, Australia", phone="(+61) 415 530 419",
             email="gabrielparedesmendoza@gmail.com", linkedin="linkedin.com/in/geparedesm",
-            skills="Program Language\nDart, Python, JavaScript, TypeScript, React, React Native.\nLanguage\nSpanish (Native), English (B2)",
+            skills="Program Language\nDart, Python, JavaScript, TypeScript, React, React Native.",
             summary="•Strong analytical skills.",
             experience="GP-Developer, Ecuador • Full Stack Developer • 01/02/2020 - 01/12/2021\nProject: GP-Security",
             education="2014 – 2019 – Mechatronic Engineering – Universidad Técnica del Norte, Ecuador",
-            certifications="CCNA Switching & Routing – CISCO - EEUU 2016", languages="",
+            certifications="CCNA Switching & Routing – CISCO - EEUU 2016",
+            languages="Spanish (Native), English (B2)", extra_info="",
             volunteering="Volunteer", projects="", trainings="",
         ))
 
@@ -166,10 +187,11 @@ Gabriel Paredes Mendoza 6 / 6
             "projects": "Passive exoskeleton development\nNetwork design",
             "volunteering": "Community workshops",
             "trainings": "Forklift Licence",
+            "certifications": "Forklift Licence",
         })
 
     def test_running_name_preserves_substantive_following_line(self):
-        for content in ("Completed 2025", "A" * 61):
+        for content in ("Completed 2025", "A" * 61, "Degree completed.", "Full Stack Developer (continued)"):
             with self.subTest(content=content):
                 result = parser.parse_cv_text(
                     "Jane Doe\nDeveloper\nEDUCATION\nJane Doe\n" + content

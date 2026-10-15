@@ -10,6 +10,11 @@ and `trainings` profile fields. References stop section content collection.
 Location is extracted from delimited contact lines. Repeated name/subtitle page
 headers and name/page-count footers are excluded from section content.
 Empty parsed fields preserve existing profile values.
+Spoken languages are kept separate from programming skills. Personal website and
+GitHub links in the contact header populate additional information, while LinkedIn
+keeps its own field. Training and credentials remain complete in trainings; only
+entries explicitly labelled certificate or licence are also copied to certifications.
+Credential wording and stated status are preserved without inferring validity.
 
 ## Profile form
 

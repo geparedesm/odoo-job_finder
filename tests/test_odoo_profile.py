@@ -1,6 +1,9 @@
 """Profile actions, access, views and uniqueness in Odoo; skipped by plain unittest."""
 
 import base64
+import json
+from pathlib import Path
+from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 
@@ -32,15 +35,57 @@ class TestProfileScreen(TransactionCase):
             "odoo.addons.job_finder.models.job_profile.parse_cv_text",
             return_value={
                 "volunteering": "Mentoring", "projects": "", "trainings": "Workshop",
-                "extra_info": "Must not import", "user_id": self.other.id,
+                "extra_info": "gp-developer.com", "user_id": self.other.id,
+                "cv_filename": "Untrusted filename",
             },
         ):
             profile.action_parse_cv()
         self.assertEqual(profile.volunteering, "Mentoring")
         self.assertEqual(profile.projects, "Existing project")
         self.assertEqual(profile.trainings, "Workshop")
-        self.assertFalse(profile.extra_info)
+        self.assertEqual(profile.extra_info, "gp-developer.com")
+        self.assertFalse(profile.cv_filename)
         self.assertEqual(profile.user_id, self.user)
+
+    def test_reference_cv_persists_complete_fields(self):
+        # Text extracted with pypdf from Gabriel_Paredes_CV_completo.pdf.
+        fixtures = Path(__file__).parent / "fixtures"
+        text = (fixtures / "gabriel_paredes_cv.txt").read_text()
+        expected = json.loads((fixtures / "gabriel_paredes_fields.json").read_text())
+        profile = self.env["job.profile"].with_user(self.user).create({
+            "cv_file": base64.b64encode(b"Reference PDF"),
+            "cv_filename": "reference.pdf",
+        })
+        pages = [SimpleNamespace(extract_text=lambda value=page: value)
+                 for page in text.split("\f")]
+        with patch("pypdf.PdfReader", return_value=SimpleNamespace(pages=pages)):
+            profile.action_parse_cv()
+        profile.flush_recordset()
+        profile.invalidate_recordset()
+        for field, value in expected.items():
+            with self.subTest(field=field):
+                self.assertEqual(profile[field], value)
+        self.assertEqual(profile.cv_raw_text, "\n".join(text.split("\f")))
+        self.assertTrue(profile.cv_parsed_date)
+        self.assertEqual(profile.user_id, self.user)
+        self.assertEqual(profile.cv_filename, "reference.pdf")
+
+    def test_empty_parsed_fields_preserve_saved_profile(self):
+        fields = ("linkedin", "languages", "certifications", "trainings", "extra_info",
+                  "volunteering", "projects", "education", "experience")
+        profile = self.env["job.profile"].with_user(self.user).create({
+            "cv_file": base64.b64encode(b"Partial PDF"),
+            **{field: "Existing " + field for field in fields},
+        })
+        page = SimpleNamespace(extract_text=lambda: "TECHNICAL SKILLS\nLanguages: Dart, Python.")
+        with patch("pypdf.PdfReader", return_value=SimpleNamespace(pages=[page])):
+            profile.action_parse_cv()
+        profile.flush_recordset()
+        profile.invalidate_recordset()
+        self.assertEqual(profile.skills, "Languages: Dart, Python.")
+        for field in fields:
+            with self.subTest(field=field):
+                self.assertEqual(profile[field], "Existing " + field)
 
     def test_user_uniq_rejects_a_second_profile_for_the_same_user(self):
         profiles = self.env["job.profile"]

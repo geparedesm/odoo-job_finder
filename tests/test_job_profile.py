@@ -63,7 +63,7 @@ class TestJobProfile(unittest.TestCase):
         with patch.object(self.module, "parse_cv_text", return_value={
             "full_name": "Ana", "skills": "Python", "email": "",
             "volunteering": "Mentoring", "projects": "IoT", "trainings": "Workshop",
-            "extra_info": "Must never overwrite", "user_id": 42,
+            "extra_info": "Portfolio", "user_id": 42,
         }) as parser:
             self.run_action()
         parser.assert_called_once_with("First\nSecond")
@@ -71,6 +71,7 @@ class TestJobProfile(unittest.TestCase):
         self.profile.write.assert_called_once_with({
             "full_name": "Ana", "skills": "Python",
             "volunteering": "Mentoring", "projects": "IoT", "trainings": "Workshop",
+            "extra_info": "Portfolio",
             "cv_raw_text": "First\nSecond",
             "cv_parsed_date": "2026-10-02 12:00:00",
         })

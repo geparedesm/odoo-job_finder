@@ -1,6 +1,9 @@
 """Profile actions, access, views and uniqueness in Odoo; skipped by plain unittest."""
 
 import base64
+import json
+from io import BytesIO
+from pathlib import Path
 import unittest
 from unittest.mock import patch
 
@@ -12,6 +15,7 @@ except ImportError:  # plain `python -m unittest`: these need Odoo
 from psycopg2 import IntegrityError
 
 from odoo.tools import mute_logger
+from odoo.exceptions import AccessError
 
 
 @tagged("post_install", "-at_install")
@@ -32,15 +36,17 @@ class TestProfileScreen(TransactionCase):
             "odoo.addons.job_finder.models.job_profile.parse_cv_text",
             return_value={
                 "volunteering": "Mentoring", "projects": "", "trainings": "Workshop",
-                "extra_info": "Must not import", "user_id": self.other.id,
+                "extra_info": "Portfolio", "user_id": self.other.id,
+                "cv_filename": "Injected filename", "unexpected_field": "Rejected",
             },
         ):
             profile.action_parse_cv()
         self.assertEqual(profile.volunteering, "Mentoring")
         self.assertEqual(profile.projects, "Existing project")
         self.assertEqual(profile.trainings, "Workshop")
-        self.assertFalse(profile.extra_info)
+        self.assertEqual(profile.extra_info, "Portfolio")
         self.assertEqual(profile.user_id, self.user)
+        self.assertFalse(profile.cv_filename)
 
     def test_user_uniq_rejects_a_second_profile_for_the_same_user(self):
         profiles = self.env["job.profile"]
@@ -80,3 +86,40 @@ class TestProfileScreen(TransactionCase):
     def test_form_view_loads_for_an_internal_user(self):
         views = self.env["job.profile"].with_user(self.user).get_views([(False, "form")])
         self.assertIn("cv_file", views["models"]["job.profile"]["fields"])
+
+    def test_real_six_page_pdf_saves_every_field_and_preserves_on_empty(self):
+        import pypdf
+
+        fixtures = Path(__file__).parent / "fixtures"
+        pdf = (fixtures / "Gabriel_Paredes_CV_completo.pdf").read_bytes()
+        expected = json.loads((fixtures / "complete_cv_expected.json").read_text())
+        profile = self.env["job.profile"].with_user(self.user).create({
+            "cv_file": base64.b64encode(pdf),
+        })
+        profile.action_parse_cv()
+        for field, value in expected.items():
+            with self.subTest(field=field):
+                self.assertEqual(profile[field], value)
+        self.assertEqual(len(pypdf.PdfReader(fixtures / "Gabriel_Paredes_CV_completo.pdf").pages), 6)
+        self.assertEqual(profile.cv_raw_text, (fixtures / "complete_cv.txt").read_text())
+        self.assertTrue(profile.cv_parsed_date)
+        blank_pdf = BytesIO()
+        writer = pypdf.PdfWriter()
+        writer.add_blank_page(width=595, height=842)
+        writer.write(blank_pdf)
+        for upload in (blank_pdf.getvalue(), b"Invalid PDF", b""):
+            profile.cv_file = base64.b64encode(upload)
+            profile.action_parse_cv()
+            for field, value in expected.items():
+                with self.subTest(upload=upload, field=field):
+                    self.assertEqual(profile[field], value)
+
+    def test_parse_cv_cannot_write_another_users_profile(self):
+        fixtures = Path(__file__).parent / "fixtures"
+        profile = self.env["job.profile"].with_user(self.other).create({
+            "cv_file": base64.b64encode(
+                (fixtures / "Gabriel_Paredes_CV_completo.pdf").read_bytes()
+            ),
+        })
+        with self.assertRaises(AccessError):
+            profile.with_user(self.user).action_parse_cv()

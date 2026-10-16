@@ -63,13 +63,13 @@ class TestJobProfile(unittest.TestCase):
         with patch.object(self.module, "parse_cv_text", return_value={
             "full_name": "Ana", "skills": "Python", "email": "",
             "volunteering": "Mentoring", "projects": "IoT", "trainings": "Workshop",
-            "extra_info": "gp-developer.com", "user_id": 42, "cv_filename": "Untrusted",
+            "user_id": 42, "cv_filename": "Untrusted",
         }) as parser:
             self.run_action()
         parser.assert_called_once_with("First\nSecond")
         self.assertEqual(self.reader.call_args.args[0].getvalue(), b"PDF bytes")
         self.profile.write.assert_called_once_with({
-            "full_name": "Ana", "skills": "Python", "extra_info": "gp-developer.com",
+            "full_name": "Ana", "skills": "Python",
             "volunteering": "Mentoring", "projects": "IoT", "trainings": "Workshop",
             "cv_raw_text": "First\nSecond",
             "cv_parsed_date": "2026-10-02 12:00:00",
@@ -91,7 +91,7 @@ class TestJobProfile(unittest.TestCase):
         self.run_action()
         values = self.profile.write.call_args.args[0]
         self.assertEqual(values["skills"], "Python")
-        self.assertNotIn("extra_info", values)
+        self.assertEqual(values["full_name"], "Ana")
 
     def test_missing_library_has_spanish_error(self):
         with patch.dict(sys.modules, {"pypdf": None}):

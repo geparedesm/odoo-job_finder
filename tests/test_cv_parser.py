@@ -16,8 +16,8 @@ spec.loader.exec_module(parser)
 
 EMPTY_RESULT = dict.fromkeys((
     "full_name", "headline", "email", "phone", "location", "linkedin",
-    "summary", "skills", "experience", "education", "certifications", "languages",
-    "volunteering", "projects", "trainings", "extra_info",
+    "summary", "skills", "experience", "education", "languages",
+    "volunteering", "projects", "trainings",
 ), "")
 
 
@@ -35,8 +35,6 @@ class TestCVParser(unittest.TestCase):
             "linkedin.com/in/geparedesm | https://gp-developer.com | "
             "https://github.com/geparedesm\nTECHNICAL SKILLS\nLanguages: Dart, Python."
         )
-        self.assertEqual(result["extra_info"],
-                         "https://gp-developer.com\nhttps://github.com/geparedesm")
         self.assertEqual(result["linkedin"], "linkedin.com/in/geparedesm")
         self.assertEqual(result["skills"], "Languages: Dart, Python.")
         self.assertEqual(result["languages"], "")
@@ -75,9 +73,8 @@ Someone • someone@example.com • +61412345678
             summary="•Strong analytical skills.",
             experience="GP-Developer, Ecuador • Full Stack Developer • 01/02/2020 - 01/12/2021\nProject: GP-Security",
             education="2014 – 2019 – Mechatronic Engineering – Universidad Técnica del Norte, Ecuador",
-            certifications="CCNA Switching & Routing – CISCO - EEUU 2016",
             languages="Spanish (Native), English (B2)",
-            volunteering="Volunteer", projects="", trainings="", extra_info="",
+            volunteering="Volunteer", projects="", trainings="",
         ))
 
     def test_complete_reference_compound_headings(self):
@@ -187,7 +184,6 @@ Gabriel Paredes Mendoza 6 / 6
             "projects": "Passive exoskeleton development\nNetwork design",
             "volunteering": "Community workshops",
             "trainings": "Forklift Licence",
-            "certifications": "Forklift Licence",
         })
 
     def test_running_name_preserves_substantive_following_line(self):
@@ -241,8 +237,6 @@ Gabriel Paredes Mendoza 6 / 6
             ("experience", ("PROFESSIONAL EXPERIENCE", "EXPERIENCE",
                             "  pRoFeSsIoNaL\t  ExPeRiEnCe:  "), "Developer\n•Built APIs"),
             ("education", ("EDUCATION", "eDuCaTiOn", "  E D U C A T I O N:  "), "Engineering\nDiploma"),
-            ("certifications", ("CERTIFICATION", "CERTIFICATIONS",
-                                "  cErTiFiCaTiOnS:  "), "CCNA\nLinux"),
             ("languages", ("LANGUAGES", "lAnGuAgEs", "  L A N G U A G E S:  "), "Spanish\nEnglish"),
         )
         expected = {**EMPTY_RESULT, **{field: body for field, _, body in sections}}
@@ -256,6 +250,15 @@ Gabriel Paredes Mendoza 6 / 6
                             for key, headings, body in order
                         )
                         self.assertEqual(parser.parse_cv_text(text), expected)
+
+    def test_ignored_headings_stop_collection_and_resume_at_supported_sections(self):
+        for heading in ("CERTIFICATION", "CERTIFICATIONS", "  cErTiFiCaTiOnS:  ",
+                        "C E R T I F I C A T I O N", "Certifications - Current", "REFERENCES"):
+            with self.subTest(heading=heading):
+                result = parser.parse_cv_text(
+                    f"SKILLS\nPython\n{heading}\nIgnored content\nEDUCATION\nDegree"
+                )
+                self.assertEqual(result, {**EMPTY_RESULT, "skills": "Python", "education": "Degree"})
 
     def test_reference_pdf_concatenated_experience_heading(self):
         # The reference PDF extracts this heading without an inter-word space.
@@ -284,7 +287,6 @@ Gabriel Paredes Mendoza 6 / 6
                 )
                 self.assertEqual(result["summary"], "About me")
                 self.assertEqual(result["experience"], "Job")
-                self.assertEqual(result["certifications"], "Award")
                 self.assertEqual(result["languages"], "English")
                 self.assertEqual(result["skills"], "Python\nSQL")
 
@@ -315,7 +317,7 @@ class TestCompletePDF(unittest.TestCase):
         expected = json.loads((fixtures / "complete_cv_expected.json").read_text())
         self.assertEqual(parser.parse_cv_text(text), expected)
 
-    def test_training_is_not_implicitly_certification(self):
+    def test_training_credentials_are_preserved(self):
         result = parser.parse_cv_text(
             "TRAINING AND CREDENTIALS\nWorkshop | 2025\n"
             "Certificate | 2016 | Not renewed\n"
@@ -323,7 +325,7 @@ class TestCompletePDF(unittest.TestCase):
             "Languages spoken: Spanish (native), English (B2).\n"
             "REFERENCES\nPrivate reference"
         )
-        self.assertEqual(result["certifications"], "Certificate | 2016 | Not renewed")
+        self.assertEqual(result["trainings"], "Workshop | 2025\nCertificate | 2016 | Not renewed")
         self.assertEqual(result["skills"], "Languages: Python, C/C++")
         self.assertEqual(result["languages"], "Spanish (native), English (B2).")
         self.assertNotIn("Private", str(result))

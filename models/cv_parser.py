@@ -5,8 +5,8 @@ import re
 
 _FIELDS = (
     "full_name", "headline", "email", "phone", "location", "linkedin",
-    "summary", "skills", "experience", "education", "certifications", "languages",
-    "volunteering", "projects", "trainings", "extra_info",
+    "summary", "skills", "experience", "education", "languages",
+    "volunteering", "projects", "trainings",
 )
 _SECTIONS = {
     "technicalskills": "skills",
@@ -24,23 +24,16 @@ _SECTIONS = {
     "experience": "experience",
     "workexperience": "experience",
     "education": "education",
-    "certification": "certifications",
-    "certifications": "certifications",
     "languages": "languages",
     "language": "languages",
 }
-_BOUNDARIES = {"references"}
+_BOUNDARIES = {"references", "certification", "certifications"}
 _EMAIL = re.compile(r"[\w.+-]+@[\w.-]+\.[a-zA-Z]{2,}")
 _LINKEDIN = re.compile(
     r"(?:https?://)?(?:www\.)?linkedin\.com/(?:in|pub)/[^\s•|,;]+",
     re.IGNORECASE,
 )
 _PHONE = re.compile(r"(?<!\w)(?:\(\+?\d{1,4}\)|\+?\d)[\d ().-]*\d(?!\w)")
-_WEB_LINK = re.compile(
-    r"(?<![\w@.-])(?:https?://)?(?:www\.)?[a-zA-Z0-9-]+"
-    r"(?:\.[a-zA-Z0-9-]+)*\.[a-zA-Z]{2,}(?:/[^\s•|,;]*)?(?![\w@.-])"
-)
-_CREDENTIAL = re.compile(r"\b(?:certificate|certified|licen[cs]e)\b", re.IGNORECASE)
 
 
 def _heading(line):
@@ -81,10 +74,6 @@ def parse_cv_text(text: str) -> dict:
         match = pattern.search(contact)
         if match:
             result[field] = match.group().rstrip(".)")
-    result["extra_info"] = "\n".join(
-        match.group().rstrip(".)") for match in _WEB_LINK.finditer(contact)
-        if not _LINKEDIN.fullmatch(match.group())
-    )
     for match in _PHONE.finditer(contact):
         candidate = match.group().strip()
         if 7 <= len(re.sub(r"\D", "", candidate)) <= 15:
@@ -138,9 +127,6 @@ def parse_cv_text(text: str) -> dict:
                 bodies["languages"].append(spoken.group(1))
             else:
                 bodies[active].append(line)
-                if active == "trainings" and _CREDENTIAL.search(line):
-                    # Copy explicit labels only, retaining the source's stated status.
-                    bodies["certifications"].append(line)
     for field, body in bodies.items():
         result[field] = "\n".join(body)
     return result

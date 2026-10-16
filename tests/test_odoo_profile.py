@@ -37,7 +37,7 @@ class TestProfileScreen(TransactionCase):
             "odoo.addons.job_finder.models.job_profile.parse_cv_text",
             return_value={
                 "volunteering": "Mentoring", "projects": "", "trainings": "Workshop",
-                "extra_info": "Portfolio", "user_id": self.other.id,
+                "user_id": self.other.id,
                 "cv_filename": "Injected filename", "unexpected_field": "Rejected",
             },
         ):
@@ -45,7 +45,6 @@ class TestProfileScreen(TransactionCase):
         self.assertEqual(profile.volunteering, "Mentoring")
         self.assertEqual(profile.projects, "Existing project")
         self.assertEqual(profile.trainings, "Workshop")
-        self.assertEqual(profile.extra_info, "Portfolio")
         self.assertEqual(profile.user_id, self.user)
         self.assertFalse(profile.cv_filename)
 
@@ -73,7 +72,7 @@ class TestProfileScreen(TransactionCase):
         self.assertEqual(profile.cv_filename, "reference.pdf")
 
     def test_empty_parsed_fields_preserve_saved_profile(self):
-        fields = ("linkedin", "languages", "certifications", "trainings", "extra_info",
+        fields = ("linkedin", "languages", "trainings",
                   "volunteering", "projects", "education", "experience")
         profile = self.env["job.profile"].with_user(self.user).create({
             "cv_file": base64.b64encode(b"Partial PDF"),

@@ -30,7 +30,6 @@ class JobProfile(models.Model):
     skills = fields.Text(string="Habilidades")
     experience = fields.Text(string="Experiencia")
     education = fields.Text(string="Educación")
-    certifications = fields.Text(string="Certificaciones")
     languages = fields.Text(string="Idiomas")
     volunteering = fields.Text(
         string="Volunteering", help="Leadership and volunteering experience from the CV.",
@@ -41,7 +40,6 @@ class JobProfile(models.Model):
     trainings = fields.Text(
         string="Trainings", help="Training and credentials from the CV.",
     )
-    extra_info = fields.Text(string="Información adicional")
     cv_file = fields.Binary(string="CV en PDF")
     cv_filename = fields.Char(string="Nombre del archivo")
     cv_raw_text = fields.Text(string="Texto extraído del CV", readonly=True)
@@ -64,8 +62,8 @@ class JobProfile(models.Model):
 
         profile_fields = (
             "full_name", "headline", "email", "phone", "location", "linkedin",
-            "summary", "skills", "experience", "education", "certifications",
-            "languages", "volunteering", "projects", "trainings", "extra_info",
+            "summary", "skills", "experience", "education",
+            "languages", "volunteering", "projects", "trainings",
         )
         for profile in self:
             if not profile.cv_file:

@@ -31,8 +31,8 @@ class TestJobProfileReport(TransactionCase):
             "summary": "Updated professional summary", "skills": "Python\nSQL",
             "experience": "Industry experience", "education": "Engineering degree",
             "volunteering": "Community mentoring", "projects": "Research prototype",
-            "trainings": "Advanced workshop", "certifications": "Professional credential",
-            "languages": "English and Spanish", "extra_info": "Available for remote work",
+            "trainings": "Advanced workshop",
+            "languages": "English and Spanish",
         }
         cls.profile = cls.env["job.profile"].with_user(cls.user).create(cls.values)
         cls.report = cls.env.ref("job_finder.action_report_job_profile")
@@ -74,10 +74,10 @@ class TestJobProfileReport(TransactionCase):
 
     def test_empty_sections_and_no_upload(self):
         self.assertFalse(self.profile.cv_file)
-        self.profile.write({"trainings": False, "extra_info": False})
+        self.profile.write({"trainings": False, "projects": False})
         html = self.render_html(self.user)
         self.assertNotIn("<h2>Trainings</h2>", html)
-        self.assertNotIn("<h2>Additional information</h2>", html)
+        self.assertNotIn("<h2>Projects</h2>", html)
         self.assertNotIn("False", html)
         self.assertIn("Report Candidate", html)
 

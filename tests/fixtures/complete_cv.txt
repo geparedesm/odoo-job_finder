@@ -1,0 +1,250 @@
+Gabriel Paredes Mendoza
+SOFTWARE DEVELOPMENT | ICT | MECHATRONICS
+Perth, Australia | +61 415 530 419 | gabrielparedesmendoza@gmail.com
+linkedin.com/in/geparedesm
+ | 
+gp-developer.com
+ | 
+github.com/geparedesm
+PROFESSIONAL PROFILE
+Multidisciplinary professional with experience in software development, mechatronics, manufacturing and hospitality.
+Developed web and mobile applications, ERP modules, security-log platforms and IoT systems. Combines technical
+delivery with production operations, customer service, community training and academic work in ICT analysis and
+telecommunications.
+TECHNICAL SKILLS
+Languages: Dart, Python, JavaScript, TypeScript, PHP, C/C++.
+Applications: Flutter, React, React Native, Flask, Django, Node.js, Odoo, Vite, Expo, Expo Application Services, Skia.
+Data & infrastructure: PostgreSQL, MySQL, Firebase, Elasticsearch, Logstash, Kibana, Filebeat, Docker, Kubernetes,
+AWS, Terraform, CI/CD.
+Engineering: Arduino, microcontrollers, PLCs, SolidWorks, Fusion 360, CAD/CAM.
+ICT analysis: Requirements elicitation, stakeholder engagement, risk assessment, network design.
+Languages spoken: Spanish (native), English (B2).
+PROFESSIONAL EXPERIENCE - SOFTWARE DEVELOPMENT
+Full Stack Developer
+Duodata | Ecuador / remote from Australia | Dec 2021 - Jan 2025 | Full-time
+Custom ERP modules - Ecuadorian Navy
+Technologies / methods: Odoo, Python, PostgreSQL
+ • Developed customised ERP modules and integrated them with existing systems to support resource allocation,
+ operational workflows and data exchange.
+Security log data warehouse
+Technologies / methods: Docker, Python, Elasticsearch, Logstash, Kibana, Filebeat, MinIO
+ • Built ingestion pipelines for Sophos, FortiGate, Cisco and Postfix logs. Developed Python reporting scripts and Kibana
+ plugins for PDF reports, dashboard migration and firewall administration. Configured event notifications and
+Elasticsearch backups; upgraded the stack from 8.4.2 to 8.14.2.
+ZKTeco biometric administration platform
+Technologies / methods: Flutter, Python, Flask, Node.js, MySQL, Docker
+ • Developed a cross-platform administration application for user management, event logs and remote door control.
+ Implemented device-protocol communication and three microservices for REST APIs, command generation and
+database synchronisation. Added user-photo transfer, Flutter unit tests and CI/CD pipelines. Increased throughput by
+40% in operations processed per minute and reduced end-to-end system response time by 30%. Achieved 90% Flutter
+test coverage, reduced errors detected during testing by 35%, and cut deployment time by 50% through CI/CD.
+Gabriel Paredes Mendoza
+1 / 6
+
+Gabriel Paredes Mendoza
+PROFESSIONAL CV
+PROFESSIONAL EXPERIENCE - SOFTWARE DEVELOPMENT
+Full Stack Developer (continued)
+Duodata | Ecuador / remote from Australia | Dec 2021 - Jan 2025 | Full-time
+The Hit - music social application
+Technologies / methods: React Native, Expo, Redux-Saga, ESLint
+ • Contributed to a mobile social network for music sharing and artist chat. Implemented asynchronous operations and
+ contact-based relationship metadata to support user discovery, collaborating with developers and designers.
+Contributed to an application with over 30,000 combined Android and iOS downloads; improved
+asynchronous-operation handling time by 15-25% and contact-based search results by 10%.
+Frecuento - mobile commerce application
+Technologies / methods: React Native, Expo, Redux-Saga, ESLint
+ • Developed features for product browsing and credit-card purchasing on Android and iOS. Applied MVC architecture,
+ asynchronous state management, testing and linting to improve code organisation and maintenance. Contributed to an
+application with over 10,000 Android downloads and 15,000 iOS downloads. Reduced controller/view code by 30-40%
+through MVC and asynchronous/state-management code by 20-30% using Redux-Saga.
+Founder & Full Stack Developer
+GP-Developer | Ecuador | Feb 2020 - Dec 2021 | Own business
+ • Independently developed approximately 15 technology projects for clients.
+ GP-Security - IoT vehicle security platform
+Technologies / methods: Flutter, Firebase, AWS, Terraform, Docker, Python, Flask, TCP/IP, Arduino, C/C++, Fusion 360
+ • Designed an end-to-end vehicle tracking platform connecting custom GPS hardware, cloud services and a cross-platform
+ application. Implemented location history, geofencing, remote engine immobilisation, window control and automated
+security alerts.
+• Built Python REST and multithreaded TCP services, improving processing speed by 35% and reducing latency by 25%.
+ Implemented CanTrack protocol communication for custom and third-party GPS devices.
+• Developed Flutter applications for web, Android and iOS. Achieved 95% unit/widget test coverage and reduced
+ post-release defects by 40%; automated delivery with CI/CD.
+• Designed a Fusion 360 enclosure, assembled electronic circuits and programmed embedded functionality using
+ ATmega, SIMCom and Espressif platforms.
+Full Stack Developer
+CODENORTE | Ecuador | Jan 2019 - Feb 2020 | Full-time
+IoT GPS tracking system
+Technologies / methods: PHP, MySQL, HTML, ATmega, SIMCom
+ • Developed a web interface and database for GPS data. Programmed tracking hardware to collect and transmit
+ coordinates, integrating embedded devices, backend services and data storage.
+Gabriel Paredes Mendoza
+2 / 6
+
+Gabriel Paredes Mendoza
+PROFESSIONAL CV
+ACADEMIC RESEARCH - MECHATRONICS
+Mechatronics Research Collaborator
+Intelligent Systems Research Group, Universidad Técnica del Norte | Ecuador | Jan 2017 - Feb 2019 | Academic
+collaboration
+Passive exoskeleton development
+Technologies / methods: LabVIEW, National Instruments controllers, PCB design, CAD/CAM
+ • Contributed to PCB design, mechanical design and manufacturing. Maintained control software, developed system
+ functionality and reworked signal acquisition for National Instruments controllers; provided technical troubleshooting.
+Three-axis CNC drawing plotter
+Technologies / methods: SolidWorks, Arduino, C/C++, GRBL, G-code
+ • Designed and assembled a drawing plotter, integrating mechanical structures, stepper motors, drivers and control
+ electronics. Implemented coordinated motion from vector designs and calibrated and tested the prototype.
+Automated production line integration
+Technologies / methods: Siemens PLC, SMC FMS-200, pneumatics, sensors
+ • Assembled modular manufacturing stations and integrated electrical wiring, sensors, pneumatic actuators and PLC
+ controllers. Supported commissioning, calibration, troubleshooting and coordinated station testing.
+Tablet counting and bottle filling prototype
+Technologies / methods: Arduino, C/C++, infrared and photoelectric sensors
+ • Designed the conveyor and vibratory hopper, assembled electronics and programmed bottle detection, tablet counting
+ and configurable filling cycles. Calibrated sensors and tested mechanical, electronic and software integration.
+Custom mechanical parts and CNC manufacturing
+Technologies / methods: SolidWorks, CAD/CAM, G-code, CNC milling and turning, 3D printing
+ • Reverse-engineered components through dimensional measurement. Created 3D models and technical drawings,
+ prepared machining instructions and manufactured parts using CNC machines and additive manufacturing.
+EDUCATION
+Advanced Diploma of Information Technology (Telecommunications Network Engineering)
+ICT60220 | National Institute of Technology, Australia | Completed 2025
+Diploma of Information Technology (Cybersecurity)
+ICT50220 | National Institute of Technology, Australia | Completed 2024
+Degree in Mechatronics Engineering
+Universidad Técnica del Norte, Ecuador | 2014 - 2019 | Graduated 2019
+Gabriel Paredes Mendoza
+3 / 6
+
+Gabriel Paredes Mendoza
+PROFESSIONAL CV
+ACADEMIC PROJECTS - ICT ANALYSIS AND NETWORKS
+National Institute of Technology (NIT) | Australia
+Jul 2024 - Jun 2026 | Academic project work
+Critical infrastructure cybersecurity requirements
+Technologies / methods: BABOK v3, ISO/IEC 27001 principles, Essential Eight
+ • Defined scope, governance and stakeholder responsibilities. Elicited security and compliance requirements and prepared
+ a prioritised baseline, traceability approach, risk register and change-control process.
+Website accessibility redevelopment
+Technologies / methods: WCAG, requirements management, Australian legislation
+ • Analysed accessibility issues, user needs and technical constraints. Documented functional and non-functional
+ requirements, acceptance criteria, stakeholder roles and approval processes.
+ICT privacy, intellectual property and ethics review
+Technologies / methods: Policy analysis, ACS Code of Ethics
+ • Reviewed data handling, software licensing, copyright and ethical conduct. Updated governance procedures and
+ prepared approval, communication and implementation materials.
+LAN-Alpha telecommunications requirements
+Technologies / methods: RSTP, VLANs, VoIP, DNS/DHCP, AAA, WHS
+ • Captured requirements for a mining-site network, including underground connectivity, real-time communications,
+ redundancy and security. Documented scope, constraints, components and compliance considerations.
+Link-Beta high-availability transmission link
+Technologies / methods: Optical fibre, transmission architecture, change control
+ • Analysed a 100 km link between Perth NOC and Boonanarring Mine Site. Documented a 99.99% availability
+ requirement, capacity and resilience needs, technology alternatives and delivery constraints.
+Multi-site IP addressing and VLAN design
+Technologies / methods: IPv4, IPv6, VLSM, VLANs, WAN addressing
+ • Produced addressing plans for six VLANs and three WAN links across Subiaco and Applecross. Calculated subnet
+ capacity and documented network IDs, host ranges, masks and traffic segmentation.
+DMC transmission network architecture
+Technologies / methods: Cambium LINKPlanner, QGIS, optical and RF communications
+ • Prepared preliminary designs for Perth HQ, Gosnells Quarry and Cataby Mine Site. Evaluated fibre and radio options,
+ selected equipment and performed link-budget analysis.
+Cybersecurity resilience and continuity
+Technologies / methods: Risk assessment, incident response, disaster recovery
+ • Analysed cyber risks and recovery needs. Prepared business continuity, disaster recovery and incident-response
+ documents, with responsibilities, communications and evaluation materials.
+BrightConnect digital transformation proposal
+Technologies / methods: SWOT, stakeholder analysis, business case development
+ • Assessed learning delivery, student records, connectivity and administration. Proposed a cloud LMS, digital records,
+ improved Wi-Fi and AI-supported administration, with risk and feasibility analysis.
+ICT strategic gap and change assessment
+Technologies / methods: Gap analysis, change assessment, action planning
+ • Compared ICT capability with organisational strategy. Identified gaps, impacts and resource needs, and prepared action
+ plans and stakeholder communications to support prioritisation.
+Gabriel Paredes Mendoza
+4 / 6
+
+Gabriel Paredes Mendoza
+PROFESSIONAL CV
+PROFESSIONAL EXPERIENCE - PRODUCTION AND HOSPITALITY
+Fencing Production Operator
+AJ Fencing Supplies | Australia | Oct 2023 - Feb 2026 | Casual
+ • Operated roll-forming lines for steel fence sheets, rails and posts; entered cut lengths and quantities and adjusted
+ production controls.
+• Loaded steel coils onto decoilers and moved materials with a counterbalance forklift. Cut posts and rails with a cold saw,
+ inspected products and prepared dispatch pallets.
+• Followed WHS procedures, lifting practices and PPE requirements; maintained a safe, organised production area.
+ 
+Bartender
+The Knock Restaurant | Australia | Feb 2025 - Present | Casual
+ • Prepared classic and contemporary cocktails and personalised recipes. Coordinated restaurant service, recommended
+ beverages and maintained an organised bar.
+Bartender
+Mr Basil Rockingham | Australia | 2024 | Casual
+ • Prepared cocktails and customised recipes, managed concurrent orders during busy service and maintained beverage
+ quality and attentive customer service.
+Bartender
+Encore | Australia | 2024 | Casual
+ • Prepared cocktails and beverages, managed orders efficiently and supported guests with recommendations while
+ maintaining a welcoming bar.
+Bartender
+MiniBar | Australia | 2024 | Casual
+ • Served cocktails and spirits, provided personalised recommendations and coordinated with colleagues to support
+ efficient service.
+Bartender
+Martini & Co | Australia | 2023 - 2024 | Casual
+ • Prepared classic and contemporary cocktails and maintained beverage presentation standards in a fast-paced hospitality
+ environment.
+Bartender
+Santos y Pecadores | Australia | 2023 - 2024 | Casual
+ • Prepared cocktails and mixed drinks, supported beverage selection and maintained inventory and cleanliness during
+ high-volume service.
+Bartender
+MIXING Bar | Ecuador | 2019 - 2023 | Shift and event work
+ • Created seven signature cocktails adopted into the official drinks menu. Experimented with flavour and presentation,
+ provided personalised service and maintained beverage standards.
+Gabriel Paredes Mendoza
+5 / 6
+
+Gabriel Paredes Mendoza
+PROFESSIONAL CV
+LEADERSHIP AND VOLUNTEERING
+NIT Connect Ambassador / Volunteer
+National Institute of Technology | Australia | Ambassador: 2025 - 2026 | Volunteer: 2024 - 2025
+ • Personally delivered 20 digital literacy and cybersecurity awareness workshops for a total of 249 participants.
+ • Coordinated student volunteers and developed learning resources. Liaised with Perth libraries and community
+ organisations; mentored students to deliver sessions independently.
+Leadership, outreach and membership
+IEEE | Ecuador / Latin America & Caribbean / global outreach | 2015 - 2021
+Roles and recognition
+Vice Chair, IEEEXtreme Public Relations Committee (2019 - 2021)
+Lead Ambassador, IEEEXtreme Latin America & Caribbean (2018 - 2019)
+IEEE MadC Ambassador (2018 - 2019)
+Outstanding Member, IEEE Ecuador Section (2017 - 2018)
+Lead Ambassador, IEEEXtreme Ecuador Section (2017 - 2018)
+President, IEEE RAS UTN Chapter (2016 - 2017)
+IEEE Member (2015 - 2021)
+ • Supported international public relations and outreach for IEEEXtreme, coordinating communication to promote the
+ programming competition.
+Robotics and Programming Volunteer Mentor
+Oviedo High School | Ibarra, Ecuador | 2013 - 2014
+ • Taught robotics and programming and prepared students for a national competition, where the team achieved second
+ place.
+TRAINING AND CREDENTIALS
+Forklift Licence (LF) | WorkSafe WA | 2025 | Current
+Responsible Service of Alcohol (RSA) | EOT | 2023
+FoodSafe Food Handler Certificate | Environmental Health Australia | 2023
+Basic, Advanced and Web Flutter | Udemy | 2019
+Human Talent Assistant | COORED | 2018
+Website Development | C-DAC | 2017
+Siemens and Industrial Networks | AiControl | 2017
+CCNA Routing & Switching | Cisco | Certified 2016 | Not renewed
+Administration with Linux | C-DAC | 2016
+Java Development | C-DAC | 2016
+Ethical Hacking and Penetration Testing | Green Ethics | 2016
+ISO Programming for CNC | UTN | 2016
+REFERENCES
+Available on request.
+Gabriel Paredes Mendoza
+6 / 6

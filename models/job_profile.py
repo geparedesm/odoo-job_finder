@@ -65,7 +65,7 @@ class JobProfile(models.Model):
         profile_fields = (
             "full_name", "headline", "email", "phone", "location", "linkedin",
             "summary", "skills", "experience", "education", "certifications",
-            "languages", "volunteering", "projects", "trainings",
+            "languages", "volunteering", "projects", "trainings", "extra_info",
         )
         for profile in self:
             if not profile.cv_file:

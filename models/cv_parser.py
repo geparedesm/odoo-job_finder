@@ -36,6 +36,11 @@ _LINKEDIN = re.compile(
     re.IGNORECASE,
 )
 _PHONE = re.compile(r"(?<!\w)(?:\(\+?\d{1,4}\)|\+?\d)[\d ().-]*\d(?!\w)")
+_WEB_LINK = re.compile(
+    r"(?<![\w@.-])(?:https?://)?(?:www\.)?[a-zA-Z0-9-]+"
+    r"(?:\.[a-zA-Z0-9-]+)*\.[a-zA-Z]{2,}(?:/[^\s•|,;]*)?(?![\w@.-])"
+)
+_CREDENTIAL = re.compile(r"\b(?:certificate|certified|licen[cs]e)\b", re.IGNORECASE)
 
 
 def _heading(line):
@@ -72,19 +77,14 @@ def parse_cv_text(text: str) -> dict:
             result["headline"] = title
 
     contact = "\n".join(header[:10])
-    links = re.findall(
-        r"(?:https?://)?(?:www\.)?[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)+(?:/[^\s•|,;]*)?",
-        contact,
-    )
-    result["extra_info"] = "\n".join(
-        link for link in links
-        if not _LINKEDIN.fullmatch(link) and link not in result["full_name"]
-        and not any(link in match.group() for match in _EMAIL.finditer(contact))
-    )
     for field, pattern in (("email", _EMAIL), ("linkedin", _LINKEDIN)):
         match = pattern.search(contact)
         if match:
             result[field] = match.group().rstrip(".)")
+    result["extra_info"] = "\n".join(
+        match.group().rstrip(".)") for match in _WEB_LINK.finditer(contact)
+        if not _LINKEDIN.fullmatch(match.group())
+    )
     for match in _PHONE.finditer(contact):
         candidate = match.group().strip()
         if 7 <= len(re.sub(r"\D", "", candidate)) <= 15:
@@ -124,7 +124,7 @@ def parse_cv_text(text: str) -> dict:
                 after_name = False
                 # Some PDF extractors put the footer's page count on its own line.
                 if re.fullmatch(r"\d+ */ *\d+", line) or line.casefold() in {
-                    "professional cv", "career overview",
+                    result["headline"].casefold(), "professional cv", "career overview",
                 }:
                     continue
         after_name = False
@@ -134,15 +134,13 @@ def parse_cv_text(text: str) -> dict:
             active = None
         elif active:
             spoken = re.fullmatch(r"Languages spoken:\s*(.+)", line, re.IGNORECASE)
-            if spoken and active == "skills":
+            if active == "skills" and spoken:
                 bodies["languages"].append(spoken.group(1))
             else:
                 bodies[active].append(line)
-            # Copy only explicit credentials, preserving the complete wording/status.
-            if active == "trainings" and re.search(
-                r"\b(?:licen[cs]e|certificate|certified)\b", line, re.IGNORECASE,
-            ):
-                bodies["certifications"].append(line)
+                if active == "trainings" and _CREDENTIAL.search(line):
+                    # Copy explicit labels only, retaining the source's stated status.
+                    bodies["certifications"].append(line)
     for field, body in bodies.items():
         result[field] = "\n".join(body)
     return result

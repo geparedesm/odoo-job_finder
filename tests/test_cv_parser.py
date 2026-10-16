@@ -1,6 +1,7 @@
 """Exercise the parser through its standalone import contract."""
 
 import importlib.util
+import json
 from pathlib import Path
 import unittest
 
@@ -21,6 +22,25 @@ EMPTY_RESULT = dict.fromkeys((
 
 
 class TestCVParser(unittest.TestCase):
+    def test_complete_six_page_reference(self):
+        fixtures = Path(__file__).parent / "fixtures"
+        text = (fixtures / "gabriel_paredes_cv.txt").read_text()
+        expected = json.loads((fixtures / "gabriel_paredes_fields.json").read_text())
+        self.assertEqual(len(text.split("\f")), 6)
+        self.assertEqual(parser.parse_cv_text(text), expected)
+
+    def test_header_links_leave_linkedin_separate(self):
+        result = parser.parse_cv_text(
+            "Gabriel Paredes Mendoza\nSOFTWARE DEVELOPMENT | ICT | MECHATRONICS\n"
+            "linkedin.com/in/geparedesm | https://gp-developer.com | "
+            "https://github.com/geparedesm\nTECHNICAL SKILLS\nLanguages: Dart, Python."
+        )
+        self.assertEqual(result["extra_info"],
+                         "https://gp-developer.com\nhttps://github.com/geparedesm")
+        self.assertEqual(result["linkedin"], "linkedin.com/in/geparedesm")
+        self.assertEqual(result["skills"], "Languages: Dart, Python.")
+        self.assertEqual(result["languages"], "")
+
     def test_sample_format(self):
         # Abbreviated from ATS-Resume-FullStack-17-04-2025.pdf; keep its
         # first two lines, contact line, headings and representative content.
@@ -171,7 +191,8 @@ Gabriel Paredes Mendoza 6 / 6
         })
 
     def test_running_name_preserves_substantive_following_line(self):
-        for content in ("Completed 2025", "A" * 61, "Substantive short continuation"):
+        for content in ("Completed 2025", "A" * 61, "Degree completed.", "Full Stack Developer (continued)",
+                        "Substantive short continuation"):
             with self.subTest(content=content):
                 result = parser.parse_cv_text(
                     "Jane Doe\nDeveloper\nEDUCATION\nJane Doe\n" + content

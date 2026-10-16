@@ -41,17 +41,9 @@
                             <h2>Trainings</h2>
                             <div t-field="profile.trainings" style="white-space: pre-wrap; overflow-wrap: break-word;"/>
                         </div>
-                        <div t-if="profile.certifications">
-                            <h2>Certifications</h2>
-                            <div t-field="profile.certifications" style="white-space: pre-wrap; overflow-wrap: break-word;"/>
-                        </div>
                         <div t-if="profile.languages">
                             <h2>Languages</h2>
                             <div t-field="profile.languages" style="white-space: pre-wrap; overflow-wrap: break-word;"/>
-                        </div>
-                        <div t-if="profile.extra_info">
-                            <h2>Additional information</h2>
-                            <div t-field="profile.extra_info" style="white-space: pre-wrap; overflow-wrap: break-word;"/>
                         </div>
                     </div>
                 </t>

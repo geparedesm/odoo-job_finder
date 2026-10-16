@@ -129,18 +129,8 @@ msgstr "Enumera tus titulaciones, instituciones y fechas de estudio."
 
 #. module: job_finder
 #: model_terms:ir.ui.view,arch_db:job_finder.view_form
-msgid "List your certifications, issuers, and dates."
-msgstr "Enumera tus certificaciones, entidades emisoras y fechas."
-
-#. module: job_finder
-#: model_terms:ir.ui.view,arch_db:job_finder.view_form
 msgid "List the languages you speak and your proficiency levels."
 msgstr "Enumera los idiomas que hablas y tu nivel de dominio."
-
-#. module: job_finder
-#: model_terms:ir.ui.view,arch_db:job_finder.view_form
-msgid "Add other relevant details, such as availability or interests."
-msgstr "Añade otros datos relevantes, como disponibilidad o intereses."
 
 #. module: job_finder
 #: model_terms:ir.ui.view,arch_db:job_finder.view_form
@@ -175,18 +165,8 @@ msgstr "Educación"
 
 #. module: job_finder
 #: model_terms:ir.ui.view,arch_db:job_finder.report_job_profile
-msgid "Certifications"
-msgstr "Certificaciones"
-
-#. module: job_finder
-#: model_terms:ir.ui.view,arch_db:job_finder.report_job_profile
 msgid "Languages"
 msgstr "Idiomas"
-
-#. module: job_finder
-#: model_terms:ir.ui.view,arch_db:job_finder.report_job_profile
-msgid "Additional information"
-msgstr "Información adicional"
 
 #. module: job_finder
 #: model_terms:ir.ui.view,arch_db:job_finder.report_job_profile

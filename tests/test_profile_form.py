@@ -29,7 +29,7 @@ class TestGuidedProfileForm(HttpCase):
         fields = views["models"]["job.profile"]["fields"]
         expected = [
             "summary", "skills", "experience", "education", "volunteering",
-            "projects", "trainings", "certifications", "languages", "extra_info",
+            "projects", "trainings", "languages",
         ]
         self.assertEqual(
             form.xpath("./sheet/notebook/page/field/@name"), expected,

@@ -41,9 +41,7 @@
                         <page string="Volunteering" name="volunteering"><field name="volunteering" placeholder="Include community work, mentoring, and leadership roles."/></page>
                         <page string="Projects" name="projects"><field name="projects" placeholder="Describe relevant projects, your contribution, and results."/></page>
                         <page string="Trainings" name="trainings"><field name="trainings" placeholder="List courses and workshops with providers and dates."/></page>
-                        <page string="Certificaciones"><field name="certifications" placeholder="List your certifications, issuers, and dates."/></page>
                         <page string="Idiomas"><field name="languages" placeholder="List the languages you speak and your proficiency levels."/></page>
-                        <page string="Información adicional"><field name="extra_info" placeholder="Add other relevant details, such as availability or interests."/></page>
                     </notebook>
                 </sheet>
             </form>

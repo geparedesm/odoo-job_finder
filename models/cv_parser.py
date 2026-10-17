@@ -4,7 +4,7 @@ import re
 
 
 _FIELDS = (
-    "full_name", "headline", "email", "phone", "location", "linkedin",
+    "full_name", "headline", "email", "phone", "location", "linkedin", "website", "github",
     "summary", "skills", "experience", "education", "languages",
     "volunteering", "projects", "trainings",
 )
@@ -31,6 +31,16 @@ _BOUNDARIES = {"references", "certification", "certifications"}
 _EMAIL = re.compile(r"[\w.+-]+@[\w.-]+\.[a-zA-Z]{2,}")
 _LINKEDIN = re.compile(
     r"(?:https?://)?(?:www\.)?linkedin\.com/(?:in|pub)/[^\s•|,;]+",
+    re.IGNORECASE,
+)
+_GITHUB = re.compile(
+    r"(?:https?://)?(?:www\.)?github\.com/[^\s•|,;]+",
+    re.IGNORECASE,
+)
+_WEBSITE = re.compile(
+    r"(?<![\w.@/-])(?:https?://)?(?:www\.)?"
+    r"(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+"
+    r"[a-zA-Z]{2,}(?:/[^\s•|,;]*)?",
     re.IGNORECASE,
 )
 _PHONE = re.compile(r"(?<!\w)(?:\(\+?\d{1,4}\)|\+?\d)[\d ().-]*\d(?!\w)")
@@ -70,10 +80,25 @@ def parse_cv_text(text: str) -> dict:
             result["headline"] = title
 
     contact = "\n".join(header[:10])
-    for field, pattern in (("email", _EMAIL), ("linkedin", _LINKEDIN)):
-        match = pattern.search(contact)
-        if match:
+    excluded_spans = [
+        match.span()
+        for pattern in (_EMAIL, _LINKEDIN, _GITHUB)
+        for match in pattern.finditer(contact)
+    ]
+    email_domains = {match.group().split("@")[1].casefold() for match in _EMAIL.finditer(contact)}
+    for field, pattern in (
+        ("email", _EMAIL), ("linkedin", _LINKEDIN), ("github", _GITHUB),
+        ("website", _WEBSITE),
+    ):
+        for match in pattern.finditer(contact):
+            if field == "website":
+                domain = re.sub(r"^https?://", "", match.group(), flags=re.IGNORECASE)
+                domain = domain.split("/")[0].casefold().removeprefix("www.")
+                if (any(start < match.end() and match.start() < end for start, end in excluded_spans)
+                        or domain in email_domains or domain in ("linkedin.com", "github.com")):
+                    continue
             result[field] = match.group().rstrip(".)")
+            break
     for match in _PHONE.finditer(contact):
         candidate = match.group().strip()
         if 7 <= len(re.sub(r"\D", "", candidate)) <= 15:

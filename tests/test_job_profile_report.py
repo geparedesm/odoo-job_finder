@@ -28,6 +28,7 @@ class TestJobProfileReport(TransactionCase):
             "full_name": "Report Candidate", "headline": "Research Engineer",
             "email": "candidate@example.com", "phone": "+34 600 111 222",
             "location": "Madrid", "linkedin": "https://linkedin.com/in/candidate",
+            "website": "https://candidate.com", "github": "https://github.com/candidate",
             "summary": "Updated professional summary", "skills": "Python\nSQL",
             "experience": "Industry experience", "education": "Engineering degree",
             "volunteering": "Community mentoring", "projects": "Research prototype",
@@ -66,6 +67,8 @@ class TestJobProfileReport(TransactionCase):
         text = "".join(etree.HTML(html).itertext())
         for value in self.values.values():
             self.assertIn(value, text)
+        self.assertIn("Website: https://candidate.com", text)
+        self.assertIn("GitHub: https://github.com/candidate", text)
         self.profile.write({"projects": "New project after parsing <script>"})
         html = self.render_html(self.user)
         self.assertIn("New project after parsing &lt;script&gt;", html)

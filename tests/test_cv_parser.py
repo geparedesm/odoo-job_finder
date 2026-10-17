@@ -15,7 +15,7 @@ spec.loader.exec_module(parser)
 
 
 EMPTY_RESULT = dict.fromkeys((
-    "full_name", "headline", "email", "phone", "location", "linkedin",
+    "full_name", "headline", "email", "phone", "location", "linkedin", "website", "github",
     "summary", "skills", "experience", "education", "languages",
     "volunteering", "projects", "trainings",
 ), "")
@@ -36,8 +36,25 @@ class TestCVParser(unittest.TestCase):
             "https://github.com/geparedesm\nTECHNICAL SKILLS\nLanguages: Dart, Python."
         )
         self.assertEqual(result["linkedin"], "linkedin.com/in/geparedesm")
+        self.assertEqual(result["website"], "https://gp-developer.com")
+        self.assertEqual(result["github"], "https://github.com/geparedesm")
         self.assertEqual(result["skills"], "Languages: Dart, Python.")
         self.assertEqual(result["languages"], "")
+
+    def test_website_excludes_email_and_social_domains(self):
+        for links in (
+            "jane@example.com",
+            "jane@example.com | example.com",
+            "https://www.linkedin.com/in/jane | https://www.github.com/jane",
+            "linkedin.com | github.com",
+            "HTTPS://WWW.LINKEDIN.COM | HTTPS://WWW.GITHUB.COM",
+        ):
+            with self.subTest(links=links):
+                header = f"Jane Doe\nDeveloper\n{links}"
+                result = parser.parse_cv_text(f"{header}\nSKILLS\nPython")
+                self.assertEqual(result["website"], "")
+                result = parser.parse_cv_text(f"{header} | gp-developer.com\nSKILLS\nPython")
+                self.assertEqual(result["website"], "gp-developer.com")
 
     def test_sample_format(self):
         # Abbreviated from ATS-Resume-FullStack-17-04-2025.pdf; keep its
@@ -69,6 +86,7 @@ Someone • someone@example.com • +61412345678
             full_name="Gabriel Paredes Mendoza", headline="FULL STACK DEVELOPER",
             location="Perth, Australia", phone="(+61) 415 530 419",
             email="gabrielparedesmendoza@gmail.com", linkedin="linkedin.com/in/geparedesm",
+            website="", github="",
             skills="Program Language\nDart, Python, JavaScript, TypeScript, React, React Native.",
             summary="•Strong analytical skills.",
             experience="GP-Developer, Ecuador • Full Stack Developer • 01/02/2020 - 01/12/2021\nProject: GP-Security",

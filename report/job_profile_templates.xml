@@ -13,6 +13,8 @@
                         <p t-if="profile.phone"><strong><span>Phone</span>: </strong><span t-field="profile.phone"/></p>
                         <p t-if="profile.location"><strong><span>Location</span>: </strong><span t-field="profile.location"/></p>
                         <p t-if="profile.linkedin"><strong><span>LinkedIn</span>: </strong><span t-field="profile.linkedin"/></p>
+                        <p t-if="profile.website"><strong><span>Website</span>: </strong><span t-field="profile.website"/></p>
+                        <p t-if="profile.github"><strong><span>GitHub</span>: </strong><span t-field="profile.github"/></p>
                         <div t-if="profile.summary">
                             <h2>Summary</h2>
                             <div t-field="profile.summary" style="white-space: pre-wrap; overflow-wrap: break-word;"/>

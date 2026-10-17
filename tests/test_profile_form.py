@@ -52,7 +52,7 @@ class TestGuidedProfileForm(HttpCase):
         ), ["full_name", "headline", "location"])
         self.assertEqual(form.xpath(
             ".//group[@name='contact_channels']/field/@name",
-        ), ["email", "phone", "linkedin"])
+        ), ["email", "phone", "linkedin", "website", "github"])
         button = form.xpath("./header/button[@name='action_parse_cv']")[0]
         self.assertEqual(button.get("name"), "action_parse_cv")
         self.assertEqual(button.get("type"), "object")

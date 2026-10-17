@@ -22,6 +22,8 @@
                             <field name="email"/>
                             <field name="phone"/>
                             <field name="linkedin" placeholder="https://www.linkedin.com/in/your-profile"/>
+                            <field name="website" placeholder="https://your-site.com"/>
+                            <field name="github" placeholder="https://github.com/your-user"/>
                         </group>
                     </group>
                     <group string="CV upload" name="cv_upload">

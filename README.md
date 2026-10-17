@@ -10,7 +10,8 @@ and `trainings` profile fields. References stop section content collection.
 Location is extracted from delimited contact lines. Repeated name/subtitle page
 headers and name/page-count footers are excluded from section content.
 Spoken languages labeled `Languages spoken` or under `Language`/`Languages` populate `languages`, while
-programming languages remain in skills. LinkedIn populates its dedicated field.
+programming languages remain in skills. LinkedIn populates its dedicated field. Personal website and GitHub links also populate
+their dedicated contact fields, which appear in the form and downloaded CV.
 Training and Credentials is retained in full in `trainings`.
 Only explicitly authorized profile fields are saved. Empty parsed fields preserve
 existing profile values.

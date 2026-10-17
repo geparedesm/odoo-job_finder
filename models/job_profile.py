@@ -26,6 +26,8 @@ class JobProfile(models.Model):
     phone = fields.Char(string="Teléfono")
     location = fields.Char(string="Ubicación")
     linkedin = fields.Char(string="LinkedIn")
+    website = fields.Char(string="Website")
+    github = fields.Char(string="GitHub")
     summary = fields.Text(string="Resumen")
     skills = fields.Text(string="Habilidades")
     experience = fields.Text(string="Experiencia")
@@ -61,7 +63,7 @@ class JobProfile(models.Model):
             raise UserError("Instale la librería pypdf para analizar el CV.") from exc
 
         profile_fields = (
-            "full_name", "headline", "email", "phone", "location", "linkedin",
+            "full_name", "headline", "email", "phone", "location", "linkedin", "website", "github",
             "summary", "skills", "experience", "education",
             "languages", "volunteering", "projects", "trainings",
         )

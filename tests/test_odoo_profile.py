@@ -72,7 +72,7 @@ class TestProfileScreen(TransactionCase):
         self.assertEqual(profile.cv_filename, "reference.pdf")
 
     def test_empty_parsed_fields_preserve_saved_profile(self):
-        fields = ("linkedin", "languages", "trainings",
+        fields = ("linkedin", "website", "github", "languages", "trainings",
                   "volunteering", "projects", "education", "experience")
         profile = self.env["job.profile"].with_user(self.user).create({
             "cv_file": base64.b64encode(b"Partial PDF"),

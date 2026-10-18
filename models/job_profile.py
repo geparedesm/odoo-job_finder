@@ -11,14 +11,21 @@ from .cv_parser import parse_cv_text
 
 class JobProfile(models.Model):
     _name = "job.profile"
-    _description = "Perfil profesional"
+    _description = "Professional profile"
 
     # Odoo 19 declares table constraints as models.Constraint; _sql_constraints is no longer applied.
     _user_uniq = models.Constraint("UNIQUE (user_id)", "A profile already exists for this user.")
+    _portfolio_slug_uniq = models.Constraint(
+        "UNIQUE (portfolio_slug)", "A portfolio URL slug must be unique.",
+    )
 
     user_id = fields.Many2one(
-        "res.users", string="Usuario", required=True,
+        "res.users", string="User", required=True,
         default=lambda self: self.env.user, ondelete="cascade",
+    )
+    portfolio_slug = fields.Char(
+        string="Portfolio URL slug", related="user_id.portfolio_slug", store=True,
+        index=True, readonly=True,
     )
     full_name = fields.Char(string="Nombre completo")
     headline = fields.Char(string="Título profesional")
@@ -47,10 +54,19 @@ class JobProfile(models.Model):
     cv_raw_text = fields.Text(string="Texto extraído del CV", readonly=True)
     cv_parsed_date = fields.Datetime(string="Fecha de análisis", readonly=True)
 
+    portfolio_initials = fields.Char(compute="_compute_portfolio_initials")
+
+    def _compute_portfolio_initials(self):
+        for profile in self:
+            name = (profile.full_name or profile.user_id.name or "").split()
+            profile.portfolio_initials = "".join(part[0] for part in name[:2]).upper() or "?"
+
     def action_open_my_profile(self):
         profile = self.search([("user_id", "=", self.env.uid)], limit=1)
         if not profile:
             profile = self.create({"user_id": self.env.uid})
+        if getattr(profile, "user_id", False):
+            profile.user_id._ensure_portfolio_slugs()
         # _for_xml_id: internal users cannot read action records directly.
         action = self.env["ir.actions.act_window"]._for_xml_id("job_finder.action_my_profile")
         action.update(res_id=profile.id, views=[(False, "form")])

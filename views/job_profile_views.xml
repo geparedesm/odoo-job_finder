@@ -35,6 +35,9 @@
                         <field name="cv_filename" invisible="True"/>
                         <field name="cv_parsed_date" readonly="True"/>
                     </group>
+                    <group string="Public portfolio" name="portfolio_settings">
+                        <field name="portfolio_slug" readonly="True"/>
+                    </group>
                     <notebook>
                         <page string="Resumen"><field name="summary" placeholder="Describe your professional background and career goals."/></page>
                         <page string="Habilidades"><field name="skills" placeholder="List your technical and interpersonal skills."/></page>

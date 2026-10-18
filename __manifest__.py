@@ -10,10 +10,12 @@
         "security/job_profile_security.xml",
         "report/job_profile_templates.xml",
         "report/job_profile_report.xml",
+        "views/portfolio_templates.xml",
         "views/job_profile_views.xml",
         "views/job_profile_menus.xml",
     ],
     "installable": True,
     "application": True,
     "license": "LGPL-3",
+    "assets": {"web.assets_frontend": ["job_finder/static/src/css/portfolio.css"]},
 }

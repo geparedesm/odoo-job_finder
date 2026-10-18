@@ -1,0 +1,38 @@
+:root { --pf-bg: #070b12; --pf-ink: #f5f2eb; --pf-muted: #9da4b2; --pf-lilac: #c8b8ff; --pf-line: #29303c; }
+.pf-page { background: var(--pf-bg); color: var(--pf-ink); font-family: "IBM Plex Sans", sans-serif; min-height: 100vh; }
+.pf-page a { color: inherit; text-decoration: none; }
+.pf-page a:focus-visible { outline: 2px solid var(--pf-lilac); outline-offset: 4px; }
+.pf-nav, .pf-hero, .pf-section, .pf-footer { box-sizing: border-box; margin: auto; max-width: 1328px; padding-left: 24px; padding-right: 24px; }
+.pf-nav { align-items: center; display: flex; justify-content: space-between; padding-bottom: 24px; padding-top: 24px; }
+.pf-wordmark { align-items: center; display: flex; font-family: "Barlow Condensed", sans-serif; font-size: 1.3rem; font-weight: 600; gap: 10px; }
+.pf-mark { align-items: center; background: var(--pf-lilac); color: var(--pf-bg); display: inline-flex; font-size: .85rem; height: 32px; justify-content: center; letter-spacing: .04em; width: 32px; }
+.pf-nav-links { display: none; gap: 28px; }
+.pf-nav-links a, .pf-contact a, .pf-contact span { color: var(--pf-muted); font-size: .9rem; }
+.pf-nav-links a:hover, .pf-contact a:hover { color: var(--pf-lilac); }
+.pf-hero { padding-bottom: 112px; padding-top: 76px; }
+.pf-kicker { color: var(--pf-muted); font-size: .85rem; letter-spacing: .05em; margin: 0 0 20px; }
+.pf-hero h1, .pf-footer h2 { font-family: "Barlow Condensed", sans-serif; font-size: clamp(4rem, 18vw, 9.2rem); font-weight: 600; letter-spacing: -.045em; line-height: .86; margin: 0; max-width: 900px; text-transform: uppercase; }
+.pf-accent { color: var(--pf-lilac); }
+.pf-lede { color: #d0d4dd; font-size: 1.05rem; line-height: 1.55; margin: 34px 0 0; max-width: 560px; white-space: pre-line; }
+.pf-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 34px; }
+.pf-button { border: 1px solid var(--pf-lilac); padding: 14px 20px; }
+.pf-button-primary { background: var(--pf-lilac); color: var(--pf-bg) !important; }
+.pf-button-secondary:hover, .pf-button-primary:hover { filter: brightness(1.1); }
+.pf-section { padding-bottom: 76px; padding-top: 76px; }
+.pf-section-rule { border-top: 1px solid var(--pf-line); }
+.pf-section-heading { align-items: baseline; display: flex; gap: 16px; margin-bottom: 30px; }
+.pf-section-heading span { color: var(--pf-lilac); font-size: .8rem; }
+.pf-section-heading h2 { font-family: "Barlow Condensed", sans-serif; font-size: 2.6rem; font-weight: 600; letter-spacing: -.02em; margin: 0; text-transform: uppercase; }
+.pf-skill-grid { display: grid; gap: 1px; grid-template-columns: 1fr; }
+.pf-skill { align-items: flex-start; border-bottom: 1px solid var(--pf-line); display: flex; gap: 12px; padding: 18px 0; }
+.pf-skill p { color: #d0d4dd; line-height: 1.5; margin: 0; white-space: pre-line; }
+.pf-skill-dot { background: var(--pf-lilac); border-radius: 50%; flex: 0 0 8px; height: 8px; margin-top: 7px; width: 8px; }
+.pf-timeline { border-left: 1px solid var(--pf-lilac); padding-left: 20px; }
+.pf-rich-text { color: #d0d4dd; line-height: 1.7; overflow-wrap: anywhere; white-space: pre-line; }
+.pf-split { display: grid; gap: 64px; }
+.pf-footer { border-top: 1px solid var(--pf-line); display: flex; flex-direction: column; gap: 44px; padding-bottom: 64px; padding-top: 76px; }
+.pf-footer h2 { font-size: clamp(3.5rem, 15vw, 7rem); }
+.pf-contact { display: flex; flex-direction: column; gap: 12px; }
+@media (min-width: 700px) { .pf-nav, .pf-hero, .pf-section, .pf-footer { padding-left: 56px; padding-right: 56px; } .pf-nav-links { display: flex; } .pf-skill-grid { grid-template-columns: repeat(2, 1fr); } .pf-split { grid-template-columns: repeat(2, 1fr); } .pf-footer { align-items: end; flex-direction: row; justify-content: space-between; } }
+@media (min-width: 1100px) { .pf-hero { padding-bottom: 160px; padding-top: 120px; } .pf-skill-grid { grid-template-columns: repeat(3, 1fr); } .pf-section { padding-bottom: 112px; padding-top: 112px; } }
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition: none !important; } }

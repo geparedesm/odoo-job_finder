@@ -10,11 +10,15 @@ def _portfolio_slug(value):
     """Return a stable, URL-safe slug from a user name or login."""
     value = unicodedata.normalize("NFKD", value or "").encode("ascii", "ignore").decode()
     value = re.sub(r"[^a-zA-Z0-9]+", "-", value).strip("-").lower()
-    return value or "portfolio"
+    return value
 
 
 class ResUsers(models.Model):
     _inherit = "res.users"
+
+    _portfolio_slug_uniq = models.Constraint(
+        "UNIQUE (portfolio_slug)", "A portfolio URL slug must be unique.",
+    )
 
     portfolio_slug = fields.Char(
         string="Portfolio URL slug", copy=False, index=True,
@@ -22,10 +26,13 @@ class ResUsers(models.Model):
 
     @classmethod
     def _generate_portfolio_slug(cls, values):
-        return _portfolio_slug(values.get("portfolio_slug") or values.get("name") or values.get("login"))
+        return _portfolio_slug(values.get("login") or values.get("name"))
 
     @api.model_create_multi
     def create(self, vals_list):
+        for values in vals_list:
+            if "portfolio_slug" not in values:
+                values["portfolio_slug"] = self._generate_portfolio_slug(values) or False
         users = super().create(vals_list)
         return users
 

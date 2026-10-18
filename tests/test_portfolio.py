@@ -21,8 +21,7 @@ class TestPortfolio(HttpCase):
         super().setUpClass()
         cls.user = cls.env["res.users"].create({
             "name": "Portfolio Owner",
-            "login": "portfolio.owner@example.com",
-            "portfolio_slug": "portfolio-owner",
+            "login": "portfolio-owner",
             "email": "private-user-email@example.com",
         })
         cls.profile = cls.env["job.profile"].create({

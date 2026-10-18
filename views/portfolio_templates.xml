@@ -2,7 +2,7 @@
 <odoo>
     <template id="portfolio_page" name="Public portfolio">
         <t t-call="web.html_container">
-            <t t-set="name" t-value="profile.full_name or profile.user_id.name"/>
+            <t t-set="name" t-value="portfolio_name"/>
             <t t-set="headline" t-value="profile.headline or 'Software developer and problem solver'"/>
             <main class="pf-page" t-att-data-slug="profile.portfolio_slug">
                 <nav class="pf-nav" aria-label="Portfolio sections">

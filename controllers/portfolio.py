@@ -37,5 +37,8 @@ class PortfolioController(http.Controller):
 
         return request.render(
             "job_finder.portfolio_page",
-            {"portfolio_user": user, "profile": profile},
+            {
+                "portfolio_name": profile.full_name or user.name or "Portfolio",
+                "profile": profile,
+            },
         )

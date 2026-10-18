@@ -15,9 +15,6 @@ class JobProfile(models.Model):
 
     # Odoo 19 declares table constraints as models.Constraint; _sql_constraints is no longer applied.
     _user_uniq = models.Constraint("UNIQUE (user_id)", "A profile already exists for this user.")
-    _portfolio_slug_uniq = models.Constraint(
-        "UNIQUE (portfolio_slug)", "A portfolio URL slug must be unique.",
-    )
 
     user_id = fields.Many2one(
         "res.users", string="User", required=True,
@@ -27,19 +24,19 @@ class JobProfile(models.Model):
         string="Portfolio URL slug", related="user_id.portfolio_slug", store=True,
         index=True, readonly=True,
     )
-    full_name = fields.Char(string="Nombre completo")
-    headline = fields.Char(string="Título profesional")
-    email = fields.Char(string="Correo electrónico")
-    phone = fields.Char(string="Teléfono")
-    location = fields.Char(string="Ubicación")
+    full_name = fields.Char(string="Full name")
+    headline = fields.Char(string="Professional headline")
+    email = fields.Char(string="Email")
+    phone = fields.Char(string="Phone")
+    location = fields.Char(string="Location")
     linkedin = fields.Char(string="LinkedIn")
     website = fields.Char(string="Website")
     github = fields.Char(string="GitHub")
-    summary = fields.Text(string="Resumen")
-    skills = fields.Text(string="Habilidades")
-    experience = fields.Text(string="Experiencia")
-    education = fields.Text(string="Educación")
-    languages = fields.Text(string="Idiomas")
+    summary = fields.Text(string="Summary")
+    skills = fields.Text(string="Skills")
+    experience = fields.Text(string="Experience")
+    education = fields.Text(string="Education")
+    languages = fields.Text(string="Languages")
     volunteering = fields.Text(
         string="Volunteering", help="Leadership and volunteering experience from the CV.",
     )
@@ -49,16 +46,16 @@ class JobProfile(models.Model):
     trainings = fields.Text(
         string="Trainings", help="Training and credentials from the CV.",
     )
-    cv_file = fields.Binary(string="CV en PDF")
-    cv_filename = fields.Char(string="Nombre del archivo")
-    cv_raw_text = fields.Text(string="Texto extraído del CV", readonly=True)
-    cv_parsed_date = fields.Datetime(string="Fecha de análisis", readonly=True)
+    cv_file = fields.Binary(string="CV PDF")
+    cv_filename = fields.Char(string="File name")
+    cv_raw_text = fields.Text(string="Extracted CV text", readonly=True)
+    cv_parsed_date = fields.Datetime(string="Parsed date", readonly=True)
 
     portfolio_initials = fields.Char(compute="_compute_portfolio_initials")
 
     def _compute_portfolio_initials(self):
         for profile in self:
-            name = (profile.full_name or profile.user_id.name or "").split()
+            name = (profile.full_name or "").split()
             profile.portfolio_initials = "".join(part[0] for part in name[:2]).upper() or "?"
 
     def action_open_my_profile(self):

@@ -17,5 +17,9 @@
     "installable": True,
     "application": True,
     "license": "LGPL-3",
-    "assets": {"web.assets_frontend": ["job_finder/static/src/css/portfolio.css"]},
+    "assets": {
+        "web.assets_frontend": [
+            "job_finder/static/src/css/portfolio.css",
+        ],
+    },
 }

@@ -48,6 +48,12 @@ class TestModuleStructure(unittest.TestCase):
                     self.assertIsInstance(path, str)
                     self.assertTrue((MODULE_ROOT / path).is_file())
 
+    def test_manifest_frontend_assets_and_portfolio_template_are_registered(self):
+        manifest = self.load_manifest()
+        frontend_assets = manifest.get("assets", {}).get("web.assets_frontend", [])
+        self.assertIn("job_finder/static/src/css/portfolio.css", frontend_assets)
+        self.assertIn("views/portfolio_templates.xml", manifest["data"])
+
     def test_xml_files_parse(self):
         for path in module_files("*.xml"):
             with self.subTest(path=str(path.relative_to(MODULE_ROOT))):

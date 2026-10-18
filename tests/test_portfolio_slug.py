@@ -44,6 +44,22 @@ class TestPortfolioSlug(TransactionCase):
         })
         self.assertFalse(user.portfolio_slug)
 
+    def test_slug_generation_with_only_special_characters(self):
+        users = self.env["res.users"].create([
+            {"name": "Dash User", "login": "---"},
+            {"name": "Plus User", "login": "+++"},
+        ])
+        self.assertFalse(users[0].portfolio_slug)
+        self.assertFalse(users[1].portfolio_slug)
+
+    def test_slug_is_not_regenerated_when_login_changes(self):
+        user = self.env["res.users"].create({
+            "name": "Custom User",
+            "login": "original.user",
+        })
+        user.write({"login": "updated.user"})
+        self.assertEqual(user.portfolio_slug, "original-user")
+
     def test_duplicate_slugs_are_rejected(self):
         self.env["res.users"].create({
             "name": "First User",

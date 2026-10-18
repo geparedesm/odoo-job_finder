@@ -18,6 +18,11 @@ class ResUsers(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
+        """Generate a slug once when the user is created.
+
+        Explicit slugs are preserved, and changing a user's login later does
+        not overwrite a slug that may have been customized by the user.
+        """
         for vals in vals_list:
             if "portfolio_slug" not in vals and vals.get("login"):
                 vals["portfolio_slug"] = self._portfolio_slug_from_login(vals["login"])
@@ -26,4 +31,5 @@ class ResUsers(models.Model):
     @staticmethod
     def _portfolio_slug_from_login(login):
         normalized = unicodedata.normalize("NFKD", login).encode("ascii", "ignore").decode()
-        return re.sub(r"[^a-z0-9]+", "-", normalized.lower()).strip("-")
+        slug = re.sub(r"[^a-z0-9]+", "-", normalized.lower()).strip("-")
+        return slug or False

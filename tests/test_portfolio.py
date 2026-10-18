@@ -6,10 +6,9 @@ try:
     from lxml import html
     from odoo.tests import HttpCase, tagged
     from odoo.tools import mute_logger
+    from psycopg2 import IntegrityError
 except ImportError:
     raise unittest.SkipTest("needs a running Odoo (--test-enable)")
-
-from psycopg2 import IntegrityError
 
 
 @tagged("post_install", "-at_install")

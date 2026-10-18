@@ -11,7 +11,6 @@
         "views/portfolio_templates.xml",
         "report/job_profile_templates.xml",
         "report/job_profile_report.xml",
-        "views/portfolio_templates.xml",
         "views/job_profile_views.xml",
         "views/job_profile_menus.xml",
     ],

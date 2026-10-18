@@ -104,3 +104,10 @@ tests/test_<feature>.py
   that a person approves.
 - Keep each change focused on the task.
 - Update `README.md` when behavior visible to users changes.
+
+## Frontend design skill
+
+- For frontend and UI design work in this project, read and apply
+  `.claude/skills/frontend-design/SKILL.md` before planning or changing the interface.
+- Source: https://github.com/anthropics/claude-code/tree/main/plugins/frontend-design
+- Apply the skill within the Odoo 19, accessibility, translation, security, and test rules above.

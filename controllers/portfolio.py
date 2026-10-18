@@ -7,7 +7,7 @@ from odoo.http import request
 from werkzeug.exceptions import NotFound
 
 
-_PORTFOLIO_SLUG_PATTERN = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*\\Z")
+_PORTFOLIO_SLUG_PATTERN = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*\Z")
 
 
 class PortfolioController(http.Controller):

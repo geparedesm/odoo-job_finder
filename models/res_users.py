@@ -27,12 +27,11 @@ class ResUsers(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         users = super().create(vals_list)
-        users._ensure_portfolio_slugs()
         return users
 
     def _ensure_portfolio_slugs(self):
         for user in self.filtered(lambda record: not record.portfolio_slug):
-            base = _portfolio_slug(user.name or user.login)
+            base = _portfolio_slug(user.login or user.name)
             slug = base
             if self.search_count([("portfolio_slug", "=", slug), ("id", "!=", user.id)]):
                 slug = f"{base}-{user.id}"

@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="portfolio_page">
+        <t t-call="web.layout">
+            <t t-set="title" t-value="profile.full_name or portfolio_user.name"/>
+            <style>
+                .job-finder-portfolio {
+                    --portfolio-ink: #18232b;
+                    --portfolio-muted: #5b6972;
+                    --portfolio-paper: #f5f2ea;
+                    --portfolio-accent: #d55d3d;
+                    background: var(--portfolio-paper);
+                    color: var(--portfolio-ink);
+                    min-height: 100vh;
+                    padding: 4rem 1.5rem;
+                }
+                .job-finder-portfolio__page {
+                    margin: 0 auto;
+                    max-width: 72rem;
+                }
+                .job-finder-portfolio__header {
+                    border-bottom: 2px solid var(--portfolio-ink);
+                    display: flex;
+                    gap: 2rem;
+                    justify-content: space-between;
+                    padding-bottom: 2rem;
+                }
+                .job-finder-portfolio__name {
+                    font-family: Georgia, serif;
+                    font-size: clamp(2.5rem, 7vw, 5.5rem);
+                    letter-spacing: -.04em;
+                    line-height: .95;
+                    margin: 0;
+                    max-width: 10ch;
+                }
+                .job-finder-portfolio__headline {
+                    color: var(--portfolio-accent);
+                    font-size: 1.2rem;
+                    margin: 1rem 0 0;
+                }
+                .job-finder-portfolio__contact {
+                    align-self: end;
+                    color: var(--portfolio-muted);
+                    line-height: 1.7;
+                    max-width: 18rem;
+                }
+                .job-finder-portfolio__contact a {
+                    color: inherit;
+                }
+                .job-finder-portfolio__body {
+                    display: grid;
+                    gap: 3rem;
+                    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+                    padding-top: 3rem;
+                }
+                .job-finder-portfolio__label {
+                    color: var(--portfolio-accent);
+                    font-size: .8rem;
+                    font-weight: 700;
+                    letter-spacing: .08em;
+                    margin: 0 0 .75rem;
+                    text-transform: uppercase;
+                }
+                .job-finder-portfolio__text {
+                    line-height: 1.7;
+                    overflow-wrap: anywhere;
+                    white-space: pre-wrap;
+                }
+                .job-finder-portfolio__section {
+                    border-top: 1px solid #c8c5bc;
+                    margin-top: 2.5rem;
+                    padding-top: 1.25rem;
+                }
+                .job-finder-portfolio__section h2 {
+                    font-family: Georgia, serif;
+                    font-size: 1.8rem;
+                    margin: 0 0 1rem;
+                }
+                @media (max-width: 700px) {
+                    .job-finder-portfolio { padding: 2.5rem 1rem; }
+                    .job-finder-portfolio__header,
+                    .job-finder-portfolio__body { display: block; }
+                    .job-finder-portfolio__contact { margin-top: 2rem; }
+                }
+                @media (prefers-reduced-motion: reduce) {
+                    .job-finder-portfolio * { scroll-behavior: auto; }
+                }
+            </style>
+            <main class="job-finder-portfolio">
+                <div class="job-finder-portfolio__page">
+                    <header class="job-finder-portfolio__header">
+                        <div>
+                            <h1 class="job-finder-portfolio__name">
+                                <t t-esc="profile.full_name or portfolio_user.name"/>
+                            </h1>
+                            <p class="job-finder-portfolio__headline" t-if="profile.headline">
+                                <t t-esc="profile.headline"/>
+                            </p>
+                        </div>
+                        <address class="job-finder-portfolio__contact" t-if="profile.email or profile.phone or profile.location">
+                            <a t-if="profile.email" t-att-href="'mailto:' + profile.email"><t t-esc="profile.email"/></a>
+                            <br t-if="profile.email and profile.phone"/>
+                            <t t-if="profile.phone" t-esc="profile.phone"/>
+                            <br t-if="(profile.email or profile.phone) and profile.location"/>
+                            <t t-if="profile.location" t-esc="profile.location"/>
+                        </address>
+                    </header>
+                    <div class="job-finder-portfolio__body">
+                        <aside>
+                            <div t-if="profile.linkedin or profile.website or profile.github">
+                                <p class="job-finder-portfolio__label">Find me online</p>
+                                <p t-if="profile.linkedin"><a t-att-href="profile.linkedin" t-esc="profile.linkedin"/></p>
+                                <p t-if="profile.website"><a t-att-href="profile.website" t-esc="profile.website"/></p>
+                                <p t-if="profile.github"><a t-att-href="profile.github" t-esc="profile.github"/></p>
+                            </div>
+                        </aside>
+                        <div>
+                            <section class="job-finder-portfolio__section" t-if="profile.summary">
+                                <p class="job-finder-portfolio__label">Profile</p>
+                                <div class="job-finder-portfolio__text"><t t-esc="profile.summary"/></div>
+                            </section>
+                            <t t-foreach="[('Skills', profile.skills), ('Experience', profile.experience), ('Education', profile.education), ('Volunteering', profile.volunteering), ('Projects', profile.projects), ('Trainings', profile.trainings), ('Languages', profile.languages)]" t-as="section">
+                                <section class="job-finder-portfolio__section" t-if="section[1]">
+                                    <h2><t t-esc="section[0]"/></h2>
+                                    <div class="job-finder-portfolio__text"><t t-esc="section[1]"/></div>
+                                </section>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </t>
+    </template>
+</odoo>

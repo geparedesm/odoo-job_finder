@@ -8,6 +8,7 @@
     "data": [
         "security/ir.model.access.csv",
         "security/job_profile_security.xml",
+        "views/portfolio_templates.xml",
         "report/job_profile_templates.xml",
         "report/job_profile_report.xml",
         "views/job_profile_views.xml",

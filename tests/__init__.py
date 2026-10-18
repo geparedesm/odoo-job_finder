@@ -7,5 +7,6 @@ except ImportError:  # plain unittest discovers the standard-library tests itsel
 else:
     from . import test_odoo_profile  # noqa: F401
     from . import test_portfolio_slug  # noqa: F401
+    from . import test_portfolio_controller  # noqa: F401
     from . import test_profile_form  # noqa: F401
     from . import test_job_profile_report  # noqa: F401

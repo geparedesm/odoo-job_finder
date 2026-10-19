@@ -2,8 +2,13 @@
 
 import unittest
 
+from types import SimpleNamespace
+from unittest.mock import patch
+
 try:
     from lxml import etree
+    from odoo.addons.job_finder.controllers import main as portfolio_main
+    from odoo.addons.web.controllers.home import Home
     from odoo.tests import HttpCase, tagged
 except ImportError:
     raise unittest.SkipTest("Odoo not available")
@@ -81,6 +86,18 @@ class PortfolioPageTestCase(HttpCase):
         # Should not show the portfolio-specific content (hero with headline)
         # The portfolio content includes the published profile name and headline
         self.assertNotIn("Gabriel Paredes", response.text)
+        # Odoo's own / answer is a redirect to the web client.
+        raw = self.url_open("/", headers={"Host": "localhost:8000"}, allow_redirects=False)
+        self.assertIn(raw.status_code, (302, 303))
+        self.assertIn("/odoo", raw.headers.get("Location", ""))
+
+    def test_portfolio_page_without_database_delegates(self):
+        """Without a selected database, / delegates to web's Home.index before any ORM access."""
+        fake_request = SimpleNamespace(db=None, env=None, httprequest=SimpleNamespace(host="gp-developer.com"))
+        with patch.object(portfolio_main, "request", fake_request), \
+                patch.object(Home, "index", autospec=True, return_value="web home") as web_index:
+            portfolio_main.PortfolioHome().index()
+        web_index.assert_called_once()
 
     def test_portfolio_page_content_inclusion(self):
         """Portfolio page includes all published profile sections."""

@@ -17,6 +17,9 @@ class PortfolioHome(Home):
     @http.route("/", auth="none", website=False)
     def index(self, **kw):
         """Serve portfolio page for configured hosts, otherwise delegate to web's home."""
+        if not request.db:
+            # Database-free requests (several databases, none selected) have no ORM: keep web's behavior.
+            return super().index(**kw)
         host_header = normalize_host(request.httprequest.host)
 
         # Read the configured portfolio hosts from system parameter

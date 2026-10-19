@@ -3,40 +3,41 @@
 import re
 from typing import Any, Optional
 
+BULLET = re.compile(r"^\s*[-•*]\s*")
 
-def split_blocks(text: Optional[str]) -> list[str]:
-    """Split text by blank lines (blocks separated by double newlines)."""
+
+def split_lines(text: Optional[str]) -> list[str]:
+    """Return non-empty stripped lines, with leading bullets (•, -, *) removed."""
     if not text:
         return []
-    blocks = re.split(r"\n\s*\n+", text.strip())
-    return [block.strip() for block in blocks if block.strip()]
+    lines = (BULLET.sub("", line).strip() for line in text.splitlines())
+    return [line for line in lines if line]
+
+
+def split_blocks(text: Optional[str]) -> list[dict[str, Any]]:
+    """Split text on blank lines into blocks of {title: first line, lines: the rest}."""
+    if not text or not text.strip():
+        return []
+    blocks = []
+    for chunk in re.split(r"\n\s*\n", text.strip()):
+        lines = split_lines(chunk)
+        if lines:
+            blocks.append({"title": lines[0], "lines": lines[1:]})
+    return blocks
 
 
 def split_items(text: Optional[str]) -> list[str]:
-    """Split text into items: lines, bullets, or semicolon-separated."""
-    if not text:
+    """Split text into items: one per line, otherwise semicolon- or comma-separated."""
+    if not text or not text.strip():
         return []
-    # Remove bullet points/dashes and normalize
-    text = text.strip()
-    items = []
-
-    # Try bullet/dash separated first (lines starting with -, •, *)
-    if re.search(r"^\s*[-•*]", text, re.MULTILINE):
-        # Split by bullets and filter out empty strings
-        parts = re.split(r"[-•*]", text)
-        items = [part.strip() for part in parts if part.strip()]
-    # Otherwise split by newlines
-    elif "\n" in text:
-        items = [item.strip() for item in text.split("\n") if item.strip()]
-    # Otherwise split by semicolon or comma
-    elif ";" in text:
-        items = [item.strip() for item in text.split(";") if item.strip()]
-    elif "," in text:
-        items = [item.strip() for item in text.split(",") if item.strip()]
-    else:
-        items = [text]
-
-    return items
+    lines = split_lines(text)
+    if len(lines) > 1:
+        return lines
+    line = lines[0]
+    for separator in (";", ","):
+        if separator in line:
+            return [item.strip() for item in line.split(separator) if item.strip()]
+    return [line]
 
 
 def parse_entries(text: Optional[str]) -> list[dict[str, Any]]:
@@ -44,23 +45,28 @@ def parse_entries(text: Optional[str]) -> list[dict[str, Any]]:
     Parse experience/education/projects into entries.
     Each block is one entry: first line is title, second line is date/location, rest is details.
     """
-    if not text:
-        return []
-    blocks = split_blocks(text)
     entries = []
-
-    for block in blocks:
-        lines = [line.strip() for line in block.split("\n") if line.strip()]
-        if not lines:
-            continue
-        entry = {"title": lines[0] if lines else ""}
-        if len(lines) > 1:
-            entry["subtitle"] = lines[1]
-        if len(lines) > 2:
-            entry["details"] = "\n".join(lines[2:])
+    for block in split_blocks(text):
+        entry = {"title": block["title"]}
+        if block["lines"]:
+            entry["subtitle"] = block["lines"][0]
+        if len(block["lines"]) > 1:
+            entry["details"] = "\n".join(block["lines"][1:])
         entries.append(entry)
-
     return entries
+
+
+def normalize_host(host: Optional[str]) -> str:
+    """Lowercase a request host and strip its port."""
+    host = (host or "").strip().lower()
+    if host.startswith("["):  # IPv6 literal, e.g. [::1]:8069
+        return host.split("]")[0] + "]"
+    return host.split(":")[0]
+
+
+def parse_hosts(value: Optional[str]) -> set[str]:
+    """Parse a comma-separated host list into a lowercase set without whitespace."""
+    return {host.strip().lower() for host in (value or "").split(",") if host.strip()}
 
 
 def safe_url(value: Optional[str]) -> Optional[str]:

@@ -4,7 +4,7 @@ import base64
 from io import BytesIO
 
 from odoo import api, fields, models
-from odoo.exceptions import AccessError, UserError, ValidationError
+from odoo.exceptions import UserError, ValidationError
 
 from .cv_parser import parse_cv_text
 from .portfolio_content import safe_url, split_items, parse_entries

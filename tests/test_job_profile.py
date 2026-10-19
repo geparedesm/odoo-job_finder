@@ -16,19 +16,25 @@ class UserError(Exception):
     pass
 
 
+class ValidationError(Exception):
+    pass
+
+
 class TestJobProfile(unittest.TestCase):
     def setUp(self):
         package = ModuleType("profile_test_models")
         package.__path__ = [str(ROOT / "models")]
         fields = SimpleNamespace(
-            Char=Mock(), Text=Mock(), Binary=Mock(), Many2one=Mock(),
+            Char=Mock(), Text=Mock(), Binary=Mock(), Many2one=Mock(), Boolean=Mock(),
             Datetime=Mock(now=Mock(return_value="2026-10-02 12:00:00")),
         )
         odoo = ModuleType("odoo")
         odoo.fields = fields
+        odoo.api = SimpleNamespace(constrains=lambda *names: lambda method: method)
         odoo.models = SimpleNamespace(Model=object, Constraint=lambda *args: None)
         exceptions = ModuleType("odoo.exceptions")
         exceptions.UserError = UserError
+        exceptions.ValidationError = ValidationError
         self.modules = patch.dict(sys.modules, {
             "profile_test_models": package, "odoo": odoo,
             "odoo.exceptions": exceptions,

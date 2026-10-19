@@ -6,6 +6,8 @@ from odoo import http
 from odoo.addons.web.controllers.home import Home
 from odoo.http import request
 
+from ..models.portfolio_content import normalize_host, parse_hosts
+
 
 class PortfolioHome(Home):
     """Override web's Home.index to serve the portfolio for configured hosts."""
@@ -13,17 +15,14 @@ class PortfolioHome(Home):
     @http.route("/", auth="none", website=False)
     def index(self, **kw):
         """Serve portfolio page for configured hosts, otherwise delegate to web's home."""
-        # Normalize host: lowercase, remove port
-        host_header = request.httprequest.host.lower()
-        if ":" in host_header:
-            host_header = host_header.split(":")[0]
+        host_header = normalize_host(request.httprequest.host)
 
         # Read the configured portfolio hosts from system parameter
         # Minimal sudo: reading a system parameter that controls a public page
         param = request.env["ir.config_parameter"].sudo().get_param(
             "job_finder.portfolio_hosts", "gp-developer.com,www.gp-developer.com"
         )
-        portfolio_hosts = [h.strip().lower() for h in param.split(",")]
+        portfolio_hosts = parse_hosts(param)
 
         if host_header in portfolio_hosts:
             # Serve the portfolio page for configured hosts

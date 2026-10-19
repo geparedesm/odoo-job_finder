@@ -18,6 +18,7 @@ split_items = portfolio_content.split_items
 split_lines = portfolio_content.split_lines
 parse_hosts = portfolio_content.parse_hosts
 normalize_host = portfolio_content.normalize_host
+parse_expertise = portfolio_content.parse_expertise
 
 
 class PortfolioContentTestCase(unittest.TestCase):
@@ -179,6 +180,23 @@ class PortfolioContentTestCase(unittest.TestCase):
         self.assertEqual(normalize_host("www.gp-developer.com"), "www.gp-developer.com")
         self.assertEqual(normalize_host("[::1]:8069"), "[::1]")
         self.assertEqual(normalize_host(None), "")
+
+    def test_parse_expertise_areas(self):
+        """Area lines become cards; a trailing comma continues the area on the next line."""
+        text = ("Languages: Dart, Python, C/C++.\n"
+                "Data & infrastructure: PostgreSQL, Docker,\nAWS, CI/CD.\n"
+                "Engineering: Arduino, PLCs")
+        self.assertEqual(parse_expertise(text), [
+            {"title": "Languages", "items": ["Dart", "Python", "C/C++"]},
+            {"title": "Data & infrastructure", "items": ["PostgreSQL", "Docker", "AWS", "CI/CD"]},
+            {"title": "Engineering", "items": ["Arduino", "PLCs"]},
+        ])
+
+    def test_parse_expertise_without_areas(self):
+        """Plain skill lists have no areas, so the page keeps the flat list."""
+        self.assertEqual(parse_expertise("Python\nJavaScript\nRust"), [])
+        self.assertEqual(parse_expertise(None), [])
+        self.assertEqual(parse_expertise("Note: \n: nothing"), [])
 
 
 if __name__ == "__main__":

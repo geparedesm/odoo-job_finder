@@ -118,12 +118,29 @@
             <!-- Skills Section -->
             <t t-if="profile.get('skills')">
               <section id="skills" class="portfolio-skills">
-                <h2>Skills</h2>
-                <div class="skills-grid">
-                  <t t-foreach="profile.get('skills')" t-as="skill">
-                    <div class="skill-chip" t-out="skill"/>
-                  </t>
-                </div>
+                <t t-if="profile.get('expertise')">
+                  <h2>Expertise</h2>
+                  <div class="expertise-grid">
+                    <t t-foreach="profile.get('expertise')" t-as="area">
+                      <article class="expertise-card">
+                        <h3 class="expertise-title" t-out="area['title']"/>
+                        <ul class="expertise-items">
+                          <t t-foreach="area['items']" t-as="item">
+                            <li class="skill-chip" t-out="item"/>
+                          </t>
+                        </ul>
+                      </article>
+                    </t>
+                  </div>
+                </t>
+                <t t-else="">
+                  <h2>Skills</h2>
+                  <div class="skills-grid">
+                    <t t-foreach="profile.get('skills')" t-as="skill">
+                      <div class="skill-chip" t-out="skill"/>
+                    </t>
+                  </div>
+                </t>
               </section>
             </t>
 

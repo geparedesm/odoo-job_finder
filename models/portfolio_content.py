@@ -40,6 +40,28 @@ def split_items(text: Optional[str]) -> list[str]:
     return [line]
 
 
+def parse_expertise(text: Optional[str]) -> list[dict[str, Any]]:
+    """
+    Group "Area: item, item" lines into expertise areas [{title, items}].
+    A line ending with a comma continues on the next line. Returns [] when no line names an area,
+    so callers can fall back to a flat skills list.
+    """
+    logical: list[str] = []
+    for line in split_lines(text):
+        if logical and logical[-1].endswith(","):
+            logical[-1] = f"{logical[-1]} {line}"
+        else:
+            logical.append(line)
+    areas = []
+    for line in logical:
+        title, sep, rest = line.partition(":")
+        if not sep or not title.strip() or not rest.strip():
+            continue
+        items = [item.strip().rstrip(".") for item in rest.split(",")]
+        areas.append({"title": title.strip(), "items": [item for item in items if item]})
+    return areas
+
+
 def parse_entries(text: Optional[str]) -> list[dict[str, Any]]:
     """
     Parse experience/education/projects into entries.

@@ -7,7 +7,7 @@ from odoo import api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
 from .cv_parser import parse_cv_text
-from .portfolio_content import safe_url, split_items, parse_entries
+from .portfolio_content import parse_entries, parse_expertise, safe_url, split_items
 
 
 class JobProfile(models.Model):
@@ -88,6 +88,7 @@ class JobProfile(models.Model):
             "location": self.location or "",
             "summary": self.summary or "",
             "skills": split_items(self.skills),
+            "expertise": parse_expertise(self.skills),
             "projects": parse_entries(self.projects),
             "experience": parse_entries(self.experience),
             "education": parse_entries(self.education),

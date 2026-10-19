@@ -255,6 +255,40 @@ a {
 .portfolio-skills {
   margin-bottom: 6rem;
 
+  .expertise-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+
+  .expertise-card {
+    padding: 1.5rem;
+    background: $pf-white;
+    border: 1px solid $pf-line;
+    border-radius: 4px;
+  }
+
+  .expertise-title {
+    font-size: 1.5rem;
+    color: $pf-ink;
+    margin-bottom: 1rem;
+  }
+
+  .expertise-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+
+    .skill-chip {
+      padding: 0.35rem 0.75rem;
+      font-size: 0.85rem;
+    }
+  }
+
   .skills-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));

@@ -158,6 +158,14 @@ class PortfolioPageTestCase(HttpCase):
         self.assertIn("btn-open-app", text)
         self.assertNotIn("btn-login", text)
 
+    def test_portfolio_page_expertise_cards(self):
+        """Skills written as "Area: items" render one expertise card per area."""
+        self.profile.skills = "Applications: Flutter, Odoo\nData & infrastructure: PostgreSQL, Docker"
+        text = self.url_open("/", headers={"Host": "gp-developer.com"}).text
+        self.assertEqual(text.count('class="expertise-card"'), 2)
+        self.assertIn("Data &amp; infrastructure", text)
+        self.assertIn("Expertise", text)
+
     def test_portfolio_page_discover_hidden_without_projects(self):
         """Without projects there is no projects section, so the hero has no Discover the work link."""
         self.profile.projects = False

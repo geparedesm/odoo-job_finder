@@ -3,10 +3,11 @@
 import base64
 from io import BytesIO
 
-from odoo import fields, models
-from odoo.exceptions import UserError
+from odoo import api, fields, models
+from odoo.exceptions import AccessError, UserError, ValidationError
 
 from .cv_parser import parse_cv_text
+from .portfolio_content import safe_url, split_items, parse_entries
 
 
 class JobProfile(models.Model):
@@ -46,6 +47,22 @@ class JobProfile(models.Model):
     cv_filename = fields.Char(string="Nombre del archivo")
     cv_raw_text = fields.Text(string="Texto extraído del CV", readonly=True)
     cv_parsed_date = fields.Datetime(string="Fecha de análisis", readonly=True)
+    is_portfolio_published = fields.Boolean(
+        string="Publish as portfolio", copy=False, groups="base.group_system",
+    )
+
+    @api.constrains("is_portfolio_published")
+    def _check_single_portfolio(self):
+        """Only one profile can be published as the portfolio."""
+        for profile in self:
+            if not profile.is_portfolio_published:
+                continue
+            # Minimal sudo: only to count other published profiles when record rules hide them.
+            count = self.env["job.profile"].sudo().search_count(
+                [("is_portfolio_published", "=", True), ("id", "!=", profile.id)]
+            )
+            if count > 0:
+                raise ValidationError(self.env._("Only one profile can be published as the portfolio."))
 
     def action_open_my_profile(self):
         profile = self.search([("user_id", "=", self.env.uid)], limit=1)
@@ -55,6 +72,27 @@ class JobProfile(models.Model):
         action = self.env["ir.actions.act_window"]._for_xml_id("job_finder.action_my_profile")
         action.update(res_id=profile.id, views=[(False, "form")])
         return action
+
+    def _get_portfolio_values(self):
+        """Return a whitelisted dict of public fields with parsed content for portfolio display."""
+        self.ensure_one()
+        return {
+            "name": self.full_name or "",
+            "headline": self.headline or "",
+            "location": self.location or "",
+            "summary": self.summary or "",
+            "skills": split_items(self.skills),
+            "projects": parse_entries(self.projects),
+            "experience": parse_entries(self.experience),
+            "education": parse_entries(self.education),
+            "trainings": split_items(self.trainings),
+            "volunteering": split_items(self.volunteering),
+            "languages": split_items(self.languages),
+            "email": self.email or "",
+            "linkedin": safe_url(self.linkedin),
+            "github": safe_url(self.github),
+            "website": safe_url(self.website),
+        }
 
     def action_parse_cv(self):
         try:

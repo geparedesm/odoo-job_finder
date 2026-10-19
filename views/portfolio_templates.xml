@@ -14,11 +14,11 @@
             <nav class="portfolio-nav-links">
               <a href="#home" class="nav-link">Home</a>
               <t t-if="is_published">
+                <t t-if="profile.get('projects')">
+                  <a href="#projects" class="nav-link">Work</a>
+                </t>
                 <t t-if="profile.get('skills')">
                   <a href="#skills" class="nav-link">Skills</a>
-                </t>
-                <t t-if="profile.get('projects')">
-                  <a href="#projects" class="nav-link">Projects</a>
                 </t>
                 <t t-if="profile.get('experience') or profile.get('education')">
                   <a href="#experience" class="nav-link">Experience</a>
@@ -243,10 +243,14 @@
                     <a t-attf-href="#{profile.get('website')}" target="_blank" rel="noopener" class="contact-link">Website</a>
                   </t>
                 </div>
-                <t t-if="request.session.uid">
-                  <a href="/portfolio/cv" class="btn-download-cv">Download CV</a>
-                </t>
               </section>
+            </t>
+
+            <!-- Download CV button - shown for all logged-in users when profile is published -->
+            <t t-if="request.session.uid">
+              <div class="portfolio-cv-section">
+                <a href="/portfolio/cv" class="btn-download-cv">Download CV</a>
+              </div>
             </t>
           </t>
           <t t-else="">

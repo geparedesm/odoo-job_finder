@@ -16,7 +16,7 @@
         "views/portfolio_templates.xml",
     ],
     "assets": {
-        "web.assets_frontend": [
+        "job_finder.portfolio_assets": [
             "job_finder/static/src/scss/portfolio.scss",
         ],
     },

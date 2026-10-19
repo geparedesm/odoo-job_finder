@@ -51,7 +51,7 @@ The portfolio renders:
 
 The portfolio includes an **EN | ES** selector (top right). Clicking a language:
 - Switches fixed page text to that language (if activated in Odoo settings).
-- Saves the choice in a cookie (`job_finder_lang`, valid 1 year).
+- Saves the choice in a cookie (`job_finder_portfolio_lang`, valid 1 year).
 - Reloading the page remembers your language choice.
 
 Invalid or unavailable languages fall back to English.

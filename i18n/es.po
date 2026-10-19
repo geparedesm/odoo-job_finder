@@ -189,7 +189,7 @@ msgid "LinkedIn"
 msgstr "LinkedIn"
 
 #. module: job_finder
-#: model:ir.model.fields,field_description:job_finder.field_job_profile__is_portfolio_published
+#: model:ir.model.fields,field_description:job_finder.field_job_profile__is_published_as_portfolio
 msgid "Publish as portfolio"
 msgstr "Publicar como portafolio"
 
@@ -317,3 +317,23 @@ msgstr "Idiomas"
 #: model_terms:ir.ui.view,arch_db:job_finder.portfolio_page
 msgid "Volunteering"
 msgstr "Voluntariado"
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.portfolio_page
+msgid "Portfolio"
+msgstr "Portafolio"
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.portfolio_page
+msgid "Developer"
+msgstr "Desarrollador"
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.portfolio_page
+msgid "All rights reserved"
+msgstr "Todos los derechos reservados"
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.portfolio_page
+msgid "Work"
+msgstr "Trabajo"

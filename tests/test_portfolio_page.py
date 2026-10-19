@@ -288,6 +288,7 @@ class PortfolioPageTestCase(HttpCase):
         response = self.url_open("/?lang=es_ES", headers={"Host": "gp-developer.com"})
         self.assertEqual(response.status_code, 200)
         self.assertIn("Sitio web", response.text)
+        self.assertIn("Portátil, placa de circuito y teléfono unidos por líneas de luz", response.text)
         self.assertIn("Todos los derechos reservados", response.text)
         self.assertNotIn("All rights reserved", response.text)
         self.assertEqual(response.cookies.get("job_finder_portfolio_lang"), "es_ES")

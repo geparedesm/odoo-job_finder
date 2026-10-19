@@ -154,6 +154,11 @@ msgstr ""
 
 #. module: job_finder
 #: model_terms:ir.ui.view,arch_db:job_finder.portfolio_page
+msgid "Laptop, circuit board and phone joined by light lines"
+msgstr "Portátil, placa de circuito y teléfono unidos por líneas de luz"
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.portfolio_page
 msgid "Discover the work"
 msgstr "Descubre el trabajo"
 

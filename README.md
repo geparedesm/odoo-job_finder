@@ -1,93 +1,87 @@
 # Job Finder
 
-Uploaded PDF CVs populate professional profile details. The parser recognizes
-compound headings such as Technical Skills and Professional Profile, and headings
-with trailing qualifiers such as Professional Experience - Software Development.
-Repeated sections accumulate in document order, including separate experience and
-academic project blocks. Leadership and volunteering, academic research and
-projects, and training and credentials populate the `volunteering`, `projects`,
-and `trainings` profile fields. References stop section content collection.
-Location is extracted from delimited contact lines. Repeated name/subtitle page
-headers and name/page-count footers are excluded from section content.
-Spoken languages labeled `Languages spoken` or under `Language`/`Languages` populate `languages`, while
-programming languages remain in skills. LinkedIn populates its dedicated field. Personal website and GitHub links also populate
-their dedicated contact fields, which appear in the form and downloaded CV.
-Training and Credentials is retained in full in `trainings`.
-Only explicitly authorized profile fields are saved. Empty parsed fields preserve
-existing profile values.
+Job Finder keeps a structured professional profile in Odoo, imports it from a PDF CV, prints it as a complete CV,
+and publishes it as a bilingual portfolio website.
 
-Regression fixtures include the complete six-page reference PDF, its extracted
-text and exact expected values for every field. Odoo tests parse and save the real
-PDF without mocking the parser, then check preservation after empty/invalid input.
+## Structured profile
 
-## Public Portfolio Page
+A profile (`job.profile`) holds the identity and contact details (name, headline, photo, location, email, phone,
+LinkedIn, GitHub, website, summary) and these records, each with a sequence and a **Show on portfolio** flag:
 
-A published job profile is available as a public, bilingual portfolio page at `/` for configured hosts
-(default: `gp-developer.com` and `www.gp-developer.com`). Only `/` is host-gated: on other hosts it keeps
-Odoo's standard behavior. The published CV is downloaded from `/portfolio/cv`, which any internal user
-can reach on any host; anonymous visitors are sent to the login page.
+| Model | Content |
+| --- | --- |
+| `job_finder.experience` | Roles: professional experience or academic research, with company, location, start and end (or *I currently work here*, or *Show years only*), employment type, description, and highlights (one per line). |
+| `job_finder.project` | Projects, usually inside a role: subtitle (client or short description), description, technologies, link, and **Featured** (listed in the portfolio's Selected work). |
+| `job_finder.technology` | Technologies and methods shared by projects and skill groups (Job Finder › Configuration › Technologies). |
+| `job_finder.skill_group` | Skill areas, each with its technologies. |
+| `job_finder.education` | Qualifications: code, institution, location, years, status. |
+| `job_finder.training` | Trainings, licences and credentials: issuer, year, status. |
+| `job_finder.volunteering` | Leadership and volunteering: organisation, location, period, highlights, roles and recognition. |
+| `job_finder.spoken_language` | Languages with their level (A1–C2 or native). |
 
-### Publishing a Portfolio
+Headline, location, summary, roles, project names and descriptions, highlights and the other texts are
+translatable: write them once per language with Odoo's translation button, and the portfolio and the CV follow the
+visitor's or the report's language.
 
-To publish your profile as the portfolio:
-1. Complete your profile (or upload and analyze your CV).
-2. In Job Finder › My profile, check **Publish as portfolio** (admin-only field).
-3. Save the profile.
+The form shows a **Profile completeness** bar with what is still missing (photo, dates of a role, language levels…).
+Users reach only their own profile and its records; administrators reach all of them.
 
-Only one profile can be published at a time. Publishing another profile raises a validation error; unpublish the first one first.
+## Import from a CV
 
-### Portfolio Content and Format
+Upload a PDF CV in the **CV import** tab and click **Analyze CV**. The text of each section is extracted (contact
+details, Summary, Experience, Academic research, Skills, Education, Trainings, Volunteering, Languages) and turned
+into records:
 
-The portfolio renders:
-- **Name and headline** in the hero section (from `full_name` and `headline`).
-- **Skills** as individual items, split by newlines, commas, or bullets.
-- **Projects** as cards, split by blank lines (first line is the title, rest is description).
-- **Experience and Education** as a timeline (first line is title, second is date/location, rest is details).
-- **Summary, Languages, Trainings, and Volunteering** as paragraphs or lists.
-- **Contact** (email, LinkedIn, GitHub, website) with links.
+- a title line followed by `Company | Location | Dates | Type` starts a role; `(continued)` roles merge into the
+  previous one;
+- a line followed by `Technologies / methods:` starts a project in the current role; bullets belong to the current
+  project, or to the role's highlights before its first project;
+- `Category: item, item` lines become skill groups; `Name | Issuer | Year | Status` lines become trainings;
+- PDF line wrapping is joined back.
 
-**Formatting tips**: Use blank lines to separate project and experience entries. Each entry can have multiple lines for details.
+Analyzing replaces the entries of every section the CV contains (after a confirmation) and keeps the others.
+The extracted text stays read-only in **CV import › Imported text**. Regression fixtures include the complete
+six-page reference PDF, its extracted text and the expected values.
 
-### Language Selection
+## Portfolio website
 
-The portfolio includes an **EN | ES** selector (top right). Clicking a language:
-- Switches fixed page text to that language (if activated in Odoo settings).
-- Saves the choice in a cookie (`job_finder_portfolio_lang`, valid 1 year).
-- Reloading the page remembers your language choice.
+The module depends on Odoo's `website`. The portfolio is the page `/portfolio`, set as the website's homepage, so
+`/` shows it (and `/es/` in Spanish). It follows the design in `ui/portfolio.pen` (desktop 1440 and mobile 390):
+hero with photo, Selected work, Experience, Research and academic projects, Skills, Education, Training and
+credentials, Languages, Leadership and volunteering, and Contact. Sections and navigation links appear only when
+they have entries shown on the portfolio.
 
-Invalid or unavailable languages fall back to English.
+### Publishing
+
+1. Complete the profile (or import the CV) and add a photo.
+2. As an administrator, switch on **Publish as portfolio** next to the headline, and save.
+3. Optionally, in the **Portfolio** tab: show the phone (hidden by default; it always appears in the complete CV)
+   and adjust the search engine and sharing title, description and image (they default to the name and headline,
+   the summary, and the photo).
+
+Only one profile can be published at a time.
+
+### Languages and domain
+
+Languages are the website's languages (Website › Configuration › Settings): the EN / ES links switch the whole page,
+including the fixed texts from `i18n/es.po` and the translated profile texts. The domain is the website's
+**Website Domain** setting; DNS, TLS and the reverse proxy are configured outside this module.
 
 ### Download CV
 
-Anonymous visitors see a **Login** button. After logging in, the button becomes **Open app**; internal users also get a **Download CV** button in the hero.
-Clicking **Download CV** downloads the complete PDF CV (includes email, phone, and location). Only internal users can download; portal and other external accounts get 403 Forbidden.
+**Download CV** opens `/portfolio/cv`. Anonymous visitors are sent to log in first; internal users download the
+complete PDF; portal and other external accounts get 403 Forbidden. Only the published profile's photo is public,
+at `/portfolio/photo`.
 
-### Configuring Hosts
+## Complete CV
 
-The system parameter `job_finder.portfolio_hosts` controls which hosts serve the portfolio (comma-separated list). Change it in Settings › Technical › System Parameters to add or remove hosts. The default is `gp-developer.com,www.gp-developer.com`.
+**Download complete CV** in the form header (or Print › Complete CV) generates the PDF from the saved records:
+roles with highlights and projects, academic research, skills by area, education, trainings, volunteering and
+languages. Entries hidden from the portfolio still appear in the complete CV. Profile access rules apply to
+downloads.
 
-**Note for reverse proxies**: The reverse proxy must forward the original `Host` header and enable Odoo's `proxy_mode` so that `X-Forwarded-Host` is recognized. DNS and TLS for the portfolio domain are configured outside this module.
+## Upgrading from 19.0.1.0.0
 
-## Profile Form
-
-The guided form starts with contact details, followed by PDF upload instructions and the portfolio publishing checkbox (admin-only).
-The header provides the analysis and download actions.
-Upload your CV, then click **Analyze CV** (**Analizar CV** in Spanish). Review and
-edit the extracted content in the tabs: summary, skills, experience, education,
-volunteering, projects, trainings, and languages.
-Each tab includes a placeholder suggesting which details to include.
-The parser behavior and three dedicated fields described above shipped in T-56-1;
-this form layout adds guidance and makes those fields available for review.
-
-## Download the complete CV
-
-Save your profile edits, then click **Download complete CV** in the form header
-(**Descargar CV completo** in Spanish), or select **Complete CV** from the Print menu.
-The PDF includes your current name, headline, contact data, summary, skills,
-experience, education, volunteering, projects, trainings, and languages. Multiline
-entries retain their line breaks; empty sections are omitted. You can download a manually completed profile without uploading a PDF.
-
-Downloads are generated afresh from saved profile values, including additions made
-after parsing. The original uploaded file and parser diagnostics remain available in
-Odoo; they are not appended to the professional CV. Existing profile access rules also
-apply to downloads, so users can only download profiles they are allowed to read.
+The migration to 19.0.1.1.0 builds the records from the text stored by earlier versions (only for profiles that
+have no records yet), sets `/portfolio` as the website homepage when none is set, and removes the former
+`job_finder.portfolio_hosts` parameter.

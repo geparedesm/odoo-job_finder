@@ -25,9 +25,7 @@ class PortfolioProfileTestCase(TransactionCase):
             "phone": "+1 555 1234",
             "location": "San Francisco",
             "linkedin": "https://linkedin.com/in/test",
-            "skills": "Python\nJavaScript\nRust",
             "summary": "A software engineer with experience",
-            "projects": "Project 1\nTechnologies: Python, Django\nBuilt a web app",
         })
         self.profile2 = self.env["job.profile"].create({
             "user_id": self.env.ref("base.user_admin").id,
@@ -77,63 +75,56 @@ class PortfolioProfileTestCase(TransactionCase):
             profile.with_user(user).write({"is_published_as_portfolio": True})
 
     def test_get_portfolio_values_whitelist(self):
-        """_get_portfolio_values returns only whitelisted fields."""
-        self.profile1.is_published_as_portfolio = True
+        """Only public fields: no phone unless the person shows it."""
         values = self.profile1._get_portfolio_values()
-
-        # Should include public fields
-        self.assertEqual(values["name"], "Test User")
-        self.assertEqual(values["headline"], "Software Engineer")
-        self.assertEqual(values["location"], "San Francisco")
-        self.assertEqual(values["email"], "test@example.com")
-
-        # Should NOT include phone (hidden from public)
+        self.assertEqual((values["name"], values["headline_parts"], values["location"], values["email"]),
+                         ("Test User", ["Software Engineer"], "San Francisco", "test@example.com"))
         self.assertNotIn(self.profile1.phone, str(values))
+        self.profile1.is_phone_public = True
+        self.assertEqual(self.profile1._get_portfolio_values()["phone"], "+1 555 1234")
 
-    def test_get_portfolio_values_parsed_content(self):
-        """_get_portfolio_values parses multi-line fields into lists."""
+    def test_get_portfolio_values_from_records(self):
+        """Featured projects, roles and skills come from the records shown on the portfolio."""
+        role = self.env["job_finder.experience"].create({
+            "profile_id": self.profile1.id, "role": "Developer", "company": "Acme",
+            "date_start": "2021-12-01", "date_end": "2025-01-01", "employment_type": "full_time",
+            "highlights": "Shipped things. Many things.",
+        })
+        python = self.env["job_finder.technology"].create({"name": "Python"})
+        self.env["job_finder.project"].create([
+            {"profile_id": self.profile1.id, "experience_id": role.id, "name": "Shown", "is_featured": True,
+             "subtitle": "internal tool", "description": "Built it. Then more.", "technology_ids": [(6, 0, python.ids)]},
+            {"profile_id": self.profile1.id, "experience_id": role.id, "name": "Hidden", "is_featured": True,
+             "is_public": False},
+        ])
+        self.env["job_finder.skill_group"].create({
+            "profile_id": self.profile1.id, "name": "Languages", "technology_ids": [(6, 0, python.ids)]})
         values = self.profile1._get_portfolio_values()
-
-        # Skills should be parsed into list
-        self.assertIsInstance(values["skills"], list)
-        self.assertIn("Python", values["skills"])
-        self.assertIn("JavaScript", values["skills"])
-
-        # Projects should be parsed into list of dicts
-        self.assertIsInstance(values["projects"], list)
-        self.assertEqual(len(values["projects"]), 1)
-        self.assertEqual(values["projects"][0]["title"], "Project 1")
+        [project] = values["featured_projects"]
+        self.assertEqual(project, {"name": "Shown", "subtitle": "Internal tool", "source": "Acme / Dec 2021 – Jan 2025",
+                                   "description": "Built it.", "technologies": "Python", "url": None})
+        [entry] = values["roles"]
+        self.assertEqual((entry["title"], entry["detail"], entry["type"]),
+                         ("Developer / Acme", "1 project in Selected work", "Full-time"))
+        self.assertEqual(values["skills"], [{"name": "Languages", "items": "Python"}])
 
     def test_get_portfolio_values_safe_urls(self):
-        """_get_portfolio_values uses safe_url for contact fields."""
-        self.profile1.linkedin = "linkedin.com/in/test"
-        self.profile1.github = "https://github.com/test"
-        self.profile1.website = "example.com"
-        values = self.profile1._get_portfolio_values()
-
-        # safe_url should add https:// to bare domains
-        self.assertTrue(values["linkedin"].startswith("https://"))
-        self.assertTrue(values["github"].startswith("https://"))
-        self.assertTrue(values["website"].startswith("https://"))
+        """Links get https:// and a short label; unsafe ones are dropped."""
+        self.profile1.write({"linkedin": "linkedin.com/in/test", "github": "javascript:alert(1)",
+                             "website": "https://www.example.com/"})
+        links = {item["kind"]: item for item in self.profile1._get_portfolio_values()["links"]}
+        self.assertEqual(links["linkedin"]["href"], "https://linkedin.com/in/test")
+        self.assertEqual(links["website"]["label"], "example.com")
+        self.assertNotIn("github", links)
 
     def test_get_portfolio_values_empty_fields(self):
-        """_get_portfolio_values handles empty fields gracefully."""
-        user = self.env["res.users"].create({
-            "name": "Empty Test User",
-            "login": "emptytest",
-            "email": "empty@example.com",
-        })
-        profile = self.env["job.profile"].create({
-            "user_id": user.id,
-            "full_name": "Empty Profile",
-        })
-        values = profile._get_portfolio_values()
-
-        # Empty fields should be empty strings or empty lists
-        self.assertEqual(values["summary"], "")
-        self.assertEqual(values["skills"], [])
-        self.assertEqual(values["projects"], [])
-
+        """An empty profile gives empty sections."""
+        user = self.env["res.users"].create({"name": "Empty Test User", "login": "emptytest"})
+        values = self.env["job.profile"].create({"user_id": user.id, "full_name": "Empty Profile"})._get_portfolio_values()
+        self.assertEqual(values["summary_paragraphs"], [])
+        for section in ("featured_projects", "roles", "research_groups", "skills", "education", "trainings",
+                        "languages", "volunteering", "links"):
+            self.assertEqual(values[section], [], section)
 
 if __name__ == "__main__":
     import unittest

@@ -11,3 +11,4 @@ else:
     from . import test_portfolio_page  # noqa: F401
     from . import test_portfolio_profile  # noqa: F401
     from . import test_profile_form  # noqa: F401
+    from . import test_structured_profile  # noqa: F401

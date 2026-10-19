@@ -1,5 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <template id="report_job_profile_role">
+        <div class="jf-role" style="page-break-inside: avoid; margin-bottom: 12px;">
+            <div style="display: flex; justify-content: space-between;">
+                <strong t-field="role.role"/>
+                <span t-out="role._get_period_label()"/>
+            </div>
+            <div class="text-muted">
+                <span t-field="role.company"/>
+                <t t-if="role.location"> · <span t-field="role.location"/></t>
+                <t t-if="role.employment_type"> · <span t-field="role.employment_type"/></t>
+            </div>
+            <p t-if="role.description" t-field="role.description" style="white-space: pre-wrap; margin: 4px 0;"/>
+            <ul t-if="role.highlights" style="margin: 4px 0;">
+                <li t-foreach="role._get_highlight_lines()" t-as="line" t-out="line"/>
+            </ul>
+            <div t-foreach="role.project_ids" t-as="project" style="margin: 6px 0 0 12px;">
+                <strong t-field="project.name"/><t t-if="project.subtitle"> · <span t-field="project.subtitle"/></t>
+                <div t-if="project.technology_ids" class="text-muted">
+                    <span>Technologies / methods</span>: <t t-out="', '.join(project.technology_ids.mapped('name'))"/>
+                </div>
+                <p t-if="project.description" t-field="project.description" style="white-space: pre-wrap; margin: 2px 0;"/>
+            </div>
+        </div>
+    </template>
+
     <template id="report_job_profile">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="profile">
@@ -19,33 +44,74 @@
                             <h2>Summary</h2>
                             <div t-field="profile.summary" style="white-space: pre-wrap; overflow-wrap: break-word;"/>
                         </div>
-                        <div t-if="profile.skills">
-                            <h2>Skills</h2>
-                            <div t-field="profile.skills" style="white-space: pre-wrap; overflow-wrap: break-word;"/>
-                        </div>
-                        <div t-if="profile.experience">
+                        <t t-set="work_roles" t-value="profile.experience_ids.filtered(lambda e: e.category == 'work')"/>
+                        <div t-if="work_roles">
                             <h2>Experience</h2>
-                            <div t-field="profile.experience" style="white-space: pre-wrap; overflow-wrap: break-word;"/>
+                            <t t-foreach="work_roles" t-as="role" t-call="job_finder.report_job_profile_role"/>
                         </div>
-                        <div t-if="profile.education">
-                            <h2>Education</h2>
-                            <div t-field="profile.education" style="white-space: pre-wrap; overflow-wrap: break-word;"/>
+                        <t t-set="research_roles" t-value="profile.experience_ids.filtered(lambda e: e.category == 'research')"/>
+                        <div t-if="research_roles">
+                            <h2>Academic research and projects</h2>
+                            <t t-foreach="research_roles" t-as="role" t-call="job_finder.report_job_profile_role"/>
                         </div>
-                        <div t-if="profile.volunteering">
-                            <h2>Volunteering</h2>
-                            <div t-field="profile.volunteering" style="white-space: pre-wrap; overflow-wrap: break-word;"/>
-                        </div>
-                        <div t-if="profile.projects">
+                        <t t-set="other_projects" t-value="profile.project_ids.filtered(lambda p: not p.experience_id)"/>
+                        <div t-if="other_projects">
                             <h2>Projects</h2>
-                            <div t-field="profile.projects" style="white-space: pre-wrap; overflow-wrap: break-word;"/>
+                            <div t-foreach="other_projects" t-as="project" style="margin-bottom: 6px;">
+                                <strong t-field="project.name"/><t t-if="project.subtitle"> · <span t-field="project.subtitle"/></t>
+                                <p t-if="project.description" t-field="project.description" style="white-space: pre-wrap; margin: 2px 0;"/>
+                            </div>
                         </div>
-                        <div t-if="profile.trainings">
+                        <div t-if="profile.skill_group_ids">
+                            <h2>Skills</h2>
+                            <p t-foreach="profile.skill_group_ids" t-as="group" style="margin: 2px 0;">
+                                <strong t-field="group.name"/>: <t t-out="', '.join(group.technology_ids.mapped('name'))"/>
+                            </p>
+                        </div>
+                        <div t-if="profile.education_ids">
+                            <h2>Education</h2>
+                            <div t-foreach="profile.education_ids" t-as="entry" style="margin-bottom: 6px;">
+                                <strong t-field="entry.qualification"/>
+                                <div class="text-muted">
+                                    <t t-if="entry.code"><span t-field="entry.code"/> · </t>
+                                    <span t-field="entry.institution"/>
+                                    <t t-if="entry.location"> · <span t-field="entry.location"/></t>
+                                    <t t-if="entry._get_period_label()"> · <t t-out="entry._get_period_label()"/></t>
+                                    <t t-if="entry.status"> · <span t-field="entry.status"/></t>
+                                </div>
+                            </div>
+                        </div>
+                        <div t-if="profile.training_ids">
                             <h2>Trainings</h2>
-                            <div t-field="profile.trainings" style="white-space: pre-wrap; overflow-wrap: break-word;"/>
+                            <p t-foreach="profile.training_ids" t-as="training" style="margin: 2px 0;">
+                                <span t-field="training.name"/>
+                                <t t-if="training.issuer"> · <span t-field="training.issuer"/></t>
+                                <t t-if="training.year"> · <t t-out="training.year"/></t>
+                                <t t-if="training.status"> · <span t-field="training.status"/></t>
+                            </p>
                         </div>
-                        <div t-if="profile.languages">
+                        <div t-if="profile.volunteering_ids">
+                            <h2>Volunteering</h2>
+                            <div t-foreach="profile.volunteering_ids" t-as="entry" style="margin-bottom: 8px; page-break-inside: avoid;">
+                                <strong t-field="entry.title"/>
+                                <div class="text-muted">
+                                    <span t-field="entry.organisation"/>
+                                    <t t-if="entry.location"> · <span t-field="entry.location"/></t>
+                                    <t t-if="entry.period"> · <span t-field="entry.period"/></t>
+                                </div>
+                                <ul t-if="entry.recognitions" style="margin: 4px 0;">
+                                    <li t-foreach="entry._get_recognition_lines()" t-as="line" t-out="line"/>
+                                </ul>
+                                <ul t-if="entry.highlights" style="margin: 4px 0;">
+                                    <li t-foreach="entry._get_highlight_lines()" t-as="line" t-out="line"/>
+                                </ul>
+                            </div>
+                        </div>
+                        <div t-if="profile.spoken_language_ids">
                             <h2>Languages</h2>
-                            <div t-field="profile.languages" style="white-space: pre-wrap; overflow-wrap: break-word;"/>
+                            <p t-foreach="profile.spoken_language_ids" t-as="language" style="margin: 2px 0;">
+                                <span t-field="language.name"/><t t-if="language.level"> · <span t-field="language.level"/></t>
+                            </p>
                         </div>
                     </div>
                 </t>

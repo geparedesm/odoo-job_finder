@@ -25,10 +25,12 @@ class TestJobProfileOpen(unittest.TestCase):
         package.__path__ = [str(ROOT / "models")]
         fields = SimpleNamespace(
             Char=Mock(), Text=Mock(), Binary=Mock(), Many2one=Mock(), Boolean=Mock(),
+            Image=Mock(), One2many=Mock(), Integer=Mock(),
             Datetime=Mock(),
         )
         odoo = SimpleNamespace(
-            fields=fields, api=SimpleNamespace(constrains=lambda *names: lambda method: method),
+            fields=fields, api=SimpleNamespace(constrains=lambda *names: lambda method: method, depends=lambda *names: lambda method: method),
+            Command=SimpleNamespace(create=Mock(), set=Mock(), clear=Mock()),
             models=SimpleNamespace(Model=object, Constraint=lambda *args: None),
         )
         exceptions = ModuleType("odoo.exceptions")

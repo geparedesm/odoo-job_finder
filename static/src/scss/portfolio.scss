@@ -569,8 +569,14 @@ a {
     padding: 0.75rem;
   }
 
+  // Links stay reachable on phones: they wrap onto stacked rows instead of being hidden.
   .portfolio-nav-links {
-    display: none;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+
+    .nav-link {
+      padding: 0.25rem 0;
+    }
   }
 
   .portfolio-hero .hero-title {

@@ -127,6 +127,20 @@ class PortfolioPageTestCase(HttpCase):
         self.assertNotIn("/portfolio/cv", response.text)
         self.assertIn('href="#projects" class="btn-discover"', response.text)
 
+    def test_portfolio_page_download_cv_logged_in_http(self):
+        """A logged-in visitor gets Download CV in the rendered hero and Open app instead of Login."""
+        # The test server is reached as 127.0.0.1; serving the portfolio there keeps the session cookie valid
+        # (HttpCase drops the authenticated session when a request overrides the Host header).
+        self.env["ir.config_parameter"].set_param("job_finder.portfolio_hosts", "gp-developer.com,127.0.0.1")
+        self.authenticate("admin", "admin")
+        text = self.url_open("/").text
+        start = text.index('class="portfolio-hero"')
+        hero = text[start:text.index("</section>", start)]
+        self.assertIn('href="/portfolio/cv"', hero)
+        self.assertIn("Discover the work", hero)
+        self.assertIn("btn-open-app", text)
+        self.assertNotIn("btn-login", text)
+
     def test_portfolio_page_download_cv_in_hero(self):
         """The hero holds Discover the work and, for logged-in visitors only, Download CV."""
         arch = etree.fromstring(self.env.ref("job_finder.portfolio_page").arch)

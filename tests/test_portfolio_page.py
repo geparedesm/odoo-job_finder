@@ -101,6 +101,8 @@ class PortfolioPageTestCase(HttpCase):
 
     def test_seo_and_sharing_metadata(self):
         text = self.page("/portfolio")
+        self.assertIn("<title>Gabriel Paredes Mendoza | Software development, ICT, Mechatronics</title>", text)
+        self.assertEqual(self.profile.display_name, "Gabriel Paredes Mendoza")
         self.assertIn('<meta property="og:title" content="Gabriel Paredes Mendoza | Software development, ICT, Mechatronics"', text)
         self.assertIn('<meta name="description" content="Multidisciplinary professional', text)
         self.assertIn("/portfolio/photo", text.split('property="og:image"')[1][:200])

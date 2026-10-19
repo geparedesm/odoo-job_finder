@@ -5,7 +5,8 @@
             <t t-set="no_header" t-value="True"/>
             <t t-set="no_footer" t-value="True"/>
             <t t-set="pageName" t-value="'jf-portfolio-page'"/>
-            <t t-set="additional_title" t-value="portfolio.get('name') or 'Portfolio'"/>
+            <!-- The page title is the person, not the website's default name ("My Website"). -->
+            <t t-set="title" t-value="(profile and profile.website_meta_title) or ' | '.join(filter(None, [portfolio.get('name'), ', '.join(portfolio.get('headline_parts') or [])])) or 'Portfolio'"/>
             <t t-set="head">
                 <link rel="preconnect" href="https://fonts.googleapis.com"/>
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>

@@ -29,6 +29,8 @@ class Portfolio(http.Controller):
             "profile": profile,
             "portfolio": profile._get_portfolio_values() if profile else {},
             "main_object": profile,
+            # Explicit: website.layout only derives it from main_object when no page title is given.
+            "seo_object": profile,
         }
         return request.render("job_finder.portfolio_page", values)
 

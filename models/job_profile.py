@@ -16,6 +16,12 @@ class JobProfile(models.Model):
 
     # Odoo 19 declares table constraints as models.Constraint; _sql_constraints is no longer applied.
     _user_uniq = models.Constraint("UNIQUE (user_id)", "A profile already exists for this user.")
+    # The Python constraint gives the readable error; this database constraint keeps concurrent publications atomic.
+    # It is deferred to commit, so unpublishing one profile and publishing another in one transaction is allowed.
+    _single_portfolio = models.Constraint(
+        "EXCLUDE (is_published_as_portfolio WITH =) WHERE (is_published_as_portfolio) DEFERRABLE INITIALLY DEFERRED",
+        "Only one profile can be published as the portfolio.",
+    )
 
     user_id = fields.Many2one(
         "res.users", string="Usuario", required=True,

@@ -154,6 +154,11 @@ msgstr ""
 
 #. module: job_finder
 #: model_terms:ir.ui.view,arch_db:job_finder.portfolio_page
+msgid "Discover the work"
+msgstr "Descubre el trabajo"
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.portfolio_page
 msgid "Download CV"
 msgstr "Descargar CV"
 

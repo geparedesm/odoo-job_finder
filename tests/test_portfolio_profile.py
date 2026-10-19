@@ -3,8 +3,10 @@
 import unittest
 
 try:
+    import psycopg2
     from odoo.exceptions import AccessError, ValidationError
     from odoo.tests import TransactionCase, tagged
+    from odoo.tools import mute_logger
 except ImportError:
     raise unittest.SkipTest("Odoo not available")
 
@@ -49,6 +51,14 @@ class PortfolioProfileTestCase(TransactionCase):
         # Should not raise
         self.profile2.is_published_as_portfolio = True
         self.assertTrue(self.profile2.is_published_as_portfolio)
+
+    def test_single_portfolio_enforced_by_database(self):
+        """Two published profiles are refused by the database even when the Python check is bypassed."""
+        self.profile1.is_published_as_portfolio = True
+        self.env.flush_all()
+        with self.assertRaises(psycopg2.IntegrityError), mute_logger("odoo.sql_db"), self.env.cr.savepoint():
+            self.env.cr.execute("UPDATE job_profile SET is_published_as_portfolio = true WHERE id = %s", [self.profile2.id])
+            self.env.cr.execute("SET CONSTRAINTS job_profile_single_portfolio IMMEDIATE")
 
     def test_admin_only_field_visibility(self):
         """Non-admin users cannot see or edit is_published_as_portfolio."""

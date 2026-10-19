@@ -57,6 +57,12 @@
                 <t t-if="profile.get('location')">
                   <p class="hero-location" t-out="profile.get('location')"/>
                 </t>
+                <div class="hero-actions">
+                  <a href="#projects" class="btn-discover">Discover the work</a>
+                  <t t-if="request.session.uid">
+                    <a href="/portfolio/cv" class="btn-download-cv">Download CV</a>
+                  </t>
+                </div>
               </div>
               <div class="hero-visual">
                 <svg viewBox="0 0 1000 600" class="hero-illustration">
@@ -246,12 +252,6 @@
               </section>
             </t>
 
-            <!-- Download CV button - shown for all logged-in users when profile is published -->
-            <t t-if="request.session.uid">
-              <div class="portfolio-cv-section">
-                <a href="/portfolio/cv" class="btn-download-cv">Download CV</a>
-              </div>
-            </t>
           </t>
           <t t-else="">
             <!-- No portfolio published -->

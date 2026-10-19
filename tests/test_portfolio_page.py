@@ -3,6 +3,7 @@
 import unittest
 
 try:
+    from lxml import etree
     from odoo.tests import HttpCase, tagged
 except ImportError:
     raise unittest.SkipTest("Odoo not available")
@@ -124,6 +125,18 @@ class PortfolioPageTestCase(HttpCase):
         # Download CV should not be shown
         self.assertNotIn("Download CV", response.text)
         self.assertNotIn("/portfolio/cv", response.text)
+        self.assertIn('href="#projects" class="btn-discover"', response.text)
+
+    def test_portfolio_page_download_cv_in_hero(self):
+        """The hero holds Discover the work and, for logged-in visitors only, Download CV."""
+        arch = etree.fromstring(self.env.ref("job_finder.portfolio_page").arch)
+        actions = arch.xpath("//section[@id='home']//div[@class='hero-actions']")
+        self.assertEqual(len(actions), 1)
+        self.assertEqual(actions[0].xpath("a[@class='btn-discover']/@href"), ["#projects"])
+        cv = actions[0].xpath("t[@t-if='request.session.uid']/a[@href='/portfolio/cv']")
+        self.assertEqual(len(cv), 1)
+        # HttpCase does not carry an authenticated session into requests that override the Host header, so the
+        # logged-in branch is checked on the arch; the anonymous rendering is covered by the HTTP tests above.
 
     def test_portfolio_page_empty_state(self):
         """When no profile is published, shows empty state."""
@@ -175,25 +188,39 @@ class PortfolioPageTestCase(HttpCase):
         # Should have aria-current="page" on EN link
         self.assertIn("aria-current", text)
 
-    def test_portfolio_page_language_selector_es(self):
-        """Language selector for ES_ES."""
-        # First, activate es_ES language
+    def _load_spanish(self):
         self.env["res.lang"]._activate_lang("es_ES")
-        response = self.url_open(
-            "/?lang=es_ES",
-            headers={"Host": "gp-developer.com"},
-        )
+        self.env["ir.module.module"]._load_module_terms(["job_finder"], ["es_ES"], overwrite=True)
+
+    def test_portfolio_page_language_selector_es(self):
+        """?lang=es_ES renders the fixed texts in Spanish and stores the choice in a cookie."""
+        self._load_spanish()
+        response = self.url_open("/?lang=es_ES", headers={"Host": "gp-developer.com"})
         self.assertEqual(response.status_code, 200)
-        # The template should be rendered, even if translations aren't loaded
+        self.assertIn("Sitio web", response.text)
+        self.assertIn("Todos los derechos reservados", response.text)
+        self.assertNotIn("All rights reserved", response.text)
+        self.assertEqual(response.cookies.get("job_finder_portfolio_lang"), "es_ES")
+
+    def test_portfolio_page_language_cookie_reused(self):
+        """After choosing Spanish, a later visit without ?lang stays in Spanish through the cookie."""
+        self._load_spanish()
+        self.url_open("/?lang=es_ES", headers={"Host": "gp-developer.com"})
+        self.assertEqual(self.opener.cookies.get("job_finder_portfolio_lang"), "es_ES")
+        response = self.url_open("/", headers={"Host": "gp-developer.com"})
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Todos los derechos reservados", response.text)
+        self.assertNotIn("All rights reserved", response.text)
 
     def test_portfolio_page_invalid_language_fallback(self):
-        """Invalid language parameter falls back to English."""
-        response = self.url_open(
-            "/?lang=fr_FR",
-            headers={"Host": "gp-developer.com"},
-        )
-        self.assertEqual(response.status_code, 200)
-        # Should render without error
+        """Unknown or inactive languages fall back to English."""
+        self._load_spanish()
+        for lang in ("fr_FR", "xx_XX"):
+            response = self.url_open(f"/?lang={lang}", headers={"Host": "gp-developer.com"})
+            self.assertEqual(response.status_code, 200)
+            self.assertIn("All rights reserved", response.text)
+            self.assertNotIn("Todos los derechos reservados", response.text)
+            self.assertEqual(response.cookies.get("job_finder_portfolio_lang"), "en_US")
 
     def test_portfolio_page_system_parameter_change(self):
         """Changing the system parameter changes which hosts serve portfolio."""

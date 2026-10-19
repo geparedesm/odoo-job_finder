@@ -41,16 +41,11 @@ class PortfolioHome(Home):
             if not lang:
                 # Try reading the stored cookie
                 lang = request.httprequest.cookies.get("job_finder_portfolio_lang", "en_US")
-            # Validate language against whitelist and active res.lang
-            valid_langs = {"en_US", "es_ES"}
-            try:
-                active_langs = {l.code for l in request.env["res.lang"].search([("active", "=", True)])}
-                if lang not in valid_langs.intersection(active_langs):
-                    lang = "en_US"
-            except Exception:
-                # If we can't query active languages, just validate against whitelist
-                if lang not in valid_langs:
-                    lang = "en_US"
+            # Validate language against the whitelist and the active languages.
+            # Minimal sudo: the visitor may be anonymous, and only active language codes are read.
+            active_langs = {code for code, _name in request.env["res.lang"].sudo().get_installed()}
+            if lang not in {"en_US", "es_ES"} & active_langs:
+                lang = "en_US"
 
             # Render the template using QWeb with language context
             html = request.env["ir.qweb"].with_context(lang=lang)._render(

@@ -19,7 +19,7 @@ class JobProfile(models.Model):
     # The Python constraint gives the readable error; this database constraint keeps concurrent publications atomic.
     # It is deferred to commit, so unpublishing one profile and publishing another in one transaction is allowed.
     _single_portfolio = models.Constraint(
-        "EXCLUDE (is_published_as_portfolio WITH =) WHERE (is_published_as_portfolio) DEFERRABLE INITIALLY DEFERRED",
+        "EXCLUDE USING btree (is_published_as_portfolio WITH =) WHERE (is_published_as_portfolio) DEFERRABLE INITIALLY DEFERRED",
         "Only one profile can be published as the portfolio.",
     )
 

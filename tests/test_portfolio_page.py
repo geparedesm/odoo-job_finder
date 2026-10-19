@@ -303,6 +303,14 @@ class PortfolioPageTestCase(HttpCase):
         self.assertIn("Todos los derechos reservados", response.text)
         self.assertNotIn("All rights reserved", response.text)
 
+    def test_portfolio_page_inactive_spanish_falls_back(self):
+        """While Spanish is not active, ?lang=es_ES renders English and stores en_US."""
+        self.env["res.lang"].with_context(active_test=False).search([("code", "=", "es_ES")]).active = False
+        response = self.url_open("/?lang=es_ES", headers={"Host": "gp-developer.com"})
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("All rights reserved", response.text)
+        self.assertEqual(response.cookies.get("job_finder_portfolio_lang"), "en_US")
+
     def test_portfolio_page_invalid_language_fallback(self):
         """Unknown or inactive languages fall back to English."""
         self._load_spanish()

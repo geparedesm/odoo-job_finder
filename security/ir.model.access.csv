@@ -1,3 +1,12 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_job_profile_user,job.profile user,model_job_profile,base.group_user,1,1,1,1
 access_job_profile_system,job.profile system,model_job_profile,base.group_system,1,1,1,1
+access_job_finder_experience_user,job_finder.experience user,model_job_finder_experience,base.group_user,1,1,1,1
+access_job_finder_project_user,job_finder.project user,model_job_finder_project,base.group_user,1,1,1,1
+access_job_finder_skill_group_user,job_finder.skill_group user,model_job_finder_skill_group,base.group_user,1,1,1,1
+access_job_finder_education_user,job_finder.education user,model_job_finder_education,base.group_user,1,1,1,1
+access_job_finder_training_user,job_finder.training user,model_job_finder_training,base.group_user,1,1,1,1
+access_job_finder_volunteering_user,job_finder.volunteering user,model_job_finder_volunteering,base.group_user,1,1,1,1
+access_job_finder_spoken_language_user,job_finder.spoken_language user,model_job_finder_spoken_language,base.group_user,1,1,1,1
+access_job_finder_technology_user,job_finder.technology user,model_job_finder_technology,base.group_user,1,1,1,0
+access_job_finder_technology_system,job_finder.technology system,model_job_finder_technology,base.group_system,1,1,1,1

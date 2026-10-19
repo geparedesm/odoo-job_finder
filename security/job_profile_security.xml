@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <record id="job_profile_rule_user" model="ir.rule">
-        <field name="name">Perfil propio del usuario</field>
+        <field name="name">Own profile</field>
         <field name="model_id" ref="model_job_profile"/>
         <field name="groups" eval="[(4, ref('base.group_user'))]"/>
         <field name="domain_force">[('user_id', '=', user.id)]</field>
@@ -12,7 +12,7 @@
     </record>
     <!-- Group rules are combined with OR, preserving full administrator access. -->
     <record id="job_profile_rule_system" model="ir.rule">
-        <field name="name">Todos los perfiles para administradores</field>
+        <field name="name">All profiles for administrators</field>
         <field name="model_id" ref="model_job_profile"/>
         <field name="groups" eval="[(4, ref('base.group_system'))]"/>
         <field name="domain_force">[(1, '=', 1)]</field>
@@ -20,5 +20,90 @@
         <field name="perm_write" eval="True"/>
         <field name="perm_create" eval="True"/>
         <field name="perm_unlink" eval="True"/>
+    </record>
+    <!-- Profile records follow their profile: users reach their own, administrators reach all. -->
+    <record id="experience_rule_user" model="ir.rule">
+        <field name="name">Own profile experience</field>
+        <field name="model_id" ref="model_job_finder_experience"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">[('profile_id.user_id', '=', user.id)]</field>
+    </record>
+    <record id="experience_rule_system" model="ir.rule">
+        <field name="name">All profile experience for administrators</field>
+        <field name="model_id" ref="model_job_finder_experience"/>
+        <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+    <record id="project_rule_user" model="ir.rule">
+        <field name="name">Own profile projects</field>
+        <field name="model_id" ref="model_job_finder_project"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">[('profile_id.user_id', '=', user.id)]</field>
+    </record>
+    <record id="project_rule_system" model="ir.rule">
+        <field name="name">All profile projects for administrators</field>
+        <field name="model_id" ref="model_job_finder_project"/>
+        <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+    <record id="skill_group_rule_user" model="ir.rule">
+        <field name="name">Own profile skill groups</field>
+        <field name="model_id" ref="model_job_finder_skill_group"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">[('profile_id.user_id', '=', user.id)]</field>
+    </record>
+    <record id="skill_group_rule_system" model="ir.rule">
+        <field name="name">All profile skill groups for administrators</field>
+        <field name="model_id" ref="model_job_finder_skill_group"/>
+        <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+    <record id="education_rule_user" model="ir.rule">
+        <field name="name">Own profile education</field>
+        <field name="model_id" ref="model_job_finder_education"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">[('profile_id.user_id', '=', user.id)]</field>
+    </record>
+    <record id="education_rule_system" model="ir.rule">
+        <field name="name">All profile education for administrators</field>
+        <field name="model_id" ref="model_job_finder_education"/>
+        <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+    <record id="training_rule_user" model="ir.rule">
+        <field name="name">Own profile trainings</field>
+        <field name="model_id" ref="model_job_finder_training"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">[('profile_id.user_id', '=', user.id)]</field>
+    </record>
+    <record id="training_rule_system" model="ir.rule">
+        <field name="name">All profile trainings for administrators</field>
+        <field name="model_id" ref="model_job_finder_training"/>
+        <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+    <record id="volunteering_rule_user" model="ir.rule">
+        <field name="name">Own profile volunteering</field>
+        <field name="model_id" ref="model_job_finder_volunteering"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">[('profile_id.user_id', '=', user.id)]</field>
+    </record>
+    <record id="volunteering_rule_system" model="ir.rule">
+        <field name="name">All profile volunteering for administrators</field>
+        <field name="model_id" ref="model_job_finder_volunteering"/>
+        <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+    <record id="spoken_language_rule_user" model="ir.rule">
+        <field name="name">Own profile languages</field>
+        <field name="model_id" ref="model_job_finder_spoken_language"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">[('profile_id.user_id', '=', user.id)]</field>
+    </record>
+    <record id="spoken_language_rule_system" model="ir.rule">
+        <field name="name">All profile languages for administrators</field>
+        <field name="model_id" ref="model_job_finder_spoken_language"/>
+        <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
     </record>
 </odoo>

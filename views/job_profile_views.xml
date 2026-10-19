@@ -7,46 +7,153 @@
             <form string="My Profile">
                 <header>
                     <button name="action_parse_cv" type="object" string="Analyze CV"
-                            class="oe_highlight" invisible="not cv_file"/>
+                            class="oe_highlight" invisible="not cv_file"
+                            confirm="Analyzing the CV replaces the entries of every section it finds. Continue?"/>
                     <button name="%(action_report_job_profile)d" type="action"
                             string="Download complete CV"/>
                 </header>
                 <sheet>
-                    <group string="Contact details" name="contact_details">
-                        <group string="Professional identity" name="professional_identity">
-                            <field name="full_name"/>
-                            <field name="headline" placeholder="Your role or professional headline"/>
-                            <field name="location"/>
-                        </group>
+                    <field name="photo" widget="image" class="oe_avatar" options="{'preview_image': 'photo'}"/>
+                    <div class="oe_title" name="identity">
+                        <h1><field name="full_name" placeholder="Your full name"/></h1>
+                        <h3><field name="headline" placeholder="Your role or professional headline"/></h3>
+                        <div class="d-flex align-items-center gap-2" groups="base.group_system">
+                            <field name="is_published_as_portfolio" widget="boolean_toggle" nolabel="1"/>
+                            <label for="is_published_as_portfolio"/>
+                        </div>
+                    </div>
+                    <group name="overview">
                         <group string="Ways to reach you" name="contact_channels">
+                            <field name="location"/>
                             <field name="email"/>
                             <field name="phone"/>
                             <field name="linkedin" placeholder="https://www.linkedin.com/in/your-profile"/>
                             <field name="website" placeholder="https://your-site.com"/>
                             <field name="github" placeholder="https://github.com/your-user"/>
                         </group>
-                    </group>
-                    <group string="CV upload" name="cv_upload">
-                        <div class="alert alert-info" role="status" name="cv_guidance" colspan="2">
-                            <strong>Start with your CV</strong>
-                            <p>Upload your PDF CV, then click Analyze CV to fill in your profile. Review the extracted details in each tab and complete any missing information.</p>
-                        </div>
-                        <field name="cv_file" filename="cv_filename"/>
-                        <field name="cv_filename" invisible="True"/>
-                        <field name="cv_parsed_date" readonly="True"/>
-                    </group>
-                    <group string="Portfolio" name="portfolio">
-                        <field name="is_published_as_portfolio" label="Publish as portfolio"/>
+                        <group string="Profile completeness" name="completeness">
+                            <field name="completeness" widget="progressbar" nolabel="1" colspan="2"/>
+                            <field name="completeness_hints" nolabel="1" colspan="2" class="text-muted"
+                                   invisible="not completeness_hints"/>
+                        </group>
                     </group>
                     <notebook>
-                        <page string="Summary"><field name="summary" placeholder="Describe your professional background and career goals."/></page>
-                        <page string="Skills"><field name="skills" placeholder="List your technical and interpersonal skills."/></page>
-                        <page string="Experience"><field name="experience" placeholder="Describe your roles, employers, dates, and achievements."/></page>
-                        <page string="Education"><field name="education" placeholder="List your degrees, institutions, and study dates."/></page>
-                        <page string="Volunteering" name="volunteering"><field name="volunteering" placeholder="Include community work, mentoring, and leadership roles."/></page>
-                        <page string="Projects" name="projects"><field name="projects" placeholder="Describe relevant projects, your contribution, and results."/></page>
-                        <page string="Trainings" name="trainings"><field name="trainings" placeholder="List courses and workshops with providers and dates."/></page>
-                        <page string="Languages"><field name="languages" placeholder="List the languages you speak and your proficiency levels."/></page>
+                        <page string="Summary" name="summary">
+                            <field name="summary" placeholder="Describe your professional background and career goals."/>
+                        </page>
+                        <page string="Experience" name="experience">
+                            <field name="experience_ids" context="{'default_profile_id': id}">
+                                <list>
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="role"/>
+                                    <field name="company"/>
+                                    <field name="location" optional="show"/>
+                                    <field name="date_start"/>
+                                    <field name="date_end"/>
+                                    <field name="is_current" optional="hide"/>
+                                    <field name="employment_type" optional="show"/>
+                                    <field name="category" optional="show"/>
+                                    <field name="project_ids" widget="many2many_tags" string="Projects" optional="show"/>
+                                    <field name="is_public" widget="boolean_toggle"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Projects" name="projects">
+                            <field name="project_ids" context="{'default_profile_id': id}">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="is_featured" widget="boolean_favorite" nolabel="1"/>
+                                    <field name="name"/>
+                                    <field name="subtitle" optional="show"/>
+                                    <field name="profile_id" column_invisible="True"/>
+                                    <field name="experience_id" optional="show"/>
+                                    <field name="category"/>
+                                    <field name="technology_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                                    <field name="description" optional="hide"/>
+                                    <field name="url" optional="hide"/>
+                                    <field name="is_public" widget="boolean_toggle"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Skills" name="skills">
+                            <field name="skill_group_ids" context="{'default_profile_id': id}">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="technology_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                                    <field name="is_public" widget="boolean_toggle"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Education" name="education">
+                            <field name="education_ids" context="{'default_profile_id': id}">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="qualification"/>
+                                    <field name="code" optional="show"/>
+                                    <field name="institution"/>
+                                    <field name="location" optional="show"/>
+                                    <field name="year_start"/>
+                                    <field name="year_end"/>
+                                    <field name="status"/>
+                                    <field name="is_public" widget="boolean_toggle"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Trainings" name="trainings">
+                            <field name="training_ids" context="{'default_profile_id': id}">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="issuer"/>
+                                    <field name="year"/>
+                                    <field name="status"/>
+                                    <field name="is_public" widget="boolean_toggle"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Volunteering" name="volunteering">
+                            <field name="volunteering_ids" context="{'default_profile_id': id}">
+                                <list>
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="title"/>
+                                    <field name="organisation"/>
+                                    <field name="location" optional="show"/>
+                                    <field name="period"/>
+                                    <field name="is_public" widget="boolean_toggle"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Languages" name="languages">
+                            <field name="spoken_language_ids" context="{'default_profile_id': id}">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="level"/>
+                                    <field name="is_public" widget="boolean_toggle"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="CV import" name="cv_import">
+                            <group name="cv_upload">
+                                <div class="alert alert-info" role="status" name="cv_guidance" colspan="2">
+                                    <strong>Start with your CV</strong>
+                                    <p>Upload your PDF CV, then click Analyze CV to fill in your profile. Review the imported entries in each tab and complete any missing information.</p>
+                                </div>
+                                <field name="cv_file" filename="cv_filename"/>
+                                <field name="cv_filename" invisible="True"/>
+                                <field name="cv_parsed_date" readonly="True"/>
+                            </group>
+                            <group string="Imported text" name="imported_text">
+                                <field name="experience"/>
+                                <field name="projects"/>
+                                <field name="skills"/>
+                                <field name="education"/>
+                                <field name="trainings"/>
+                                <field name="volunteering"/>
+                                <field name="languages"/>
+                            </group>
+                        </page>
                     </notebook>
                 </sheet>
             </form>
@@ -60,6 +167,7 @@
                 <field name="full_name"/>
                 <field name="headline"/>
                 <field name="email"/>
+                <field name="completeness" widget="progressbar"/>
             </list>
         </field>
     </record>

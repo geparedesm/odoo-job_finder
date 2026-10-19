@@ -31,12 +31,14 @@ class TestJobProfile(unittest.TestCase):
         package.__path__ = [str(ROOT / "models")]
         fields = SimpleNamespace(
             Char=Mock(), Text=Mock(), Binary=Mock(), Many2one=Mock(), Boolean=Mock(),
+            Image=Mock(), One2many=Mock(), Integer=Mock(),
             Datetime=Mock(now=Mock(return_value="2026-10-02 12:00:00")),
         )
         odoo = ModuleType("odoo")
         odoo.fields = fields
-        odoo.api = SimpleNamespace(constrains=lambda *names: lambda method: method)
+        odoo.api = SimpleNamespace(constrains=lambda *names: lambda method: method, depends=lambda *names: lambda method: method)
         odoo.models = SimpleNamespace(Model=object, Constraint=lambda *args: None)
+        odoo.Command = SimpleNamespace(create=Mock(), set=Mock(), clear=Mock())
         exceptions = ModuleType("odoo.exceptions")
         exceptions.UserError = UserError
         exceptions.ValidationError = ValidationError
@@ -52,7 +54,7 @@ class TestJobProfile(unittest.TestCase):
         self.module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(self.module)
         self.profile = SimpleNamespace(
-            cv_file=base64.b64encode(b"PDF bytes"), write=Mock(),
+            cv_file=base64.b64encode(b"PDF bytes"), write=Mock(), _set_structured_sections=Mock(),
         )
         self.reader = Mock(return_value=SimpleNamespace(pages=[]))
         self.pdf = patch.dict(sys.modules, {
@@ -112,7 +114,7 @@ class TestJobProfile(unittest.TestCase):
 
     def test_recordset_and_missing_upload(self):
         empty = SimpleNamespace(cv_file=False, write=Mock())
-        other = SimpleNamespace(cv_file=self.profile.cv_file, write=Mock())
+        other = SimpleNamespace(cv_file=self.profile.cv_file, write=Mock(), _set_structured_sections=Mock())
         self.run_action([self.profile, empty, other])
         self.profile.write.assert_called_once()
         other.write.assert_called_once()

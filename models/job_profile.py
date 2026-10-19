@@ -3,9 +3,10 @@
 import base64
 from io import BytesIO
 
-from odoo import api, fields, models
+from odoo import Command, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
+from . import cv_structure
 from .cv_parser import parse_cv_text
 from .portfolio_content import parse_entries, parse_expertise, safe_url, split_items
 
@@ -28,27 +29,35 @@ class JobProfile(models.Model):
         default=lambda self: self.env.user, ondelete="cascade",
     )
     full_name = fields.Char(string="Full name")
-    headline = fields.Char(string="Headline")
+    headline = fields.Char(string="Headline", translate=True)
+    photo = fields.Image(string="Photo", max_width=1024, max_height=1024)
     email = fields.Char(string="Email")
     phone = fields.Char(string="Phone")
-    location = fields.Char(string="Location")
+    location = fields.Char(string="Location", translate=True)
     linkedin = fields.Char(string="LinkedIn")
     website = fields.Char(string="Website")
     github = fields.Char(string="GitHub")
-    summary = fields.Text(string="Summary")
-    skills = fields.Text(string="Skills")
-    experience = fields.Text(string="Experience")
-    education = fields.Text(string="Education")
-    languages = fields.Text(string="Languages")
-    volunteering = fields.Text(
-        string="Volunteering", help="Leadership and volunteering experience from the CV.",
-    )
-    projects = fields.Text(
-        string="Projects", help="Academic research and projects from the CV.",
-    )
-    trainings = fields.Text(
-        string="Trainings", help="Training and credentials from the CV.",
-    )
+    summary = fields.Text(string="Summary", translate=True)
+
+    experience_ids = fields.One2many("job_finder.experience", "profile_id", string="Experience")
+    project_ids = fields.One2many("job_finder.project", "profile_id", string="Projects")
+    skill_group_ids = fields.One2many("job_finder.skill_group", "profile_id", string="Skills")
+    education_ids = fields.One2many("job_finder.education", "profile_id", string="Education")
+    training_ids = fields.One2many("job_finder.training", "profile_id", string="Trainings")
+    volunteering_ids = fields.One2many("job_finder.volunteering", "profile_id", string="Volunteering")
+    spoken_language_ids = fields.One2many("job_finder.spoken_language", "profile_id", string="Languages")
+    completeness = fields.Integer(string="Completeness", compute="_compute_completeness")
+    completeness_hints = fields.Text(string="Missing information", compute="_compute_completeness")
+
+    # The CV sections as extracted text. The structured records above are built from them; they are kept read-only
+    # as the source of the last import.
+    skills = fields.Text(string="Skills (imported text)", readonly=True)
+    experience = fields.Text(string="Experience (imported text)", readonly=True)
+    education = fields.Text(string="Education (imported text)", readonly=True)
+    languages = fields.Text(string="Languages (imported text)", readonly=True)
+    volunteering = fields.Text(string="Volunteering (imported text)", readonly=True)
+    projects = fields.Text(string="Projects (imported text)", readonly=True)
+    trainings = fields.Text(string="Trainings (imported text)", readonly=True)
     cv_file = fields.Binary(string="CV (PDF)")
     cv_filename = fields.Char(string="File name")
     cv_raw_text = fields.Text(string="Extracted CV text", readonly=True)
@@ -69,6 +78,94 @@ class JobProfile(models.Model):
             )
             if count > 0:
                 raise ValidationError(self.env._("Only one profile can be published as the portfolio."))
+
+    @api.depends(
+        "full_name", "headline", "summary", "email", "photo", "experience_ids.date_start",
+        "experience_ids.is_current", "experience_ids.date_end", "skill_group_ids", "spoken_language_ids.level",
+        "education_ids",
+    )
+    def _compute_completeness(self):
+        for profile in self:
+            checks = [
+                (bool(profile.full_name), self.env._("Add your full name.")),
+                (bool(profile.headline), self.env._("Add a headline.")),
+                (bool(profile.summary), self.env._("Write a summary.")),
+                (bool(profile.email), self.env._("Add an email address.")),
+                (bool(profile.photo), self.env._("Add a photo.")),
+                (bool(profile.experience_ids), self.env._("Add at least one role.")),
+                (all(e.date_start and (e.date_end or e.is_current) for e in profile.experience_ids),
+                 self.env._("Complete the dates of every role.")),
+                (bool(profile.skill_group_ids), self.env._("Add your skills.")),
+                (bool(profile.spoken_language_ids) and all(lang.level for lang in profile.spoken_language_ids),
+                 self.env._("Add your languages with their level.")),
+                (bool(profile.education_ids), self.env._("Add your education.")),
+            ]
+            profile.completeness = round(100 * sum(ok for ok, _hint in checks) / len(checks))
+            profile.completeness_hints = "\n".join(hint for ok, hint in checks if not ok)
+
+    def _set_structured_sections(self, sections):
+        """Replace the profile's records with those parsed from CV section texts.
+
+        `sections` maps the text fields (experience, projects, skills, education, trainings, volunteering,
+        languages) to their text. A section that is missing or empty keeps its existing records.
+        """
+        self.ensure_one()
+        Technology = self.env["job_finder.technology"]
+        commands = {}
+        roles = []
+        if sections.get("experience"):
+            roles += cv_structure.parse_roles(sections["experience"], "work")
+        if sections.get("projects"):
+            roles += cv_structure.parse_roles(sections["projects"], "research")
+        if roles:
+            categories = {role["category"] for role in roles}
+            self.experience_ids.filtered(lambda e: e.category in categories).unlink()
+            self.project_ids.filtered(lambda p: p.category in categories).unlink()
+            for sequence, role in enumerate(roles, start=1):
+                self.env["job_finder.experience"].create({
+                    "profile_id": self.id,
+                    "sequence": sequence,
+                    **{key: role[key] for key in ("role", "company", "location", "date_start", "date_end",
+                                                  "is_current", "is_year_only", "employment_type", "category",
+                                                  "description")},
+                    "highlights": "\n".join(role["highlights"]),
+                    "project_ids": [Command.create({
+                        "profile_id": self.id,
+                        "sequence": index,
+                        "name": project["name"],
+                        "subtitle": project["subtitle"],
+                        "description": project["description"],
+                        "category": project["category"],
+                        "is_featured": project["category"] == "work",
+                        "technology_ids": [Command.set(Technology._find_or_create(project["technologies"]).ids)],
+                    }) for index, project in enumerate(role["projects"], start=1)],
+                })
+        if sections.get("skills"):
+            commands["skill_group_ids"] = [Command.clear()] + [Command.create({
+                "sequence": sequence, "name": group["name"],
+                "technology_ids": [Command.set(Technology._find_or_create(group["technologies"]).ids)],
+            }) for sequence, group in enumerate(cv_structure.parse_skill_groups(sections["skills"]), start=1)]
+        if sections.get("education"):
+            commands["education_ids"] = [Command.clear()] + [
+                Command.create({"sequence": sequence, **entry})
+                for sequence, entry in enumerate(cv_structure.parse_education(sections["education"]), start=1)]
+        if sections.get("trainings"):
+            commands["training_ids"] = [Command.clear()] + [
+                Command.create({"sequence": sequence, **entry})
+                for sequence, entry in enumerate(cv_structure.parse_trainings(sections["trainings"]), start=1)]
+        if sections.get("volunteering"):
+            commands["volunteering_ids"] = [Command.clear()] + [Command.create({
+                "sequence": sequence,
+                **{key: entry[key] for key in ("title", "organisation", "location", "period")},
+                "highlights": "\n".join(entry["highlights"]),
+                "recognitions": "\n".join(entry["recognitions"]),
+            }) for sequence, entry in enumerate(cv_structure.parse_volunteering(sections["volunteering"]), start=1)]
+        if sections.get("languages"):
+            commands["spoken_language_ids"] = [Command.clear()] + [
+                Command.create({"sequence": sequence, **entry})
+                for sequence, entry in enumerate(cv_structure.parse_spoken_languages(sections["languages"]), start=1)]
+        if commands:
+            self.write(commands)
 
     def action_open_my_profile(self):
         profile = self.search([("user_id", "=", self.env.uid)], limit=1)
@@ -136,3 +233,4 @@ class JobProfile(models.Model):
                 cv_raw_text=text, cv_parsed_date=fields.Datetime.now(),
             )
             profile.write(values)
+            profile._set_structured_sections(parsed)

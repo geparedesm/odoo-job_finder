@@ -29,13 +29,32 @@ class TestJobProfileReport(TransactionCase):
             "email": "candidate@example.com", "phone": "+34 600 111 222",
             "location": "Madrid", "linkedin": "https://linkedin.com/in/candidate",
             "website": "https://candidate.com", "github": "https://github.com/candidate",
-            "summary": "Updated professional summary", "skills": "Python\nSQL",
-            "experience": "Industry experience", "education": "Engineering degree",
-            "volunteering": "Community mentoring", "projects": "Research prototype",
-            "trainings": "Advanced workshop",
-            "languages": "English and Spanish",
+            "summary": "Updated professional summary",
         }
         cls.profile = cls.env["job.profile"].with_user(cls.user).create(cls.values)
+        python = cls.env["job_finder.technology"].create({"name": "Python"})
+        cls.role = cls.env["job_finder.experience"].with_user(cls.user).create({
+            "profile_id": cls.profile.id, "role": "Data Engineer", "company": "Acme",
+            "location": "Madrid", "employment_type": "full_time",
+            "date_start": "2021-12-01", "date_end": "2025-01-01",
+            "highlights": "Cut costs by 30%\nLed a team of four",
+            "project_ids": [(0, 0, {"profile_id": cls.profile.id, "name": "Research prototype",
+                                    "subtitle": "Internal lab", "technology_ids": [(6, 0, python.ids)],
+                                    "description": "Built a prototype."})],
+        })
+        cls.env["job_finder.skill_group"].with_user(cls.user).create({
+            "profile_id": cls.profile.id, "name": "Languages", "technology_ids": [(6, 0, python.ids)]})
+        cls.env["job_finder.education"].with_user(cls.user).create({
+            "profile_id": cls.profile.id, "qualification": "Engineering degree", "institution": "UTN",
+            "year_start": 2014, "year_end": 2019, "status": "graduated"})
+        cls.env["job_finder.training"].with_user(cls.user).create({
+            "profile_id": cls.profile.id, "name": "Advanced workshop", "issuer": "Cisco", "year": 2016,
+            "status": "not_renewed"})
+        cls.env["job_finder.volunteering"].with_user(cls.user).create({
+            "profile_id": cls.profile.id, "title": "Community mentoring", "organisation": "IEEE",
+            "recognitions": "President, RAS chapter"})
+        cls.env["job_finder.spoken_language"].with_user(cls.user).create({
+            "profile_id": cls.profile.id, "name": "English", "level": "b2"})
         cls.report = cls.env.ref("job_finder.action_report_job_profile")
 
     def render_html(self, user, ids=None):
@@ -63,24 +82,32 @@ class TestJobProfileReport(TransactionCase):
         self.assertEqual(action["context"]["active_ids"], self.profile.ids)
 
     def test_all_professional_fields_and_latest_edits_are_rendered(self):
-        html = self.render_html(self.user)
-        text = "".join(etree.HTML(html).itertext())
+        text = "".join(etree.HTML(self.render_html(self.user)).itertext())
         for value in self.values.values():
             self.assertIn(value, text)
         self.assertIn("Website: https://candidate.com", text)
-        self.assertIn("GitHub: https://github.com/candidate", text)
-        self.profile.write({"projects": "New project after parsing <script>"})
+        for expected in ("Data Engineer", "Acme", "Dec 2021 – Jan 2025", "Full-time", "Cut costs by 30%",
+                         "Led a team of four", "Research prototype", "Internal lab", "Technologies / methods: Python",
+                         "Languages: Python", "Engineering degree", "2014 – 2019", "Graduated",
+                         "Advanced workshop", "Not renewed", "Community mentoring", "President, RAS chapter",
+                         "English", "B2 · Upper intermediate"):
+            self.assertIn(expected, text)
+        self.role.project_ids.write({"name": "New project after parsing <script>"})
         html = self.render_html(self.user)
         self.assertIn("New project after parsing &lt;script&gt;", html)
         self.assertNotIn("Research prototype", html)
-        self.assertIn("white-space: pre-wrap", html)
+
+    def test_hidden_entries_stay_in_the_complete_cv(self):
+        self.role.is_public = False
+        self.assertIn("Data Engineer", self.render_html(self.user))
 
     def test_empty_sections_and_no_upload(self):
         self.assertFalse(self.profile.cv_file)
-        self.profile.write({"trainings": False, "projects": False})
+        self.profile.training_ids.unlink()
+        self.profile.experience_ids.unlink()
         html = self.render_html(self.user)
         self.assertNotIn("<h2>Trainings</h2>", html)
-        self.assertNotIn("<h2>Projects</h2>", html)
+        self.assertNotIn("<h2>Experience</h2>", html)
         self.assertNotIn("False", html)
         self.assertIn("Report Candidate", html)
 

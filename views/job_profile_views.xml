@@ -4,7 +4,7 @@
         <field name="name">job.profile.form</field>
         <field name="model">job.profile</field>
         <field name="arch" type="xml">
-            <form string="Mi Perfil">
+            <form string="My Profile">
                 <header>
                     <button name="action_parse_cv" type="object" string="Analyze CV"
                             class="oe_highlight" invisible="not cv_file"/>
@@ -39,14 +39,14 @@
                         <field name="is_published_as_portfolio" label="Publish as portfolio"/>
                     </group>
                     <notebook>
-                        <page string="Resumen"><field name="summary" placeholder="Describe your professional background and career goals."/></page>
-                        <page string="Habilidades"><field name="skills" placeholder="List your technical and interpersonal skills."/></page>
-                        <page string="Experiencia"><field name="experience" placeholder="Describe your roles, employers, dates, and achievements."/></page>
-                        <page string="Educación"><field name="education" placeholder="List your degrees, institutions, and study dates."/></page>
+                        <page string="Summary"><field name="summary" placeholder="Describe your professional background and career goals."/></page>
+                        <page string="Skills"><field name="skills" placeholder="List your technical and interpersonal skills."/></page>
+                        <page string="Experience"><field name="experience" placeholder="Describe your roles, employers, dates, and achievements."/></page>
+                        <page string="Education"><field name="education" placeholder="List your degrees, institutions, and study dates."/></page>
                         <page string="Volunteering" name="volunteering"><field name="volunteering" placeholder="Include community work, mentoring, and leadership roles."/></page>
                         <page string="Projects" name="projects"><field name="projects" placeholder="Describe relevant projects, your contribution, and results."/></page>
                         <page string="Trainings" name="trainings"><field name="trainings" placeholder="List courses and workshops with providers and dates."/></page>
-                        <page string="Idiomas"><field name="languages" placeholder="List the languages you speak and your proficiency levels."/></page>
+                        <page string="Languages"><field name="languages" placeholder="List the languages you speak and your proficiency levels."/></page>
                     </notebook>
                 </sheet>
             </form>
@@ -56,7 +56,7 @@
         <field name="name">job.profile.list</field>
         <field name="model">job.profile</field>
         <field name="arch" type="xml">
-            <list string="Perfiles">
+            <list string="Profiles">
                 <field name="full_name"/>
                 <field name="headline"/>
                 <field name="email"/>

@@ -12,7 +12,7 @@ from .portfolio_content import parse_entries, parse_expertise, safe_url, split_i
 
 class JobProfile(models.Model):
     _name = "job.profile"
-    _description = "Perfil profesional"
+    _description = "Professional profile"
 
     # Odoo 19 declares table constraints as models.Constraint; _sql_constraints is no longer applied.
     _user_uniq = models.Constraint("UNIQUE (user_id)", "A profile already exists for this user.")
@@ -24,22 +24,22 @@ class JobProfile(models.Model):
     )
 
     user_id = fields.Many2one(
-        "res.users", string="Usuario", required=True,
+        "res.users", string="User", required=True,
         default=lambda self: self.env.user, ondelete="cascade",
     )
-    full_name = fields.Char(string="Nombre completo")
-    headline = fields.Char(string="Título profesional")
-    email = fields.Char(string="Correo electrónico")
-    phone = fields.Char(string="Teléfono")
-    location = fields.Char(string="Ubicación")
+    full_name = fields.Char(string="Full name")
+    headline = fields.Char(string="Headline")
+    email = fields.Char(string="Email")
+    phone = fields.Char(string="Phone")
+    location = fields.Char(string="Location")
     linkedin = fields.Char(string="LinkedIn")
     website = fields.Char(string="Website")
     github = fields.Char(string="GitHub")
-    summary = fields.Text(string="Resumen")
-    skills = fields.Text(string="Habilidades")
-    experience = fields.Text(string="Experiencia")
-    education = fields.Text(string="Educación")
-    languages = fields.Text(string="Idiomas")
+    summary = fields.Text(string="Summary")
+    skills = fields.Text(string="Skills")
+    experience = fields.Text(string="Experience")
+    education = fields.Text(string="Education")
+    languages = fields.Text(string="Languages")
     volunteering = fields.Text(
         string="Volunteering", help="Leadership and volunteering experience from the CV.",
     )
@@ -49,10 +49,10 @@ class JobProfile(models.Model):
     trainings = fields.Text(
         string="Trainings", help="Training and credentials from the CV.",
     )
-    cv_file = fields.Binary(string="CV en PDF")
-    cv_filename = fields.Char(string="Nombre del archivo")
-    cv_raw_text = fields.Text(string="Texto extraído del CV", readonly=True)
-    cv_parsed_date = fields.Datetime(string="Fecha de análisis", readonly=True)
+    cv_file = fields.Binary(string="CV (PDF)")
+    cv_filename = fields.Char(string="File name")
+    cv_raw_text = fields.Text(string="Extracted CV text", readonly=True)
+    cv_parsed_date = fields.Datetime(string="Analysis date", readonly=True)
     is_published_as_portfolio = fields.Boolean(
         string="Publish as portfolio", copy=False, groups="base.group_system",
     )
@@ -105,7 +105,7 @@ class JobProfile(models.Model):
         try:
             import pypdf
         except ImportError as exc:
-            raise UserError("Instale la librería pypdf para analizar el CV.") from exc
+            raise UserError(self.env._("Install the pypdf library to analyze the CV.")) from exc
 
         profile_fields = (
             "full_name", "headline", "email", "phone", "location", "linkedin", "website", "github",

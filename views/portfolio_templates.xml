@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <template id="portfolio_page" name="Portfolio Page">
+    <t t-call="web.layout">
+      <t t-set="title"><t t-if="is_published"><t t-out="profile.get('name', 'Portfolio')"/> – Portfolio</t><t t-else="">Portfolio</t></t>
+      <t t-call-assets="job_finder.portfolio_assets"/>
+      <div class="portfolio">
+        <header class="portfolio-header">
+          <div class="portfolio-nav">
+            <a href="/" class="portfolio-wordmark" aria-label="Go to portfolio home">
+              GP / <span t-if="is_published" t-out="profile.get('name', 'Developer')"/>
+              <span t-else="">Developer</span>
+            </a>
+            <nav class="portfolio-nav-links">
+              <a href="#home" class="nav-link">Home</a>
+              <t t-if="is_published">
+                <t t-if="profile.get('projects')">
+                  <a href="#projects" class="nav-link">Work</a>
+                </t>
+                <t t-if="profile.get('skills')">
+                  <a href="#skills" class="nav-link">Skills</a>
+                </t>
+                <t t-if="profile.get('experience') or profile.get('education')">
+                  <a href="#experience" class="nav-link">Experience</a>
+                </t>
+                <t t-if="profile.get('summary')">
+                  <a href="#about" class="nav-link">About</a>
+                </t>
+                <t t-if="profile.get('email') or profile.get('linkedin') or profile.get('github') or profile.get('website') or profile.get('location')">
+                  <a href="#contact" class="nav-link">Contact</a>
+                </t>
+              </t>
+            </nav>
+            <div class="portfolio-nav-actions">
+              <div class="lang-selector">
+                <a t-attf-href="/?lang=en_US" t-att-aria-current="'page' if current_lang == 'en_US' else None" class="lang-link">EN</a>
+                <span class="lang-separator">|</span>
+                <a t-attf-href="/?lang=es_ES" t-att-aria-current="'page' if current_lang == 'es_ES' else None" class="lang-link">ES</a>
+              </div>
+              <t t-if="not request.session.uid">
+                <a href="/web/login?redirect=/" class="btn-login">Login</a>
+              </t>
+              <t t-else="">
+                <a href="/odoo" class="btn-open-app">Open app</a>
+              </t>
+            </div>
+          </div>
+        </header>
+
+        <main class="portfolio-main">
+          <t t-if="is_published">
+            <!-- Hero Section -->
+            <section id="home" class="portfolio-hero">
+              <div class="hero-content">
+                <p class="hero-kicker">Hello, I'm a</p>
+                <h1 class="hero-title" t-out="profile.get('headline', 'Developer')"/>
+                <t t-if="profile.get('location')">
+                  <p class="hero-location" t-out="profile.get('location')"/>
+                </t>
+                <div class="hero-actions">
+                  <t t-if="profile.get('projects')">
+                    <a href="#projects" class="btn-discover">Discover the work</a>
+                  </t>
+                  <t t-if="can_download_cv">
+                    <a href="/portfolio/cv" class="btn-download-cv">Download CV</a>
+                  </t>
+                </div>
+              </div>
+              <div class="hero-visual">
+                <svg viewBox="0 0 1000 600" class="hero-illustration" role="img" aria-label="Laptop, circuit board and phone joined by light lines">
+                  <!-- Hardware illustration (laptop, circuit board, phone) drawn with the pf-* design tokens -->
+                  <defs>
+                    <linearGradient id="pf-line-light" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" style="stop-color:#D9D3EF;stop-opacity:1" />
+                      <stop offset="100%" style="stop-color:#CDCDD5;stop-opacity:1" />
+                    </linearGradient>
+                    <linearGradient id="pf-line-lilac" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" style="stop-color:#D9D3EF;stop-opacity:1" />
+                      <stop offset="100%" style="stop-color:#606169;stop-opacity:1" />
+                    </linearGradient>
+                  </defs>
+                  <!-- Background -->
+                  <rect width="1000" height="600" fill="#070B12"/>
+                  <!-- Laptop -->
+                  <rect x="50" y="200" width="350" height="250" rx="8" fill="#212325" stroke="url(#pf-line-light)" stroke-width="3"/>
+                  <rect x="60" y="210" width="330" height="180" fill="#070B12"/>
+                  <rect x="50" y="460" width="350" height="30" fill="#606169"/>
+                  <!-- Circuit board -->
+                  <g transform="translate(500, 250)">
+                    <rect x="0" y="0" width="280" height="280" fill="#212325" stroke="url(#pf-line-lilac)" stroke-width="3" rx="4"/>
+                    <!-- Circuit pattern -->
+                    <circle cx="70" cy="70" r="12" fill="#CDCDD5"/>
+                    <circle cx="140" cy="70" r="12" fill="#CDCDD5"/>
+                    <circle cx="210" cy="70" r="12" fill="#CDCDD5"/>
+                    <circle cx="70" cy="140" r="12" fill="#CDCDD5"/>
+                    <circle cx="140" cy="140" r="15" fill="#D9D3EF"/>
+                    <circle cx="210" cy="140" r="12" fill="#CDCDD5"/>
+                    <circle cx="70" cy="210" r="12" fill="#CDCDD5"/>
+                    <circle cx="140" cy="210" r="12" fill="#CDCDD5"/>
+                    <circle cx="210" cy="210" r="12" fill="#CDCDD5"/>
+                    <line x1="70" y1="70" x2="140" y2="70" stroke="#CDCDD5" stroke-width="1" opacity="0.6"/>
+                    <line x1="140" y1="70" x2="210" y2="70" stroke="#CDCDD5" stroke-width="1" opacity="0.6"/>
+                    <line x1="70" y1="70" x2="70" y2="140" stroke="#CDCDD5" stroke-width="1" opacity="0.6"/>
+                    <line x1="140" y1="70" x2="140" y2="140" stroke="#D9D3EF" stroke-width="1" opacity="0.6"/>
+                  </g>
+                  <!-- Mobile device -->
+                  <rect x="800" y="220" width="150" height="240" rx="12" fill="#212325" stroke="url(#pf-line-light)" stroke-width="3"/>
+                  <rect x="810" y="230" width="130" height="160" fill="#070B12"/>
+                  <circle cx="875" cy="408" r="6" fill="#606169"/>
+                  <!-- Neon connecting lines -->
+                  <path d="M 400 380 Q 450 320, 500 250" stroke="url(#pf-line-light)" stroke-width="4" fill="none" stroke-linecap="round"/>
+                  <path d="M 780 280 Q 800 300, 820 320" stroke="url(#pf-line-lilac)" stroke-width="4" fill="none" stroke-linecap="round"/>
+                  <path d="M 500 530 Q 650 550, 800 460" stroke="url(#pf-line-light)" stroke-width="4" fill="none" stroke-linecap="round"/>
+                </svg>
+              </div>
+            </section>
+
+            <!-- Skills Section -->
+            <t t-if="profile.get('skills')">
+              <section id="skills" class="portfolio-skills">
+                <t t-if="profile.get('expertise')">
+                  <h2>Expertise</h2>
+                  <div class="expertise-grid">
+                    <t t-foreach="profile.get('expertise')" t-as="area">
+                      <article class="expertise-card">
+                        <h3 class="expertise-title" t-out="area['title']"/>
+                        <ul class="expertise-items">
+                          <t t-foreach="area['items']" t-as="item">
+                            <li class="skill-chip" t-out="item"/>
+                          </t>
+                        </ul>
+                      </article>
+                    </t>
+                  </div>
+                </t>
+                <t t-else="">
+                  <h2>Skills</h2>
+                  <div class="skills-grid">
+                    <t t-foreach="profile.get('skills')" t-as="skill">
+                      <div class="skill-chip" t-out="skill"/>
+                    </t>
+                  </div>
+                </t>
+              </section>
+            </t>
+
+            <!-- Projects Section -->
+            <t t-if="profile.get('projects')">
+              <section id="projects" class="portfolio-projects">
+                <h2>Projects</h2>
+                <div class="projects-grid">
+                  <t t-foreach="profile.get('projects')" t-as="project">
+                    <div class="project-card">
+                      <h3 t-out="project.get('title', '')"/>
+                      <t t-if="project.get('subtitle')">
+                        <p class="project-meta" t-out="project.get('subtitle')"/>
+                      </t>
+                      <t t-if="project.get('details')">
+                        <p class="project-description" t-out="project.get('details')"/>
+                      </t>
+                    </div>
+                  </t>
+                </div>
+              </section>
+            </t>
+
+            <!-- About Section -->
+            <t t-if="profile.get('summary')">
+              <section id="about" class="portfolio-about">
+                <h2>About</h2>
+                <div class="about-content">
+                  <p t-out="profile.get('summary')"/>
+                </div>
+              </section>
+            </t>
+
+            <!-- Experience Section -->
+            <t t-if="profile.get('experience')">
+              <section id="experience" class="portfolio-experience">
+                <h2>Experience</h2>
+                <div class="timeline">
+                  <t t-foreach="profile.get('experience')" t-as="entry">
+                    <div class="timeline-entry">
+                      <h3 t-out="entry.get('title', '')"/>
+                      <t t-if="entry.get('subtitle')">
+                        <p class="entry-meta" t-out="entry.get('subtitle')"/>
+                      </t>
+                      <t t-if="entry.get('details')">
+                        <p class="entry-description" t-out="entry.get('details')"/>
+                      </t>
+                    </div>
+                  </t>
+                </div>
+              </section>
+            </t>
+
+            <!-- Education Section -->
+            <t t-if="profile.get('education')">
+              <section class="portfolio-education">
+                <h2>Education</h2>
+                <div class="timeline">
+                  <t t-foreach="profile.get('education')" t-as="entry">
+                    <div class="timeline-entry">
+                      <h3 t-out="entry.get('title', '')"/>
+                      <t t-if="entry.get('subtitle')">
+                        <p class="entry-meta" t-out="entry.get('subtitle')"/>
+                      </t>
+                      <t t-if="entry.get('details')">
+                        <p class="entry-description" t-out="entry.get('details')"/>
+                      </t>
+                    </div>
+                  </t>
+                </div>
+              </section>
+            </t>
+
+            <!-- Languages Section -->
+            <t t-if="profile.get('languages')">
+              <section class="portfolio-languages">
+                <h2>Languages</h2>
+                <ul class="languages-list">
+                  <t t-foreach="profile.get('languages')" t-as="lang">
+                    <li t-out="lang"/>
+                  </t>
+                </ul>
+              </section>
+            </t>
+
+            <!-- Trainings Section -->
+            <t t-if="profile.get('trainings')">
+              <section class="portfolio-trainings">
+                <h2>Trainings &amp; Credentials</h2>
+                <ul class="trainings-list">
+                  <t t-foreach="profile.get('trainings')" t-as="training">
+                    <li t-out="training"/>
+                  </t>
+                </ul>
+              </section>
+            </t>
+
+            <!-- Volunteering Section -->
+            <t t-if="profile.get('volunteering')">
+              <section class="portfolio-volunteering">
+                <h2>Volunteering</h2>
+                <ul class="volunteering-list">
+                  <t t-foreach="profile.get('volunteering')" t-as="vol">
+                    <li t-out="vol"/>
+                  </t>
+                </ul>
+              </section>
+            </t>
+
+            <!-- Contact Section -->
+            <t t-if="profile.get('email') or profile.get('linkedin') or profile.get('github') or profile.get('website') or profile.get('location')">
+              <section id="contact" class="portfolio-contact">
+                <h2>Let's build something that works</h2>
+                <t t-if="profile.get('location')">
+                  <p class="contact-location" t-out="profile.get('location')"/>
+                </t>
+                <div class="contact-links">
+                  <t t-if="profile.get('email')">
+                    <a t-attf-href="mailto:#{profile.get('email')}" class="contact-link" t-out="profile.get('email')"/>
+                  </t>
+                  <t t-if="profile.get('linkedin')">
+                    <a t-attf-href="#{profile.get('linkedin')}" target="_blank" rel="noopener" class="contact-link">LinkedIn</a>
+                  </t>
+                  <t t-if="profile.get('github')">
+                    <a t-attf-href="#{profile.get('github')}" target="_blank" rel="noopener" class="contact-link">GitHub</a>
+                  </t>
+                  <t t-if="profile.get('website')">
+                    <a t-attf-href="#{profile.get('website')}" target="_blank" rel="noopener" class="contact-link">Website</a>
+                  </t>
+                </div>
+              </section>
+            </t>
+
+          </t>
+          <t t-else="">
+            <!-- No portfolio published -->
+            <section class="portfolio-empty">
+              <h1>Portfolio Coming Soon</h1>
+              <p>Check back soon for an exciting portfolio.</p>
+              <t t-if="not request.session.uid">
+                <a href="/web/login?redirect=/" class="btn-login">Login</a>
+              </t>
+            </section>
+          </t>
+        </main>
+
+        <footer class="portfolio-footer">
+          <p>© <span t-if="is_published" t-out="profile.get('name', 'Developer')"/><span t-else="">Developer</span>. All rights reserved.</p>
+        </footer>
+      </div>
+    </t>
+  </template>
+</odoo>

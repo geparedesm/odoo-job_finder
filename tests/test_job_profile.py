@@ -16,19 +16,30 @@ class UserError(Exception):
     pass
 
 
+class Records(list):
+    """A recordset stand-in: iterable profiles with an env providing translation."""
+    env = SimpleNamespace(_=lambda text: text)
+
+
+class ValidationError(Exception):
+    pass
+
+
 class TestJobProfile(unittest.TestCase):
     def setUp(self):
         package = ModuleType("profile_test_models")
         package.__path__ = [str(ROOT / "models")]
         fields = SimpleNamespace(
-            Char=Mock(), Text=Mock(), Binary=Mock(), Many2one=Mock(),
+            Char=Mock(), Text=Mock(), Binary=Mock(), Many2one=Mock(), Boolean=Mock(),
             Datetime=Mock(now=Mock(return_value="2026-10-02 12:00:00")),
         )
         odoo = ModuleType("odoo")
         odoo.fields = fields
+        odoo.api = SimpleNamespace(constrains=lambda *names: lambda method: method)
         odoo.models = SimpleNamespace(Model=object, Constraint=lambda *args: None)
         exceptions = ModuleType("odoo.exceptions")
         exceptions.UserError = UserError
+        exceptions.ValidationError = ValidationError
         self.modules = patch.dict(sys.modules, {
             "profile_test_models": package, "odoo": odoo,
             "odoo.exceptions": exceptions,
@@ -52,7 +63,7 @@ class TestJobProfile(unittest.TestCase):
 
     def run_action(self, profiles=None):
         self.module.JobProfile.action_parse_cv(
-            profiles if profiles is not None else [self.profile],
+            Records(profiles if profiles is not None else [self.profile]),
         )
 
     def test_all_pages_and_whitelisted_fields(self):
@@ -93,9 +104,9 @@ class TestJobProfile(unittest.TestCase):
         self.assertEqual(values["skills"], "Python")
         self.assertEqual(values["full_name"], "Ana")
 
-    def test_missing_library_has_spanish_error(self):
+    def test_missing_library_has_translatable_error(self):
         with patch.dict(sys.modules, {"pypdf": None}):
-            with self.assertRaisesRegex(UserError, "Instale la librería pypdf"):
+            with self.assertRaisesRegex(UserError, "Install the pypdf library"):
                 self.run_action()
         self.profile.write.assert_not_called()
 

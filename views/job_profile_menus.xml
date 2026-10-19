@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <record id="action_my_profile" model="ir.actions.act_window">
-        <field name="name">Mi Perfil</field>
+        <field name="name">My Profile</field>
         <field name="res_model">job.profile</field>
         <field name="view_mode">form</field>
         <field name="view_id" ref="view_form"/>
         <field name="target">current</field>
     </record>
     <record id="action_open_my_profile" model="ir.actions.server">
-        <field name="name">Abrir mi perfil</field>
+        <field name="name">Open my profile</field>
         <field name="model_id" ref="model_job_profile"/>
         <field name="state">code</field>
         <field name="code">action = model.action_open_my_profile()</field>
     </record>
     <menuitem id="menu_root" name="Job Finder" sequence="10"/>
-    <menuitem id="menu_my_profile" name="Mi Perfil"
+    <menuitem id="menu_my_profile" name="My Profile"
               parent="menu_root" action="action_open_my_profile"
               sequence="10"/>
 </odoo>

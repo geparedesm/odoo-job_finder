@@ -20,9 +20,58 @@ Regression fixtures include the complete six-page reference PDF, its extracted
 text and exact expected values for every field. Odoo tests parse and save the real
 PDF without mocking the parser, then check preservation after empty/invalid input.
 
-## Profile form
+## Public Portfolio Page
 
-The guided form starts with contact details, followed by PDF upload instructions. The header provides the analysis and download actions.
+A published job profile is available as a public, bilingual portfolio page at `/` for configured hosts
+(default: `gp-developer.com` and `www.gp-developer.com`). Only `/` is host-gated: on other hosts it keeps
+Odoo's standard behavior. The published CV is downloaded from `/portfolio/cv`, which any internal user
+can reach on any host; anonymous visitors are sent to the login page.
+
+### Publishing a Portfolio
+
+To publish your profile as the portfolio:
+1. Complete your profile (or upload and analyze your CV).
+2. In Job Finder › My profile, check **Publish as portfolio** (admin-only field).
+3. Save the profile.
+
+Only one profile can be published at a time. Publishing another profile raises a validation error; unpublish the first one first.
+
+### Portfolio Content and Format
+
+The portfolio renders:
+- **Name and headline** in the hero section (from `full_name` and `headline`).
+- **Skills** as individual items, split by newlines, commas, or bullets.
+- **Projects** as cards, split by blank lines (first line is the title, rest is description).
+- **Experience and Education** as a timeline (first line is title, second is date/location, rest is details).
+- **Summary, Languages, Trainings, and Volunteering** as paragraphs or lists.
+- **Contact** (email, LinkedIn, GitHub, website) with links.
+
+**Formatting tips**: Use blank lines to separate project and experience entries. Each entry can have multiple lines for details.
+
+### Language Selection
+
+The portfolio includes an **EN | ES** selector (top right). Clicking a language:
+- Switches fixed page text to that language (if activated in Odoo settings).
+- Saves the choice in a cookie (`job_finder_portfolio_lang`, valid 1 year).
+- Reloading the page remembers your language choice.
+
+Invalid or unavailable languages fall back to English.
+
+### Download CV
+
+Anonymous visitors see a **Login** button. After logging in, the button becomes **Open app**; internal users also get a **Download CV** button in the hero.
+Clicking **Download CV** downloads the complete PDF CV (includes email, phone, and location). Only internal users can download; portal and other external accounts get 403 Forbidden.
+
+### Configuring Hosts
+
+The system parameter `job_finder.portfolio_hosts` controls which hosts serve the portfolio (comma-separated list). Change it in Settings › Technical › System Parameters to add or remove hosts. The default is `gp-developer.com,www.gp-developer.com`.
+
+**Note for reverse proxies**: The reverse proxy must forward the original `Host` header and enable Odoo's `proxy_mode` so that `X-Forwarded-Host` is recognized. DNS and TLS for the portfolio domain are configured outside this module.
+
+## Profile Form
+
+The guided form starts with contact details, followed by PDF upload instructions and the portfolio publishing checkbox (admin-only).
+The header provides the analysis and download actions.
 Upload your CV, then click **Analyze CV** (**Analizar CV** in Spanish). Review and
 edit the extracted content in the tabs: summary, skills, experience, education,
 volunteering, projects, trainings, and languages.

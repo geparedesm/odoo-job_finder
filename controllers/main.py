@@ -26,19 +26,14 @@ class PortfolioHome(Home):
         portfolio_hosts = [h.strip().lower() for h in param.split(",")]
 
         if host_header in portfolio_hosts:
-            # Serve the portfolio page
-            published = request.env["job.profile"].search(
+            # Serve the portfolio page for configured hosts
+            # Use sudo to search for published profile (accessible to public)
+            published = request.env["job.profile"].sudo().search(
                 [("is_portfolio_published", "=", True)], limit=1
             )
             lang = request.args.get("lang", "en_US")
             if lang not in ("en_US", "es_ES"):
                 lang = "en_US"
-
-            # Validate the language exists in the database
-            lang_record = request.env["res.lang"].search([("code", "=", lang)], limit=1)
-            if lang_record:
-                request.context = request.context.copy()
-                request.context["lang"] = lang
 
             # Render the template using QWeb
             html = request.env["ir.qweb"]._render(

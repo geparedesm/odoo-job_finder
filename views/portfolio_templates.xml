@@ -1,23 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-  <template id="portfolio_layout" name="Portfolio Layout" inherit_id="web.html_container">
-    <xpath expr="//head" position="inside">
-      <meta charset="UTF-8"/>
-      <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-      <meta name="description" t-att-content="profile.get('headline', '')"/>
-      <t t-call-assets="job_finder.assets_portfolio"/>
-    </xpath>
-  </template>
-
-  <template id="portfolio_page" name="Portfolio Page" inherit_id="web.html_container">
-    <xpath expr="//head" position="inside">
-      <meta charset="UTF-8"/>
-      <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-      <meta name="description" t-att-content="profile.get('headline', '')"/>
-      <title><t t-if="is_published"><t t-out="profile.get('name', 'Portfolio')"/> – Portfolio</t><t t-else="">Portfolio</t></title>
-      <t t-call-assets="job_finder.assets_portfolio"/>
-    </xpath>
-    <xpath expr="//body" position="inside">
+  <template id="portfolio_page" name="Portfolio Page">
+    <t t-call="web.layout">
+      <t t-set="title"><t t-if="is_published"><t t-out="profile.get('name', 'Portfolio')"/> – Portfolio</t><t t-else="">Portfolio</t></t>
       <div class="portfolio">
         <header class="portfolio-header">
           <div class="portfolio-nav">
@@ -279,6 +264,6 @@
           <p>© <span t-if="is_published" t-out="profile.get('name', 'Developer')"/><span t-else="">Developer</span>. All rights reserved.</p>
         </footer>
       </div>
-    </xpath>
+    </t>
   </template>
 </odoo>

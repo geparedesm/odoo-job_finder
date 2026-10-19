@@ -192,17 +192,25 @@ class PortfolioPageTestCase(HttpCase):
 
     def test_portfolio_page_system_parameter_change(self):
         """Changing the system parameter changes which hosts serve portfolio."""
-        # Update the parameter to exclude gp-developer.com
+        # First, verify the portfolio is being served for the current host
+        response1 = self.url_open(
+            "/",
+            headers={"Host": "gp-developer.com"},
+        )
+        self.assertIn("Systems Developer", response1.text)
+
+        # Now update the parameter to exclude gp-developer.com
         self.env["ir.config_parameter"].set_param(
             "job_finder.portfolio_hosts",
             "other-domain.com"
         )
-        response = self.url_open(
+        response2 = self.url_open(
             "/",
             headers={"Host": "gp-developer.com"},
         )
         # Should now fall back to standard behavior (not portfolio)
-        self.assertNotEqual(response.status_code, 200)
+        # The portfolio content should not be present
+        self.assertNotIn("Systems Developer", response2.text)
 
     def test_portfolio_page_javascript_url_not_rendered(self):
         """JavaScript URLs in contact fields are not rendered as links."""

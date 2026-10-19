@@ -52,13 +52,14 @@ class PortfolioProfileTestCase(TransactionCase):
             "login": "testuser",
             "email": "test@example.com",
         })
+        # Create profile for this user
         profile = self.env["job.profile"].create({
             "user_id": user.id,
             "full_name": "Regular User",
         })
         # Try to write as non-admin should raise AccessError
         with self.assertRaises(AccessError):
-            profile.sudo(user).write({"is_portfolio_published": True})
+            profile.with_user(user).write({"is_portfolio_published": True})
 
     def test_get_portfolio_values_whitelist(self):
         """_get_portfolio_values returns only whitelisted fields."""
@@ -102,8 +103,13 @@ class PortfolioProfileTestCase(TransactionCase):
 
     def test_get_portfolio_values_empty_fields(self):
         """_get_portfolio_values handles empty fields gracefully."""
+        user = self.env["res.users"].create({
+            "name": "Empty Test User",
+            "login": "emptytest",
+            "email": "empty@example.com",
+        })
         profile = self.env["job.profile"].create({
-            "user_id": self.env.user.id,
+            "user_id": user.id,
             "full_name": "Empty Profile",
         })
         values = profile._get_portfolio_values()

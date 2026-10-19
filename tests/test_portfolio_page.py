@@ -185,6 +185,18 @@ class PortfolioPageTestCase(HttpCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.headers.get("Content-Type"), "application/pdf")
 
+    def test_portfolio_cv_filename_is_sanitized(self):
+        """Quotes and line breaks in the profile name cannot break the download header."""
+        self.profile.full_name = 'Ana "QA"\r\nX-Injected: 1 / Test'
+        self.authenticate("admin", "admin")
+        response = self.url_open("/portfolio/cv")
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn("X-Injected", response.headers)
+        disposition = response.headers.get("Content-Disposition", "")
+        self.assertIn("attachment", disposition)
+        self.assertIn("filename*=UTF-8''Ana%20QA%20X-Injected%201%20Test-cv.pdf", disposition)
+        self.assertNotIn('"QA"', disposition)
+
     def test_portfolio_cv_not_found_when_nothing_published(self):
         """GET /portfolio/cv returns 404 when nothing is published."""
         self.authenticate("admin", "admin")

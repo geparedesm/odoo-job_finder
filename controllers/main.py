@@ -1,10 +1,12 @@
 """Portfolio public page and CV download."""
 
+import re
+
 from werkzeug.exceptions import NotFound
 
 from odoo import http
 from odoo.addons.web.controllers.home import Home
-from odoo.http import request
+from odoo.http import content_disposition, request
 
 from ..models.portfolio_content import normalize_host, parse_hosts
 
@@ -64,6 +66,12 @@ class PortfolioHome(Home):
             return super().index(**kw)
 
 
+def cv_filename(full_name):
+    """A download name built from the profile name without quotes, separators or control characters."""
+    name = " ".join(re.sub(r"[^\w .-]+", " ", full_name or "").split())
+    return (name or "portfolio") + "-cv.pdf"
+
+
 class PortfolioCV(http.Controller):
     """Download the published profile's complete CV PDF."""
 
@@ -85,6 +93,6 @@ class PortfolioCV(http.Controller):
             pdf_content,
             [
                 ("Content-Type", "application/pdf"),
-                ("Content-Disposition", f'attachment; filename="{published.full_name}-cv.pdf"'),
+                ("Content-Disposition", content_disposition(cv_filename(published.full_name))),
             ],
         )

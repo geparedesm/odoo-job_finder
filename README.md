@@ -23,8 +23,9 @@ PDF without mocking the parser, then check preservation after empty/invalid inpu
 ## Public Portfolio Page
 
 A published job profile is available as a public, bilingual portfolio page at `/` for configured hosts
-(default: `gp-developer.com` and `www.gp-developer.com`). The portfolio is not available via other hosts
-or paths; those keep Odoo's standard `/` behavior.
+(default: `gp-developer.com` and `www.gp-developer.com`). Only `/` is host-gated: on other hosts it keeps
+Odoo's standard behavior. The published CV is downloaded from `/portfolio/cv`, which any logged-in user
+can reach on any host; anonymous visitors are sent to the login page.
 
 ### Publishing a Portfolio
 

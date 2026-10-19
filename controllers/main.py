@@ -1,0 +1,83 @@
+"""Portfolio public page and CV download."""
+
+from werkzeug.exceptions import NotFound
+
+from odoo import http
+from odoo.addons.web.controllers.home import Home
+from odoo.http import request
+
+
+class PortfolioHome(Home):
+    """Override web's Home.index to serve the portfolio for configured hosts."""
+
+    @http.route("/", auth="none", website=False)
+    def index(self, **kw):
+        """Serve portfolio page for configured hosts, otherwise delegate to web's home."""
+        # Normalize host: lowercase, remove port
+        host_header = request.httprequest.host.lower()
+        if ":" in host_header:
+            host_header = host_header.split(":")[0]
+
+        # Read the configured portfolio hosts from system parameter
+        # Minimal sudo: reading a system parameter that controls a public page
+        param = request.env["ir.config_parameter"].sudo().get_param(
+            "job_finder.portfolio_hosts", "gp-developer.com,www.gp-developer.com"
+        )
+        portfolio_hosts = [h.strip().lower() for h in param.split(",")]
+
+        if host_header in portfolio_hosts:
+            # Serve the portfolio page
+            published = request.env["job.profile"].search(
+                [("is_portfolio_published", "=", True)], limit=1
+            )
+            lang = request.args.get("lang", "en_US")
+            if lang not in ("en_US", "es_ES"):
+                lang = "en_US"
+
+            # Validate the language exists in the database
+            lang_record = request.env["res.lang"].search([("code", "=", lang)], limit=1)
+            if lang_record:
+                request.context = request.context.copy()
+                request.context["lang"] = lang
+
+            # Render the template using QWeb
+            html = request.env["ir.qweb"]._render(
+                "job_finder.portfolio_page",
+                {
+                    "profile": published._get_portfolio_values() if published else {},
+                    "is_published": bool(published),
+                    "current_lang": lang,
+                },
+            )
+            # Set a cookie to remember the language choice
+            response = request.make_response(html)
+            response.set_cookie("job_finder_lang", lang, max_age=31536000)  # 1 year
+            return response
+        else:
+            # Fall back to web's standard behavior
+            return super().index(**kw)
+
+
+class PortfolioCV(http.Controller):
+    """Download the published profile's complete CV PDF."""
+
+    @http.route("/portfolio/cv", auth="user")
+    def download_cv(self):
+        """Download the published profile's CV as PDF."""
+        published = request.env["job.profile"].search(
+            [("is_portfolio_published", "=", True)], limit=1
+        )
+        if not published:
+            raise NotFound("No portfolio published.")
+
+        # Minimal sudo: any logged-in user can download the published owner's CV
+        pdf_content, _filename = request.env["ir.actions.report"].sudo()._render_qweb_pdf(
+            "job_finder.report_job_profile", published.ids
+        )
+        return request.make_response(
+            pdf_content,
+            [
+                ("Content-Type", "application/pdf"),
+                ("Content-Disposition", f'attachment; filename="{published.full_name}-cv.pdf"'),
+            ],
+        )

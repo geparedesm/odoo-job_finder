@@ -158,12 +158,29 @@ class PortfolioPageTestCase(HttpCase):
         self.assertIn("btn-open-app", text)
         self.assertNotIn("btn-login", text)
 
+    def test_portfolio_page_discover_hidden_without_projects(self):
+        """Without projects there is no projects section, so the hero has no Discover the work link."""
+        self.profile.projects = False
+        text = self.url_open("/", headers={"Host": "gp-developer.com"}).text
+        self.assertNotIn("btn-discover", text)
+        self.assertNotIn('id="projects"', text)
+
+    def test_portfolio_page_hero_uses_design_tokens(self):
+        """The hero illustration only uses the portfolio design colors."""
+        text = self.url_open("/", headers={"Host": "gp-developer.com"}).text
+        start = text.index('class="hero-illustration"')
+        svg = text[start:text.index("</svg>", start)]
+        for color in ("#00d9ff", "#cc33ff", "#00ff00", "#ffff00", "#0a1e2e"):
+            self.assertNotIn(color, svg.lower())
+        self.assertIn("#070B12", svg)
+
     def test_portfolio_page_download_cv_in_hero(self):
         """The hero holds Discover the work and, for logged-in visitors only, Download CV."""
         arch = etree.fromstring(self.env.ref("job_finder.portfolio_page").arch)
         actions = arch.xpath("//section[@id='home']//div[@class='hero-actions']")
         self.assertEqual(len(actions), 1)
-        self.assertEqual(actions[0].xpath("a[@class='btn-discover']/@href"), ["#projects"])
+        self.assertEqual(
+            actions[0].xpath("t[@t-if=\"profile.get('projects')\"]/a[@class='btn-discover']/@href"), ["#projects"])
         cv = actions[0].xpath("t[@t-if='request.session.uid']/a[@href='/portfolio/cv']")
         self.assertEqual(len(cv), 1)
         # HttpCase does not carry an authenticated session into requests that override the Host header, so the

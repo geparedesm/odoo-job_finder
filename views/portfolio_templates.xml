@@ -58,57 +58,59 @@
                   <p class="hero-location" t-out="profile.get('location')"/>
                 </t>
                 <div class="hero-actions">
-                  <a href="#projects" class="btn-discover">Discover the work</a>
+                  <t t-if="profile.get('projects')">
+                    <a href="#projects" class="btn-discover">Discover the work</a>
+                  </t>
                   <t t-if="request.session.uid">
                     <a href="/portfolio/cv" class="btn-download-cv">Download CV</a>
                   </t>
                 </div>
               </div>
               <div class="hero-visual">
-                <svg viewBox="0 0 1000 600" class="hero-illustration">
-                  <!-- Hardware illustration: laptop, circuit board, mobile device with neon lines -->
+                <svg viewBox="0 0 1000 600" class="hero-illustration" role="img" aria-label="Laptop, circuit board and phone joined by light lines">
+                  <!-- Hardware illustration (laptop, circuit board, phone) drawn with the pf-* design tokens -->
                   <defs>
-                    <linearGradient id="neon-cyan" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" style="stop-color:#00d9ff;stop-opacity:1" />
-                      <stop offset="100%" style="stop-color:#0099cc;stop-opacity:1" />
+                    <linearGradient id="pf-line-light" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" style="stop-color:#D9D3EF;stop-opacity:1" />
+                      <stop offset="100%" style="stop-color:#CDCDD5;stop-opacity:1" />
                     </linearGradient>
-                    <linearGradient id="neon-purple" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" style="stop-color:#cc33ff;stop-opacity:1" />
-                      <stop offset="100%" style="stop-color:#9900ff;stop-opacity:1" />
+                    <linearGradient id="pf-line-lilac" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" style="stop-color:#D9D3EF;stop-opacity:1" />
+                      <stop offset="100%" style="stop-color:#606169;stop-opacity:1" />
                     </linearGradient>
                   </defs>
                   <!-- Background -->
-                  <rect width="1000" height="600" fill="#0a1e2e"/>
+                  <rect width="1000" height="600" fill="#070B12"/>
                   <!-- Laptop -->
-                  <rect x="50" y="200" width="350" height="250" rx="8" fill="#1a1a1a" stroke="url(#neon-cyan)" stroke-width="3"/>
-                  <rect x="60" y="210" width="330" height="180" fill="#000"/>
-                  <rect x="50" y="460" width="350" height="30" fill="#2a2a2a"/>
+                  <rect x="50" y="200" width="350" height="250" rx="8" fill="#212325" stroke="url(#pf-line-light)" stroke-width="3"/>
+                  <rect x="60" y="210" width="330" height="180" fill="#070B12"/>
+                  <rect x="50" y="460" width="350" height="30" fill="#606169"/>
                   <!-- Circuit board -->
                   <g transform="translate(500, 250)">
-                    <rect x="0" y="0" width="280" height="280" fill="#0d3a47" stroke="url(#neon-purple)" stroke-width="3" rx="4"/>
+                    <rect x="0" y="0" width="280" height="280" fill="#212325" stroke="url(#pf-line-lilac)" stroke-width="3" rx="4"/>
                     <!-- Circuit pattern -->
-                    <circle cx="70" cy="70" r="12" fill="#00ff00"/>
-                    <circle cx="140" cy="70" r="12" fill="#00ff00"/>
-                    <circle cx="210" cy="70" r="12" fill="#00ff00"/>
-                    <circle cx="70" cy="140" r="12" fill="#00ff00"/>
-                    <circle cx="140" cy="140" r="15" fill="#ffff00"/>
-                    <circle cx="210" cy="140" r="12" fill="#00ff00"/>
-                    <circle cx="70" cy="210" r="12" fill="#00ff00"/>
-                    <circle cx="140" cy="210" r="12" fill="#00ff00"/>
-                    <circle cx="210" cy="210" r="12" fill="#00ff00"/>
-                    <line x1="70" y1="70" x2="140" y2="70" stroke="#00ff00" stroke-width="1" opacity="0.6"/>
-                    <line x1="140" y1="70" x2="210" y2="70" stroke="#00ff00" stroke-width="1" opacity="0.6"/>
-                    <line x1="70" y1="70" x2="70" y2="140" stroke="#00ff00" stroke-width="1" opacity="0.6"/>
-                    <line x1="140" y1="70" x2="140" y2="140" stroke="#ffff00" stroke-width="1" opacity="0.6"/>
+                    <circle cx="70" cy="70" r="12" fill="#CDCDD5"/>
+                    <circle cx="140" cy="70" r="12" fill="#CDCDD5"/>
+                    <circle cx="210" cy="70" r="12" fill="#CDCDD5"/>
+                    <circle cx="70" cy="140" r="12" fill="#CDCDD5"/>
+                    <circle cx="140" cy="140" r="15" fill="#D9D3EF"/>
+                    <circle cx="210" cy="140" r="12" fill="#CDCDD5"/>
+                    <circle cx="70" cy="210" r="12" fill="#CDCDD5"/>
+                    <circle cx="140" cy="210" r="12" fill="#CDCDD5"/>
+                    <circle cx="210" cy="210" r="12" fill="#CDCDD5"/>
+                    <line x1="70" y1="70" x2="140" y2="70" stroke="#CDCDD5" stroke-width="1" opacity="0.6"/>
+                    <line x1="140" y1="70" x2="210" y2="70" stroke="#CDCDD5" stroke-width="1" opacity="0.6"/>
+                    <line x1="70" y1="70" x2="70" y2="140" stroke="#CDCDD5" stroke-width="1" opacity="0.6"/>
+                    <line x1="140" y1="70" x2="140" y2="140" stroke="#D9D3EF" stroke-width="1" opacity="0.6"/>
                   </g>
                   <!-- Mobile device -->
-                  <rect x="800" y="220" width="150" height="240" rx="12" fill="#1a1a1a" stroke="url(#neon-cyan)" stroke-width="3"/>
-                  <rect x="810" y="230" width="130" height="160" fill="#000"/>
-                  <circle cx="875" cy="408" r="6" fill="#333"/>
+                  <rect x="800" y="220" width="150" height="240" rx="12" fill="#212325" stroke="url(#pf-line-light)" stroke-width="3"/>
+                  <rect x="810" y="230" width="130" height="160" fill="#070B12"/>
+                  <circle cx="875" cy="408" r="6" fill="#606169"/>
                   <!-- Neon connecting lines -->
-                  <path d="M 400 380 Q 450 320, 500 250" stroke="url(#neon-cyan)" stroke-width="4" fill="none" stroke-linecap="round"/>
-                  <path d="M 780 280 Q 800 300, 820 320" stroke="url(#neon-purple)" stroke-width="4" fill="none" stroke-linecap="round"/>
-                  <path d="M 500 530 Q 650 550, 800 460" stroke="url(#neon-cyan)" stroke-width="4" fill="none" stroke-linecap="round"/>
+                  <path d="M 400 380 Q 450 320, 500 250" stroke="url(#pf-line-light)" stroke-width="4" fill="none" stroke-linecap="round"/>
+                  <path d="M 780 280 Q 800 300, 820 320" stroke="url(#pf-line-lilac)" stroke-width="4" fill="none" stroke-linecap="round"/>
+                  <path d="M 500 530 Q 650 550, 800 460" stroke="url(#pf-line-light)" stroke-width="4" fill="none" stroke-linecap="round"/>
                 </svg>
               </div>
             </section>

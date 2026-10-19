@@ -593,3 +593,14 @@ a {
     border-left-width: 1px;
   }
 }
+
+// Respect visitors who ask for less motion.
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,0 +1,578 @@
+// Portfolio page styling
+// Grid-based responsive layout with hardware illustration hero
+
+$color-bg-dark: #0a1e2e;
+$color-bg-card: #1a2332;
+$color-text-light: #e8eef7;
+$color-text-muted: #a8b3c4;
+$color-accent-cyan: #00d9ff;
+$color-accent-purple: #cc33ff;
+$color-border: #2a3d52;
+
+// Typography base
+html, body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: $color-text-light;
+  background-color: $color-bg-dark;
+  margin: 0;
+  padding: 0;
+}
+
+h1, h2, h3 {
+  margin: 0 0 1rem 0;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+h1 {
+  font-size: 3rem;
+  line-height: 1.1;
+}
+
+h2 {
+  font-size: 2rem;
+  border-bottom: 1px solid $color-border;
+  padding-bottom: 1rem;
+}
+
+h3 {
+  font-size: 1.25rem;
+}
+
+p {
+  margin: 0 0 1rem 0;
+  color: $color-text-light;
+}
+
+a {
+  color: $color-accent-cyan;
+  text-decoration: none;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: $color-accent-purple;
+  }
+
+  &:focus {
+    outline: 2px solid $color-accent-cyan;
+    outline-offset: 2px;
+  }
+}
+
+// Layout containers
+.portfolio {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.portfolio-header {
+  background: rgba(10, 30, 46, 0.95);
+  border-bottom: 1px solid $color-border;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  padding: 1rem 0;
+}
+
+.portfolio-nav {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.portfolio-wordmark {
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: $color-text-light;
+  white-space: nowrap;
+
+  &:hover {
+    color: $color-accent-cyan;
+  }
+}
+
+.portfolio-nav-links {
+  display: flex;
+  gap: 2rem;
+  flex: 1;
+  align-items: center;
+
+  .nav-link {
+    font-size: 0.9rem;
+    color: $color-text-muted;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: $color-accent-cyan;
+    }
+  }
+}
+
+.portfolio-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.lang-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+
+  .lang-link {
+    padding: 0.25rem 0.75rem;
+    color: $color-text-muted;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+
+    &[aria-current="page"] {
+      color: $color-accent-cyan;
+      border-color: $color-accent-cyan;
+    }
+
+    &:hover {
+      color: $color-accent-cyan;
+    }
+  }
+
+  .lang-separator {
+    color: $color-text-muted;
+  }
+}
+
+.btn-login, .btn-open-app {
+  padding: 0.5rem 1.25rem;
+  border: 1px solid $color-accent-cyan;
+  border-radius: 4px;
+  color: $color-text-light;
+  background: transparent;
+  font-weight: 500;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+
+  &:hover {
+    background: $color-accent-cyan;
+    color: $color-bg-dark;
+  }
+}
+
+.btn-open-app {
+  border-color: $color-text-muted;
+  color: $color-text-muted;
+
+  &:hover {
+    background: $color-text-muted;
+    color: $color-bg-dark;
+  }
+}
+
+// Main content
+.portfolio-main {
+  flex: 1;
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 4rem 2rem;
+}
+
+// Hero section with dynamic content
+.portfolio-hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+  margin-bottom: 6rem;
+
+  .hero-content {
+    z-index: 2;
+  }
+
+  .hero-kicker {
+    font-size: 1.125rem;
+    color: $color-accent-cyan;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+  }
+
+  .hero-title {
+    color: $color-text-light;
+    margin-bottom: 1rem;
+  }
+
+  .hero-location {
+    font-size: 1.125rem;
+    color: $color-text-muted;
+  }
+
+  .hero-visual {
+    position: relative;
+
+    svg {
+      width: 100%;
+      height: auto;
+      filter: drop-shadow(0 20px 40px rgba(0, 217, 255, 0.1));
+    }
+  }
+}
+
+// Skills section
+.portfolio-skills {
+  margin-bottom: 6rem;
+
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  .skill-chip {
+    padding: 0.75rem 1.25rem;
+    background: $color-bg-card;
+    border: 1px solid $color-border;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    color: $color-text-light;
+    text-align: center;
+    transition: all 0.2s ease;
+
+    &:hover {
+      border-color: $color-accent-cyan;
+      background: rgba(0, 217, 255, 0.05);
+    }
+  }
+}
+
+// Projects section
+.portfolio-projects {
+  margin-bottom: 6rem;
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+
+  .project-card {
+    padding: 1.5rem;
+    background: $color-bg-card;
+    border: 1px solid $color-border;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+
+    &:hover {
+      border-color: $color-accent-cyan;
+      box-shadow: 0 10px 30px rgba(0, 217, 255, 0.1);
+    }
+
+    h3 {
+      margin-top: 0;
+      color: $color-accent-cyan;
+      border: none;
+      padding: 0;
+    }
+
+    .project-meta {
+      font-size: 0.875rem;
+      color: $color-text-muted;
+      margin-bottom: 0.75rem;
+    }
+
+    .project-description {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: $color-text-light;
+    }
+  }
+}
+
+// About section
+.portfolio-about {
+  margin-bottom: 6rem;
+
+  .about-content {
+    margin-top: 2rem;
+    font-size: 1.1rem;
+    line-height: 1.8;
+    max-width: 65ch;
+  }
+}
+
+// Timeline sections (experience, education)
+.portfolio-experience,
+.portfolio-education {
+  margin-bottom: 6rem;
+}
+
+.timeline {
+  margin-top: 2rem;
+
+  .timeline-entry {
+    padding: 1.5rem 0;
+    padding-left: 2rem;
+    border-left: 2px solid $color-border;
+    margin-left: 1rem;
+    position: relative;
+    margin-bottom: 2rem;
+
+    &::before {
+      content: "";
+      position: absolute;
+      left: -7px;
+      top: 1.5rem;
+      width: 12px;
+      height: 12px;
+      background: $color-accent-cyan;
+      border: 2px solid $color-bg-dark;
+      border-radius: 50%;
+    }
+
+    &:hover {
+      border-color: $color-accent-cyan;
+    }
+
+    h3 {
+      margin-top: 0;
+      color: $color-text-light;
+      border: none;
+    }
+
+    .entry-meta {
+      font-size: 0.875rem;
+      color: $color-text-muted;
+      margin-bottom: 0.75rem;
+    }
+
+    .entry-description {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: $color-text-light;
+    }
+  }
+}
+
+// Languages, trainings, volunteering sections
+.portfolio-languages,
+.portfolio-trainings,
+.portfolio-volunteering {
+  margin-bottom: 6rem;
+
+  ul {
+    margin: 2rem 0;
+    padding: 0;
+    list-style: none;
+
+    li {
+      padding: 0.5rem 0;
+      color: $color-text-light;
+
+      &::before {
+        content: "→ ";
+        color: $color-accent-cyan;
+        margin-right: 0.5rem;
+        font-weight: 600;
+      }
+    }
+  }
+}
+
+// Contact section
+.portfolio-contact {
+  margin-bottom: 6rem;
+  text-align: center;
+
+  h2 {
+    border: none;
+    padding: 0;
+  }
+
+  .contact-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2rem;
+    margin: 2rem 0;
+
+    .contact-link {
+      padding: 0.75rem 1.5rem;
+      border: 1px solid $color-border;
+      border-radius: 4px;
+      transition: all 0.2s ease;
+
+      &:hover {
+        border-color: $color-accent-cyan;
+        background: rgba(0, 217, 255, 0.05);
+      }
+    }
+  }
+
+  .btn-download-cv {
+    display: inline-block;
+    padding: 0.75rem 2rem;
+    background: linear-gradient(135deg, $color-accent-cyan, $color-accent-purple);
+    color: $color-bg-dark;
+    border: none;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 1rem;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(0, 217, 255, 0.2);
+    }
+
+    &:focus {
+      outline: 2px solid $color-text-light;
+      outline-offset: 2px;
+    }
+  }
+}
+
+// Empty state
+.portfolio-empty {
+  text-align: center;
+  padding: 4rem 2rem;
+
+  h1 {
+    margin-bottom: 1rem;
+    color: $color-text-muted;
+  }
+
+  p {
+    color: $color-text-muted;
+    margin-bottom: 2rem;
+  }
+
+  .btn-login {
+    display: inline-block;
+  }
+}
+
+// Footer
+.portfolio-footer {
+  background: $color-bg-card;
+  border-top: 1px solid $color-border;
+  padding: 2rem;
+  text-align: center;
+  color: $color-text-muted;
+  font-size: 0.875rem;
+
+  p {
+    margin: 0;
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  h1 {
+    font-size: 2rem;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  .portfolio-nav {
+    flex-wrap: wrap;
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .portfolio-wordmark {
+    flex-basis: 100%;
+    margin-bottom: 0.5rem;
+  }
+
+  .portfolio-nav-links {
+    flex-basis: 100%;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .portfolio-nav-actions {
+    flex-basis: 100%;
+    gap: 1rem;
+  }
+
+  .portfolio-hero {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    margin-bottom: 4rem;
+  }
+
+  .portfolio-main {
+    padding: 2rem 1rem;
+  }
+
+  .skills-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+
+  .projects-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .contact-links {
+    flex-direction: column;
+    gap: 1rem;
+
+    .contact-link {
+      width: 100%;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  h2 {
+    font-size: 1.25rem;
+  }
+
+  .portfolio-header {
+    padding: 0.5rem 0;
+  }
+
+  .portfolio-nav {
+    padding: 0.75rem;
+  }
+
+  .portfolio-nav-links {
+    display: none;
+  }
+
+  .portfolio-hero {
+    .hero-title {
+      font-size: 2rem;
+    }
+  }
+
+  .skills-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .timeline {
+    .timeline-entry {
+      padding-left: 1rem;
+      margin-left: 0;
+      border-left-width: 1px;
+    }
+  }
+}

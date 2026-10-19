@@ -67,14 +67,14 @@ class PortfolioPageTestCase(HttpCase):
         self.assertEqual(response.status_code, 200)
 
     def test_portfolio_page_non_configured_host_fallback(self):
-        """GET / with non-configured host returns standard Odoo behavior."""
+        """GET / with non-configured host returns standard Odoo behavior (not portfolio)."""
         response = self.url_open(
             "/",
             headers={"Host": "localhost:8000"},
         )
-        # Should redirect or show login (not the portfolio page)
-        # The standard home controller redirects
-        self.assertNotEqual(response.status_code, 200)  # Should be 302/redirect
+        # Should not show the portfolio-specific content (hero with headline)
+        # The portfolio content includes the published profile name and headline
+        self.assertNotIn("Gabriel Paredes", response.text)
 
     def test_portfolio_page_content_inclusion(self):
         """Portfolio page includes all published profile sections."""

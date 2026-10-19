@@ -1,6 +1,11 @@
 """Tests for the public portfolio page and CV download."""
 
-from odoo.tests import HttpCase, tagged
+import unittest
+
+try:
+    from odoo.tests import HttpCase, tagged
+except ImportError:
+    raise unittest.SkipTest("Odoo not available")
 
 
 @tagged("post_install", "-at_install")
@@ -26,7 +31,7 @@ class PortfolioPageTestCase(HttpCase):
             "experience": "Senior Dev\nAcme Corp, 2021-2023\nLed a team of 5",
             "education": "BS Computer Science\nUniversity of Tech, 2019",
             "languages": "English\nSpanish",
-            "is_portfolio_published": True,
+            "is_published_as_portfolio": True,
         })
 
     def test_portfolio_page_configured_host_desktop(self):
@@ -122,7 +127,7 @@ class PortfolioPageTestCase(HttpCase):
 
     def test_portfolio_page_empty_state(self):
         """When no profile is published, shows empty state."""
-        self.profile.is_portfolio_published = False
+        self.profile.is_published_as_portfolio = False
         response = self.url_open(
             "/",
             headers={"Host": "gp-developer.com"},
@@ -156,7 +161,7 @@ class PortfolioPageTestCase(HttpCase):
     def test_portfolio_cv_not_found_when_nothing_published(self):
         """GET /portfolio/cv returns 404 when nothing is published."""
         self.authenticate("admin", "admin")
-        self.profile.is_portfolio_published = False
+        self.profile.is_published_as_portfolio = False
         response = self.url_open("/portfolio/cv", allow_redirects=False)
         self.assertEqual(response.status_code, 404)
 

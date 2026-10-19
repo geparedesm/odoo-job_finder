@@ -47,19 +47,19 @@ class JobProfile(models.Model):
     cv_filename = fields.Char(string="Nombre del archivo")
     cv_raw_text = fields.Text(string="Texto extraído del CV", readonly=True)
     cv_parsed_date = fields.Datetime(string="Fecha de análisis", readonly=True)
-    is_portfolio_published = fields.Boolean(
+    is_published_as_portfolio = fields.Boolean(
         string="Publish as portfolio", copy=False, groups="base.group_system",
     )
 
-    @api.constrains("is_portfolio_published")
+    @api.constrains("is_published_as_portfolio")
     def _check_single_portfolio(self):
         """Only one profile can be published as the portfolio."""
         for profile in self:
-            if not profile.is_portfolio_published:
+            if not profile.is_published_as_portfolio:
                 continue
             # Minimal sudo: only to count other published profiles when record rules hide them.
             count = self.env["job.profile"].sudo().search_count(
-                [("is_portfolio_published", "=", True), ("id", "!=", profile.id)]
+                [("is_published_as_portfolio", "=", True), ("id", "!=", profile.id)]
             )
             if count > 0:
                 raise ValidationError(self.env._("Only one profile can be published as the portfolio."))

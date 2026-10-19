@@ -272,3 +272,48 @@ msgstr "Ir al inicio del portafolio"
 #: model_terms:ir.ui.view,arch_db:job_finder.portfolio_page
 msgid "Trainings &amp; Credentials"
 msgstr "Formación y Credenciales"
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.portfolio_page
+msgid "Work"
+msgstr "Trabajo"
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.portfolio_page
+msgid "Experience"
+msgstr "Experiencia"
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.portfolio_page
+msgid "About"
+msgstr "Acerca de"
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.portfolio_page
+msgid "Contact"
+msgstr "Contacto"
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.portfolio_page
+msgid "Skills"
+msgstr "Habilidades"
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.portfolio_page
+msgid "Projects"
+msgstr "Proyectos"
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.portfolio_page
+msgid "Education"
+msgstr "Educación"
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.portfolio_page
+msgid "Languages"
+msgstr "Idiomas"
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.portfolio_page
+msgid "Volunteering"
+msgstr "Voluntariado"

@@ -29,14 +29,26 @@ class PortfolioHome(Home):
             # Serve the portfolio page for configured hosts
             # Use sudo to search for published profile (accessible to public)
             published = request.env["job.profile"].sudo().search(
-                [("is_portfolio_published", "=", True)], limit=1
+                [("is_published_as_portfolio", "=", True)], limit=1
             )
-            lang = request.params.get("lang", "en_US")
-            if lang not in ("en_US", "es_ES"):
-                lang = "en_US"
+            # Language selection: query param → cookie → default to en_US
+            lang = request.params.get("lang")
+            if not lang:
+                # Try reading the stored cookie
+                lang = request.httprequest.cookies.get("job_finder_portfolio_lang", "en_US")
+            # Validate language against whitelist and active res.lang
+            valid_langs = {"en_US", "es_ES"}
+            try:
+                active_langs = {l.code for l in request.env["res.lang"].search([("active", "=", True)])}
+                if lang not in valid_langs.intersection(active_langs):
+                    lang = "en_US"
+            except Exception:
+                # If we can't query active languages, just validate against whitelist
+                if lang not in valid_langs:
+                    lang = "en_US"
 
-            # Render the template using QWeb
-            html = request.env["ir.qweb"]._render(
+            # Render the template using QWeb with language context
+            html = request.env["ir.qweb"].with_context(lang=lang)._render(
                 "job_finder.portfolio_page",
                 {
                     "profile": published._get_portfolio_values() if published else {},
@@ -46,7 +58,7 @@ class PortfolioHome(Home):
             )
             # Set a cookie to remember the language choice
             response = request.make_response(html)
-            response.set_cookie("job_finder_lang", lang, max_age=31536000)  # 1 year
+            response.set_cookie("job_finder_portfolio_lang", lang, max_age=31536000)  # 1 year
             return response
         else:
             # Fall back to web's standard behavior
@@ -59,8 +71,9 @@ class PortfolioCV(http.Controller):
     @http.route("/portfolio/cv", auth="user")
     def download_cv(self):
         """Download the published profile's CV as PDF."""
-        published = request.env["job.profile"].search(
-            [("is_portfolio_published", "=", True)], limit=1
+        # Minimal sudo: search for published profile (record rules restrict users to their own)
+        published = request.env["job.profile"].sudo().search(
+            [("is_published_as_portfolio", "=", True)], limit=1
         )
         if not published:
             raise NotFound("No portfolio published.")

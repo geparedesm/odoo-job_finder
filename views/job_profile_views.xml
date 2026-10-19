@@ -36,7 +36,7 @@
                         <field name="cv_parsed_date" readonly="True"/>
                     </group>
                     <group string="Portfolio" name="portfolio">
-                        <field name="is_portfolio_published" label="Publish as portfolio"/>
+                        <field name="is_published_as_portfolio" label="Publish as portfolio"/>
                     </group>
                     <notebook>
                         <page string="Resumen"><field name="summary" placeholder="Describe your professional background and career goals."/></page>

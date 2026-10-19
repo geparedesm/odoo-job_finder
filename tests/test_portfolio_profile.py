@@ -1,7 +1,12 @@
 """Tests for portfolio profile publishing and public values."""
 
-from odoo.exceptions import AccessError, ValidationError
-from odoo.tests import TransactionCase, tagged
+import unittest
+
+try:
+    from odoo.exceptions import AccessError, ValidationError
+    from odoo.tests import TransactionCase, tagged
+except ImportError:
+    raise unittest.SkipTest("Odoo not available")
 
 
 @tagged("post_install", "-at_install")
@@ -31,22 +36,22 @@ class PortfolioProfileTestCase(TransactionCase):
     def test_single_portfolio_published(self):
         """Only one profile can be published as portfolio."""
         # Publish profile1
-        self.profile1.is_portfolio_published = True
+        self.profile1.is_published_as_portfolio = True
         # Publishing profile2 should raise ValidationError
         with self.assertRaises(ValidationError) as cm:
-            self.profile2.is_portfolio_published = True
+            self.profile2.is_published_as_portfolio = True
         self.assertIn("Only one profile", str(cm.exception))
 
     def test_unpublish_allows_another(self):
         """Unpublishing one profile allows publishing another."""
-        self.profile1.is_portfolio_published = True
-        self.profile1.is_portfolio_published = False
+        self.profile1.is_published_as_portfolio = True
+        self.profile1.is_published_as_portfolio = False
         # Should not raise
-        self.profile2.is_portfolio_published = True
-        self.assertTrue(self.profile2.is_portfolio_published)
+        self.profile2.is_published_as_portfolio = True
+        self.assertTrue(self.profile2.is_published_as_portfolio)
 
     def test_admin_only_field_visibility(self):
-        """Non-admin users cannot see or edit is_portfolio_published."""
+        """Non-admin users cannot see or edit is_published_as_portfolio."""
         user = self.env["res.users"].create({
             "name": "Test User",
             "login": "testuser",
@@ -59,11 +64,11 @@ class PortfolioProfileTestCase(TransactionCase):
         })
         # Try to write as non-admin should raise AccessError
         with self.assertRaises(AccessError):
-            profile.with_user(user).write({"is_portfolio_published": True})
+            profile.with_user(user).write({"is_published_as_portfolio": True})
 
     def test_get_portfolio_values_whitelist(self):
         """_get_portfolio_values returns only whitelisted fields."""
-        self.profile1.is_portfolio_published = True
+        self.profile1.is_published_as_portfolio = True
         values = self.profile1._get_portfolio_values()
 
         # Should include public fields

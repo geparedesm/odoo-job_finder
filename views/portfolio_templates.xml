@@ -3,6 +3,7 @@
   <template id="portfolio_page" name="Portfolio Page">
     <t t-call="web.layout">
       <t t-set="title"><t t-if="is_published"><t t-out="profile.get('name', 'Portfolio')"/> – Portfolio</t><t t-else="">Portfolio</t></t>
+      <t t-call-assets="job_finder.portfolio_assets"/>
       <div class="portfolio">
         <header class="portfolio-header">
           <div class="portfolio-nav">

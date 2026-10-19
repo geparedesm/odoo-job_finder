@@ -187,3 +187,88 @@ msgstr "Ubicación"
 #: model_terms:ir.ui.view,arch_db:job_finder.report_job_profile
 msgid "LinkedIn"
 msgstr "LinkedIn"
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_profile__is_portfolio_published
+msgid "Publish as portfolio"
+msgstr "Publicar como portafolio"
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.view_form
+msgid "Portfolio"
+msgstr "Portafolio"
+
+#. module: job_finder
+#: model:ir.model,name:job_finder.model_job_profile
+msgid "Only one profile can be published as the portfolio."
+msgstr "Solo un perfil puede publicarse como portafolio."
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.portfolio_page
+msgid "Hello, I'm a"
+msgstr "Hola, soy"
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.portfolio_page
+msgid "Home"
+msgstr "Inicio"
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.portfolio_page
+msgid "Contact"
+msgstr "Contacto"
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.portfolio_page
+msgid "About"
+msgstr "Acerca de"
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.portfolio_page
+msgid "Let's build something that works"
+msgstr "Construyamos algo que funcione"
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.portfolio_page
+msgid "Portfolio Coming Soon"
+msgstr "Portafolio Próximamente"
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.portfolio_page
+msgid "Check back soon for an exciting portfolio."
+msgstr "Vuelve pronto para ver un portafolio emocionante."
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.portfolio_page
+msgid "Login"
+msgstr "Iniciar sesión"
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.portfolio_page
+msgid "Download CV"
+msgstr "Descargar CV"
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.portfolio_page
+msgid "Open app"
+msgstr "Abrir aplicación"
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.portfolio_page
+msgid "EN"
+msgstr "EN"
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.portfolio_page
+msgid "ES"
+msgstr "ES"
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.portfolio_page
+msgid "Go to portfolio home"
+msgstr "Ir al inicio del portafolio"
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.portfolio_page
+msgid "Trainings &amp; Credentials"
+msgstr "Formación y Credenciales"

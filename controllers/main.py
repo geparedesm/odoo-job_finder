@@ -6,7 +6,6 @@ from werkzeug.exceptions import Forbidden, NotFound
 
 from odoo import http
 from odoo.addons.web.controllers.home import Home
-from odoo.addons.web.controllers.utils import is_user_internal
 from odoo.http import content_disposition, request
 
 from ..models.portfolio_content import normalize_host, parse_hosts
@@ -14,6 +13,13 @@ from ..models.portfolio_content import normalize_host, parse_hosts
 
 class PortfolioHome(Home):
     """Override web's Home.index to serve the portfolio for configured hosts."""
+
+    @staticmethod
+    def _is_internal_visitor():
+        """Whether the session belongs to an internal user (auth="none" routes have no request user)."""
+        uid = request.session.uid
+        # Minimal sudo: reading the visitor's own user record to know whether it is internal.
+        return bool(uid) and request.env["res.users"].sudo().browse(uid)._is_internal()
 
     @http.route("/", auth="none", website=False)
     def index(self, **kw):
@@ -55,7 +61,7 @@ class PortfolioHome(Home):
                     "is_published": bool(published),
                     "current_lang": lang,
                     # Download CV is for internal users only; portal and other external accounts do not get it.
-                    "can_download_cv": bool(request.session.uid) and is_user_internal(request.session.uid),
+                    "can_download_cv": self._is_internal_visitor(),
                 },
             )
             # Set a cookie to remember the language choice

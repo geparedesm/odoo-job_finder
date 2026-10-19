@@ -31,7 +31,7 @@ class PortfolioHome(Home):
             published = request.env["job.profile"].sudo().search(
                 [("is_portfolio_published", "=", True)], limit=1
             )
-            lang = request.args.get("lang", "en_US")
+            lang = request.params.get("lang", "en_US")
             if lang not in ("en_US", "es_ES"):
                 lang = "en_US"
 

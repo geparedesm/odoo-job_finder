@@ -144,9 +144,16 @@ class TestStructuredProfile(TransactionCase):
         legacy = self.env["job.profile"].create({
             "user_id": self.other.id, **{name: EXPECTED[name] for name in SECTIONS},
         })
+        website = self.env.ref("website.default_website")
+        website.homepage_url = False
+        self.env["ir.config_parameter"].set_param("job_finder.portfolio_hosts", "example.com")
         migration.migrate(self.env.cr, "19.0.1.0.0")
         self.assertEqual(len(legacy.experience_ids), 13)
+        self.assertEqual(website.homepage_url, "/portfolio")
+        self.assertFalse(self.env["ir.config_parameter"].get_param("job_finder.portfolio_hosts"))
+        website.homepage_url = "/contactus"
         legacy.experience_ids[0].role = "Edited by the person"
         migration.migrate(self.env.cr, "19.0.1.0.0")
         self.assertEqual(legacy.experience_ids[0].role, "Edited by the person")
         self.assertEqual(len(legacy.experience_ids), 13)
+        self.assertEqual(website.homepage_url, "/contactus")  # a homepage chosen later is kept

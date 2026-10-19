@@ -1,76 +1,16 @@
-"""Portfolio public page and CV download."""
+"""Public portfolio website page, its photo, and the CV download."""
 
 import re
 
 from werkzeug.exceptions import Forbidden, NotFound
 
 from odoo import http
-from odoo.addons.web.controllers.home import Home
 from odoo.http import content_disposition, request
 
-from ..models.portfolio_content import normalize_host, parse_hosts
 
-
-class PortfolioHome(Home):
-    """Override web's Home.index to serve the portfolio for configured hosts."""
-
-    @staticmethod
-    def _is_internal_visitor():
-        """Whether the session belongs to an internal user (auth="none" routes have no request user)."""
-        uid = request.session.uid
-        # Minimal sudo: reading the visitor's own user record to know whether it is internal.
-        return bool(uid) and request.env["res.users"].sudo().browse(uid)._is_internal()
-
-    @http.route("/", auth="none", website=False)
-    def index(self, **kw):
-        """Serve portfolio page for configured hosts, otherwise delegate to web's home."""
-        if not request.db:
-            # Database-free requests (several databases, none selected) have no ORM: keep web's behavior.
-            return super().index(**kw)
-        host_header = normalize_host(request.httprequest.host)
-
-        # Read the configured portfolio hosts from system parameter
-        # Minimal sudo: reading a system parameter that controls a public page
-        param = request.env["ir.config_parameter"].sudo().get_param(
-            "job_finder.portfolio_hosts", "gp-developer.com,www.gp-developer.com"
-        )
-        portfolio_hosts = parse_hosts(param)
-
-        if host_header in portfolio_hosts:
-            # Serve the portfolio page for configured hosts
-            # Use sudo to search for published profile (accessible to public)
-            published = request.env["job.profile"].sudo().search(
-                [("is_published_as_portfolio", "=", True)], limit=1
-            )
-            # Language selection: query param → cookie → default to en_US
-            lang = request.params.get("lang")
-            if not lang:
-                # Try reading the stored cookie
-                lang = request.httprequest.cookies.get("job_finder_portfolio_lang", "en_US")
-            # Validate language against the whitelist and the active languages.
-            # Minimal sudo: the visitor may be anonymous, and only active language codes are read.
-            active_langs = {code for code, _name in request.env["res.lang"].sudo().get_installed()}
-            if lang not in {"en_US", "es_ES"} & active_langs:
-                lang = "en_US"
-
-            # Render the template using QWeb with language context
-            html = request.env["ir.qweb"].with_context(lang=lang)._render(
-                "job_finder.portfolio_page",
-                {
-                    "profile": published._get_portfolio_values() if published else {},
-                    "is_published": bool(published),
-                    "current_lang": lang,
-                    # Download CV is for internal users only; portal and other external accounts do not get it.
-                    "can_download_cv": self._is_internal_visitor(),
-                },
-            )
-            # Set a cookie to remember the language choice
-            response = request.make_response(html)
-            response.set_cookie("job_finder_portfolio_lang", lang, max_age=31536000)  # 1 year
-            return response
-        else:
-            # Fall back to web's standard behavior
-            return super().index(**kw)
+def published_profile():
+    """The profile published as the portfolio, read with minimal sudo: visitors cannot read profiles."""
+    return request.env["job.profile"].sudo().search([("is_published_as_portfolio", "=", True)], limit=1)
 
 
 def cv_filename(full_name):
@@ -79,29 +19,44 @@ def cv_filename(full_name):
     return (name or "portfolio") + "-cv.pdf"
 
 
-class PortfolioCV(http.Controller):
-    """Download the published profile's complete CV PDF."""
+class Portfolio(http.Controller):
 
-    @http.route("/portfolio/cv", auth="user")
-    def download_cv(self):
+    @http.route("/portfolio", type="http", auth="public", website=True, sitemap=True)
+    def portfolio(self, **kw):
+        """The portfolio page (the website's homepage): the published profile's public entries."""
+        profile = published_profile()
+        values = {
+            "profile": profile,
+            "portfolio": profile._get_portfolio_values() if profile else {},
+            "main_object": profile,
+        }
+        return request.render("job_finder.portfolio_page", values)
+
+    @http.route("/portfolio/photo", type="http", auth="public", website=True, sitemap=False)
+    def portfolio_photo(self, **kw):
+        """Only the published profile's photo is public."""
+        profile = published_profile()
+        if not profile or not profile.photo:
+            raise NotFound()
+        stream = request.env["ir.binary"]._get_image_stream_from(profile, "photo", width=1024, height=1024)
+        return stream.get_response(max_age=3600)
+
+    @http.route("/portfolio/cv", type="http", auth="user", website=True, sitemap=False)
+    def download_cv(self, **kw):
         """Download the published profile's CV as PDF (internal users only)."""
         if not request.env.user._is_internal():
             raise Forbidden("The CV is available to internal users only.")
-        # Minimal sudo: search for published profile (record rules restrict users to their own)
-        published = request.env["job.profile"].sudo().search(
-            [("is_published_as_portfolio", "=", True)], limit=1
-        )
-        if not published:
+        profile = published_profile()
+        if not profile:
             raise NotFound("No portfolio published.")
-
-        # Minimal sudo: any internal user can download the published owner's CV
+        # Minimal sudo: any internal user can download the published owner's CV.
         pdf_content, _filename = request.env["ir.actions.report"].sudo()._render_qweb_pdf(
-            "job_finder.report_job_profile", published.ids
+            "job_finder.report_job_profile", profile.ids
         )
         return request.make_response(
             pdf_content,
             [
                 ("Content-Type", "application/pdf"),
-                ("Content-Disposition", content_disposition(cv_filename(published.full_name))),
+                ("Content-Disposition", content_disposition(cv_filename(profile.full_name))),
             ],
         )

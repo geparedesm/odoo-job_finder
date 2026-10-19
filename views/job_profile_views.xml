@@ -134,6 +134,17 @@
                                 </list>
                             </field>
                         </page>
+                        <page string="Portfolio" name="portfolio">
+                            <group name="portfolio_options">
+                                <field name="is_phone_public"/>
+                            </group>
+                            <group string="Search engines and sharing" name="seo">
+                                <field name="website_meta_title" placeholder="Defaults to your name and headline"/>
+                                <field name="website_meta_description" placeholder="Defaults to your summary"/>
+                                <field name="website_meta_keywords"/>
+                                <field name="website_meta_og_img" placeholder="Defaults to your photo"/>
+                            </group>
+                        </page>
                         <page string="CV import" name="cv_import">
                             <group name="cv_upload">
                                 <div class="alert alert-info" role="status" name="cv_guidance" colspan="2">

@@ -1,94 +1,7 @@
-"""Portfolio content parsing: splits free-form text fields into structured data."""
+"""Small text helpers for the public portfolio, without Odoo."""
 
 import re
-from typing import Any, Optional
-
-BULLET = re.compile(r"^\s*[-•*]\s*")
-
-
-def split_lines(text: Optional[str]) -> list[str]:
-    """Return non-empty stripped lines, with leading bullets (•, -, *) removed."""
-    if not text:
-        return []
-    lines = (BULLET.sub("", line).strip() for line in text.splitlines())
-    return [line for line in lines if line]
-
-
-def split_blocks(text: Optional[str]) -> list[dict[str, Any]]:
-    """Split text on blank lines into blocks of {title: first line, lines: the rest}."""
-    if not text or not text.strip():
-        return []
-    blocks = []
-    for chunk in re.split(r"\n\s*\n", text.strip()):
-        lines = split_lines(chunk)
-        if lines:
-            blocks.append({"title": lines[0], "lines": lines[1:]})
-    return blocks
-
-
-def split_items(text: Optional[str]) -> list[str]:
-    """Split text into items: one per line, otherwise semicolon- or comma-separated."""
-    if not text or not text.strip():
-        return []
-    lines = split_lines(text)
-    if len(lines) > 1:
-        return lines
-    line = lines[0]
-    for separator in (";", ","):
-        if separator in line:
-            return [item.strip() for item in line.split(separator) if item.strip()]
-    return [line]
-
-
-def parse_expertise(text: Optional[str]) -> list[dict[str, Any]]:
-    """
-    Group "Area: item, item" lines into expertise areas [{title, items}].
-    A line ending with a comma continues on the next line. Returns [] when no line names an area,
-    so callers can fall back to a flat skills list.
-    """
-    logical: list[str] = []
-    for line in split_lines(text):
-        if logical and logical[-1].endswith(","):
-            logical[-1] = f"{logical[-1]} {line}"
-        else:
-            logical.append(line)
-    areas = []
-    for line in logical:
-        title, sep, rest = line.partition(":")
-        if not sep or not title.strip() or not rest.strip():
-            continue
-        items = [item.strip().rstrip(".") for item in rest.split(",")]
-        areas.append({"title": title.strip(), "items": [item for item in items if item]})
-    return areas
-
-
-def parse_entries(text: Optional[str]) -> list[dict[str, Any]]:
-    """
-    Parse experience/education/projects into entries.
-    Each block is one entry: first line is title, second line is date/location, rest is details.
-    """
-    entries = []
-    for block in split_blocks(text):
-        entry = {"title": block["title"]}
-        if block["lines"]:
-            entry["subtitle"] = block["lines"][0]
-        if len(block["lines"]) > 1:
-            entry["details"] = "\n".join(block["lines"][1:])
-        entries.append(entry)
-    return entries
-
-
-def normalize_host(host: Optional[str]) -> str:
-    """Lowercase a request host and strip its port."""
-    host = (host or "").strip().lower()
-    if host.startswith("["):  # IPv6 literal, e.g. [::1]:8069
-        return host.split("]")[0] + "]"
-    return host.split(":")[0]
-
-
-def parse_hosts(value: Optional[str]) -> set[str]:
-    """Parse a comma-separated host list into a lowercase set without whitespace."""
-    return {host.strip().lower() for host in (value or "").split(",") if host.strip()}
+from typing import Optional
 
 
 def safe_url(value: Optional[str]) -> Optional[str]:
@@ -99,23 +12,65 @@ def safe_url(value: Optional[str]) -> Optional[str]:
     if not value:
         return None
     value = value.strip()
-    if not value:
+    if not value or " " in value:
         return None
-
-    # Reject URLs with spaces
-    if " " in value:
-        return None
-
     # Reject javascript: and other non-http schemes
     if re.match(r"^\w+:", value) and not re.match(r"^https?:", value, re.IGNORECASE):
         return None
-
-    # If it looks like a domain without scheme, add https://
     if not re.match(r"^https?://", value, re.IGNORECASE):
-        # Check if it looks like a domain (has a dot)
-        if "." in value:
-            value = "https://" + value
-        else:
+        if "." not in value:
             return None
-
+        value = "https://" + value
     return value
+
+
+def capitalize_first(text: Optional[str]) -> str:
+    """'music social application' -> 'Music social application'; the rest is kept as written."""
+    text = (text or "").strip()
+    return text[:1].upper() + text[1:]
+
+
+def headline_parts(headline: Optional[str]) -> list[str]:
+    """'SOFTWARE DEVELOPMENT | ICT | MECHATRONICS' -> ['Software development', 'ICT', 'Mechatronics'].
+
+    Parts written in capitals become sentence case, except short acronyms (four letters or fewer).
+    """
+    parts = []
+    for part in (headline or "").split("|"):
+        part = " ".join(part.split())
+        if not part:
+            continue
+        if part.isupper() and len(part.replace(" ", "")) > 4:
+            part = part[:1] + part[1:].lower()
+        parts.append(part)
+    return parts
+
+
+def paragraphs(text: Optional[str]) -> list[str]:
+    """Single line breaks are joined (PDF wrapping); blank lines start a new paragraph."""
+    blocks = re.split(r"\n\s*\n", (text or "").strip())
+    return [" ".join(block.split()) for block in blocks if block.strip()]
+
+
+def first_sentence(text: Optional[str]) -> str:
+    """The first sentence of a text ('Built pipelines. Added tests.' -> 'Built pipelines.')."""
+    text = " ".join((text or "").split())
+    match = re.search(r"^(.+?[.!?])(?=\s+[A-Z(])", text)
+    return match.group(1) if match else text
+
+
+def en_dash_ranges(text: Optional[str]) -> str:
+    """'2015 - 2021' -> '2015 – 2021' (number ranges only)."""
+    return re.sub(r"(\d)\s+-\s+(\d)", "\\1 – \\2", text or "")
+
+
+def split_organisation(company: Optional[str]) -> tuple[str, str]:
+    """'Intelligent Systems Research Group, Universidad Técnica del Norte' -> (organisation, group)."""
+    group, sep, organisation = (company or "").rpartition(", ")
+    return (organisation, group) if sep and group and organisation else (company or "", "")
+
+
+def highlight_lines(text: Optional[str]) -> list[str]:
+    """Non-empty lines of a highlights field, without leading bullets."""
+    lines = (line.strip().lstrip("•-*").strip() for line in (text or "").splitlines())
+    return [line for line in lines if line]

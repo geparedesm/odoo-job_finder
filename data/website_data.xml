@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- The portfolio is the website's homepage. noupdate: a homepage chosen later in Website settings is kept. -->
+    <record id="website.default_website" model="website">
+        <field name="homepage_url">/portfolio</field>
+    </record>
+</odoo>

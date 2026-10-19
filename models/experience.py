@@ -6,6 +6,8 @@ from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 from odoo.tools.misc import babel_locale_parse
 
+from .portfolio_content import highlight_lines
+
 
 class Experience(models.Model):
     _name = "job_finder.experience"
@@ -83,9 +85,3 @@ def period_label(env, date_start, date_end, *, is_current=False, is_year_only=Fa
     if start and end and start != end:
         return f"{start} – {end}"
     return start or end
-
-
-def highlight_lines(text):
-    """Non-empty lines of a highlights field, without leading bullets."""
-    lines = ((line.strip().lstrip("•-*").strip()) for line in (text or "").splitlines())
-    return [line for line in lines if line]

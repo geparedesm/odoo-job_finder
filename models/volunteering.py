@@ -2,7 +2,7 @@
 
 from odoo import fields, models
 
-from .experience import highlight_lines
+from .portfolio_content import highlight_lines
 
 
 class Volunteering(models.Model):

@@ -1,645 +1,661 @@
-// Portfolio page styling based on ui/portfolio.pen design tokens
-// pf-bg #F1F1F4, pf-ink #212325, pf-blue #454C33, pf-muted #606169, pf-line #CDCDD5, pf-white #FFFFFF, pf-lilac #D9D3EF, dark band #070B12
+// Public portfolio, following ui/portfolio.pen ("Portfolio / Desktop / 1440" and "Mobile / 390").
+// Scoped to .jf-portfolio so the rest of the website (login, other pages) keeps its own style.
 
-// Design tokens
-$pf-bg: #F1F1F4;
-$pf-ink: #212325;
-$pf-blue: #454C33;
-$pf-muted: #606169;
-$pf-line: #CDCDD5;
-$pf-white: #FFFFFF;
-$pf-lilac: #D9D3EF;
-$dark-band: #070B12;
+$jf-bg: #070B12;
+$jf-surface: #101925;
+$jf-line: #243246;
+$jf-ink: #F4F6FF;
+$jf-body: #B4C0D5;
+$jf-muted: #8E9BB3;
+$jf-violet: #9054FA;
+$jf-violet-text: #B98AFF;
+$jf-cyan: #30D4FF;
+$jf-display: "Space Grotesk", system-ui, sans-serif;
+$jf-text: "IBM Plex Sans", system-ui, sans-serif;
+$jf-gutter: 80px;
+$jf-gutter-mobile: 24px;
 
-// Typography base
-html, body {
-  font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 16px;
-  line-height: 1.6;
-  color: $pf-ink;
-  background-color: $pf-bg;
-  margin: 0;
-  padding: 0;
+#wrapwrap.jf-portfolio-page {
+    background-color: $jf-bg;
 }
 
-h1, h2, h3 {
-  font-family: 'Barlow Condensed', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-weight: 600;
-  margin: 0 0 1rem 0;
-}
+.jf-portfolio {
+    background-color: $jf-bg;
+    color: $jf-body;
+    font-family: $jf-text;
+    font-size: 15px;
+    line-height: 1.55;
 
-h1 {
-  font-size: 3rem;
-  line-height: 1.1;
-  color: $pf-ink;
-}
-
-h2 {
-  font-size: 2rem;
-  color: $pf-ink;
-}
-
-h3 {
-  font-size: 1.5rem;
-  color: $pf-ink;
-}
-
-p {
-  margin: 0 0 1rem 0;
-  color: $pf-ink;
-}
-
-a {
-  color: $pf-blue;
-  text-decoration: none;
-  transition: color 0.2s ease;
-
-  &:hover {
-    color: $pf-muted;
-  }
-
-  &:focus {
-    outline: 2px solid $pf-blue;
-    outline-offset: 2px;
-  }
-}
-
-// Layout
-.portfolio {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background-color: $pf-bg;
-}
-
-.portfolio-header {
-  background: $pf-white;
-  border-bottom: 1px solid $pf-line;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  padding: 1rem 0;
-}
-
-.portfolio-nav {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 2rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 2rem;
-}
-
-.portfolio-wordmark {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-weight: 700;
-  font-size: 1.25rem;
-  color: $pf-ink;
-  white-space: nowrap;
-
-  &:hover {
-    color: $pf-blue;
-  }
-}
-
-.portfolio-nav-links {
-  display: flex;
-  gap: 2rem;
-  flex: 1;
-  align-items: center;
-
-  .nav-link {
-    font-size: 0.9rem;
-    color: $pf-muted;
-    transition: color 0.2s ease;
-
-    &:hover {
-      color: $pf-blue;
-    }
-  }
-}
-
-.portfolio-nav-actions {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-}
-
-.lang-selector {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.9rem;
-
-  .lang-link {
-    padding: 0.25rem 0.75rem;
-    color: $pf-muted;
-    border: 1px solid transparent;
-    border-radius: 4px;
-    transition: all 0.2s ease;
-
-    &[aria-current="page"] {
-      color: $pf-blue;
-      border-color: $pf-blue;
+    h1, h2, h3, h4 {
+        font-family: $jf-display;
+        color: $jf-ink;
+        margin: 0;
     }
 
-    &:hover {
-      color: $pf-blue;
-    }
-  }
-
-  .lang-separator {
-    color: $pf-muted;
-  }
-}
-
-.btn-login, .btn-open-app {
-  padding: 0.5rem 1.25rem;
-  border: 1px solid $pf-blue;
-  border-radius: 4px;
-  color: $pf-ink;
-  background: transparent;
-  font-weight: 500;
-  font-size: 0.9rem;
-  transition: all 0.2s ease;
-  cursor: pointer;
-
-  &:hover {
-    background: $pf-blue;
-    color: $pf-white;
-  }
-}
-
-.btn-open-app {
-  border-color: $pf-muted;
-  color: $pf-muted;
-
-  &:hover {
-    background: $pf-muted;
-    color: $pf-white;
-  }
-}
-
-.portfolio-main {
-  flex: 1;
-  max-width: 1400px;
-  width: 100%;
-  margin: 0 auto;
-  padding: 4rem 2rem;
-}
-
-// Hero section
-.portfolio-hero {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 4rem;
-  align-items: center;
-  margin-bottom: 6rem;
-
-  .hero-content {
-    z-index: 2;
-  }
-
-  .hero-kicker {
-    font-size: 1.125rem;
-    color: $pf-muted;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: 0.5rem;
-  }
-
-  .hero-title {
-    color: $pf-ink;
-    margin-bottom: 1rem;
-  }
-
-  .hero-location {
-    font-size: 1.125rem;
-    color: $pf-muted;
-  }
-
-  .hero-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    margin-top: 2rem;
-  }
-
-  .btn-discover {
-    display: inline-block;
-    padding: 0.75rem 2rem;
-    border: 1px solid $pf-ink;
-    border-radius: 4px;
-    color: $pf-ink;
-    font-weight: 600;
-    transition: all 0.2s ease;
-
-    &:hover {
-      background: $pf-ink;
-      color: $pf-white;
-    }
-  }
-
-  .hero-visual {
-    position: relative;
-
-    svg {
-      width: 100%;
-      height: auto;
-    }
-  }
-}
-
-// Skills section
-.portfolio-skills {
-  margin-bottom: 6rem;
-
-  .expertise-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.5rem;
-    margin-top: 2rem;
-  }
-
-  .expertise-card {
-    padding: 1.5rem;
-    background: $pf-white;
-    border: 1px solid $pf-line;
-    border-radius: 4px;
-  }
-
-  .expertise-title {
-    font-size: 1.5rem;
-    color: $pf-ink;
-    margin-bottom: 1rem;
-  }
-
-  .expertise-items {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-
-    .skill-chip {
-      padding: 0.35rem 0.75rem;
-      font-size: 0.85rem;
-    }
-  }
-
-  .skills-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 1rem;
-    margin-top: 2rem;
-  }
-
-  .skill-chip {
-    padding: 0.75rem 1.25rem;
-    background: $pf-lilac;
-    border: 1px solid $pf-line;
-    border-radius: 4px;
-    font-size: 0.9rem;
-    color: $pf-ink;
-    text-align: center;
-    transition: all 0.2s ease;
-
-    &:hover {
-      border-color: $pf-blue;
-      background: $pf-white;
-    }
-  }
-}
-
-// Projects section
-.portfolio-projects {
-  margin-bottom: 6rem;
-
-  .projects-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 2rem;
-    margin-top: 2rem;
-  }
-
-  .project-card {
-    padding: 1.5rem;
-    background: $pf-white;
-    border: 1px solid $pf-line;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-
-    &:hover {
-      border-color: $pf-blue;
-      box-shadow: 0 4px 12px rgba(69, 76, 51, 0.1);
+    p, ul, dl {
+        margin: 0;
     }
 
-    h3 {
-      margin-top: 0;
-      color: $pf-blue;
+    ul {
+        list-style: none;
+        padding: 0;
     }
 
-    .project-meta {
-      font-size: 0.875rem;
-      color: $pf-muted;
-      margin-bottom: 0.75rem;
+    a {
+        color: inherit;
+        text-decoration: none;
+
+        &:hover {
+            text-decoration: underline;
+            text-underline-offset: 3px;
+        }
+
+        &:focus-visible, summary:focus-visible {
+            outline: 2px solid $jf-cyan;
+            outline-offset: 3px;
+            border-radius: 4px;
+        }
     }
 
-    .project-description {
-      font-size: 0.95rem;
-      line-height: 1.6;
-      color: $pf-ink;
-    }
-  }
-}
+    .jf-muted { color: $jf-muted; }
+    .jf-small { font-size: 13px; line-height: 20px; }
+    .jf-accent { color: $jf-violet-text; }
+    .jf-tech { color: $jf-cyan; font-size: 14px; }
+    .jf-label { color: $jf-muted; font-size: 12px; line-height: 18px; }
 
-// About section
-.portfolio-about {
-  margin-bottom: 6rem;
+    // Buttons: 44px or more, violet primary, outlined secondary.
+    .jf-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 44px;
+        padding: 0 18px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        white-space: nowrap;
 
-  .about-content {
-    margin-top: 2rem;
-    font-size: 1.1rem;
-    line-height: 1.8;
-    max-width: 65ch;
-  }
-}
-
-// Timeline sections
-.portfolio-experience,
-.portfolio-education {
-  margin-bottom: 6rem;
-}
-
-.timeline {
-  margin-top: 2rem;
-
-  .timeline-entry {
-    padding: 1.5rem 0;
-    padding-left: 2rem;
-    border-left: 2px solid $pf-line;
-    margin-left: 1rem;
-    position: relative;
-    margin-bottom: 2rem;
-
-    &::before {
-      content: "";
-      position: absolute;
-      left: -7px;
-      top: 1.5rem;
-      width: 12px;
-      height: 12px;
-      background: $pf-blue;
-      border: 2px solid $pf-bg;
-      border-radius: 50%;
+        &:hover { text-decoration: none; }
     }
 
-    &:hover {
-      border-color: $pf-blue;
+    .jf-button-large {
+        min-height: 48px;
+        padding: 0 20px;
+        font-size: 15px;
     }
 
-    h3 {
-      margin-top: 0;
-      color: $pf-ink;
+    .jf-button-primary {
+        background-color: $jf-violet;
+        color: #FFFFFF;
+
+        &:hover { background-color: lighten($jf-violet, 6%); }
     }
 
-    .entry-meta {
-      font-size: 0.875rem;
-      color: $pf-muted;
-      margin-bottom: 0.75rem;
+    .jf-button-outline {
+        color: $jf-ink;
+        box-shadow: inset 0 0 0 1px $jf-line;
+
+        &:hover { box-shadow: inset 0 0 0 1px lighten($jf-violet, 12%); }
     }
 
-    .entry-description {
-      font-size: 0.95rem;
-      line-height: 1.6;
-      color: $pf-ink;
+    // Navigation
+    .jf-nav {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+        min-height: 80px;
+        padding: 0 $jf-gutter;
+        background-color: rgba($jf-bg, 0.94);
+        border-bottom: 1px solid $jf-line;
+        backdrop-filter: blur(8px);
     }
-  }
-}
 
-// List sections
-.portfolio-languages,
-.portfolio-trainings,
-.portfolio-volunteering {
-  margin-bottom: 6rem;
-
-  ul {
-    margin: 2rem 0;
-    padding: 0;
-    list-style: none;
-
-    li {
-      padding: 0.5rem 0;
-      color: $pf-ink;
-
-      &::before {
-        content: "→ ";
-        color: $pf-blue;
-        margin-right: 0.5rem;
+    .jf-wordmark {
+        font-family: $jf-display;
+        font-size: 20px;
         font-weight: 600;
-      }
+        color: $jf-ink;
+        white-space: nowrap;
     }
-  }
-}
 
-// Contact section
-.portfolio-contact {
-  margin-bottom: 3rem;
+    .jf-nav-links {
+        display: flex;
+        gap: 28px;
+        font-size: 14px;
 
-  .contact-links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 2rem;
-    margin: 2rem 0;
-
-    .contact-link {
-      padding: 0.75rem 1.5rem;
-      border: 1px solid $pf-line;
-      border-radius: 4px;
-      color: $pf-blue;
-      transition: all 0.2s ease;
-
-      &:hover {
-        border-color: $pf-blue;
-        background: $pf-lilac;
-      }
+        a { color: $jf-body; }
+        a:hover { color: $jf-ink; }
     }
-  }
-}
 
-// CV section
-.btn-download-cv {
-  display: inline-block;
-  padding: 0.75rem 2rem;
-  background: $pf-blue;
-  color: $pf-white;
-  border: none;
-  border-radius: 4px;
-  font-weight: 600;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  &:hover {
-    opacity: 0.9;
-  }
-
-  &:focus {
-    outline: 2px solid $pf-blue;
-    outline-offset: 2px;
-  }
-}
-
-// Empty state
-.portfolio-empty {
-  text-align: center;
-  padding: 4rem 2rem;
-
-  h1 {
-    margin-bottom: 1rem;
-    color: $pf-muted;
-  }
-
-  p {
-    color: $pf-muted;
-    margin-bottom: 2rem;
-  }
-
-  .btn-login {
-    display: inline-block;
-  }
-}
-
-// Footer
-.portfolio-footer {
-  background: $pf-white;
-  border-top: 1px solid $pf-line;
-  padding: 2rem;
-  text-align: center;
-  color: $pf-muted;
-  font-size: 0.875rem;
-
-  p {
-    margin: 0;
-  }
-}
-
-// Responsive design
-@media (max-width: 768px) {
-  h1 {
-    font-size: 2rem;
-  }
-
-  h2 {
-    font-size: 1.5rem;
-  }
-
-  .portfolio-nav {
-    flex-wrap: wrap;
-    padding: 1rem;
-    gap: 1rem;
-  }
-
-  .portfolio-wordmark {
-    flex-basis: 100%;
-    margin-bottom: 0.5rem;
-  }
-
-  .portfolio-nav-links {
-    flex-basis: 100%;
-    gap: 1rem;
-    margin-bottom: 0.5rem;
-  }
-
-  .portfolio-nav-actions {
-    flex-basis: 100%;
-    gap: 1rem;
-  }
-
-  .portfolio-hero {
-    grid-template-columns: 1fr;
-    gap: 2rem;
-    margin-bottom: 4rem;
-  }
-
-  .portfolio-main {
-    padding: 2rem 1rem;
-  }
-
-  .skills-grid {
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  }
-
-  .projects-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .portfolio-contact .contact-links {
-    flex-direction: column;
-    gap: 1rem;
-
-    .contact-link {
-      width: 100%;
+    .jf-nav-actions {
+        display: flex;
+        align-items: center;
+        gap: 20px;
     }
-  }
-}
 
-@media (max-width: 480px) {
-  h1 {
-    font-size: 1.5rem;
-  }
-
-  h2 {
-    font-size: 1.25rem;
-  }
-
-  .portfolio-header {
-    padding: 0.5rem 0;
-  }
-
-  .portfolio-nav {
-    padding: 0.75rem;
-  }
-
-  // Links stay reachable on phones: they wrap onto stacked rows instead of being hidden.
-  .portfolio-nav-links {
-    flex-wrap: wrap;
-    gap: 0.5rem 1rem;
-
-    .nav-link {
-      padding: 0.25rem 0;
+    .jf-lang {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+        color: $jf-muted;
     }
-  }
 
-  .portfolio-hero .hero-title {
-    font-size: 2rem;
-  }
+    .jf-lang-link {
+        display: inline-flex;
+        align-items: center;
+        min-height: 44px;
+        padding: 0 2px;
 
-  .skills-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+        &.is-active { color: $jf-ink; }
+    }
 
-  .timeline .timeline-entry {
-    padding-left: 1rem;
-    margin-left: 0;
-    border-left-width: 1px;
-  }
-}
+    .jf-menu {
+        display: none;
+        position: relative;
 
-.portfolio-contact .contact-location {
-  color: $pf-muted;
-  margin-bottom: 1.5rem;
-}
+        summary {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            border-radius: 8px;
+            box-shadow: inset 0 0 0 1px $jf-line;
+            color: $jf-ink;
+            cursor: pointer;
+            list-style: none;
 
-// Respect visitors who ask for less motion.
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    transition: none !important;
-    animation: none !important;
-    scroll-behavior: auto !important;
-  }
+            &::-webkit-details-marker { display: none; }
+        }
+
+        .jf-menu-links {
+            position: absolute;
+            right: 0;
+            top: 52px;
+            display: flex;
+            flex-direction: column;
+            min-width: 220px;
+            padding: 8px;
+            background-color: $jf-surface;
+            border: 1px solid $jf-line;
+            border-radius: 8px;
+
+            a {
+                display: flex;
+                align-items: center;
+                min-height: 44px;
+                padding: 0 12px;
+                color: $jf-body;
+            }
+        }
+    }
+
+    // Hero
+    .jf-hero {
+        position: relative;
+        display: flex;
+        align-items: flex-start;
+        min-height: 600px;
+        padding: 72px $jf-gutter 64px;
+        overflow: hidden;
+    }
+
+    .jf-hero-content {
+        position: relative;
+        z-index: 4;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+        max-width: 700px;
+    }
+
+    .jf-location {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: $jf-cyan;
+        font-size: 14px;
+    }
+
+    .jf-name {
+        font-size: 68px;
+        font-weight: 600;
+        line-height: 1.05;
+        letter-spacing: -1.5px;
+    }
+
+    .jf-disciplines {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px;
+        font-family: $jf-display;
+        font-size: 24px;
+        font-weight: 500;
+        line-height: 1.2;
+        color: $jf-violet-text;
+    }
+
+    .jf-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 3px;
+        background-color: $jf-violet-text;
+    }
+
+    .jf-summary {
+        max-width: 600px;
+        font-size: 17px;
+        line-height: 27px;
+    }
+
+    .jf-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .jf-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 24px;
+        font-size: 14px;
+
+        a {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            min-height: 44px;
+        }
+    }
+
+    .jf-portrait {
+        position: absolute;
+        top: 40px;
+        right: 70px;
+        width: 540px;
+        height: 560px;
+    }
+
+    .jf-portrait-glow {
+        position: absolute;
+        top: 20px;
+        left: -10px;
+        width: 560px;
+        height: 560px;
+        border-radius: 50%;
+        background: radial-gradient(ellipse 50% 50% at 50% 50%, rgba($jf-violet, 0.4) 0%, rgba($jf-cyan, 0.1) 55%, rgba($jf-bg, 0) 100%);
+    }
+
+    .jf-portrait-photo {
+        position: relative;
+        z-index: 2;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: top center;
+    }
+
+    .jf-portrait-fade {
+        position: absolute;
+        z-index: 3;
+        left: -130px;
+        right: -70px;
+        bottom: 0;
+        height: 130px;
+        background: linear-gradient(180deg, rgba($jf-bg, 0) 0%, $jf-bg 100%);
+    }
+
+    // Sections
+    .jf-section {
+        display: flex;
+        flex-direction: column;
+        gap: 32px;
+        padding: 96px $jf-gutter 0;
+        scroll-margin-top: 80px;
+    }
+
+    .jf-heading {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        h2 {
+            font-size: 36px;
+            font-weight: 600;
+            line-height: 43px;
+            letter-spacing: -0.5px;
+        }
+    }
+
+    .jf-intro {
+        max-width: 640px;
+        color: $jf-muted;
+        font-size: 16px;
+    }
+
+    .jf-rows {
+        border-top: 1px solid $jf-line;
+    }
+
+    .jf-row {
+        display: flex;
+        gap: 40px;
+        border-bottom: 1px solid $jf-line;
+    }
+
+    // Selected work
+    .jf-project {
+        padding: 28px 0;
+
+        h3 {
+            font-size: 22px;
+            font-weight: 600;
+            line-height: 26px;
+        }
+    }
+
+    .jf-project-title {
+        display: flex;
+        flex: 0 0 360px;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .jf-project-description {
+        flex: 1;
+        line-height: 23px;
+    }
+
+    .jf-project-tech {
+        display: flex;
+        flex: 0 0 300px;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    // Experience
+    .jf-role {
+        padding: 20px 0;
+        font-size: 14px;
+
+        h3 {
+            font-size: 18px;
+            font-weight: 500;
+            line-height: 22px;
+        }
+    }
+
+    .jf-role-period { flex: 0 0 200px; }
+    .jf-role-title { display: flex; flex: 1; flex-direction: column; gap: 4px; }
+    .jf-role-location { flex: 0 0 240px; }
+    .jf-role-type { flex: 0 0 160px; }
+
+    // Research
+    .jf-groups {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 64px;
+    }
+
+    .jf-group {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .jf-group-heading {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        padding-bottom: 16px;
+        border-bottom: 2px solid $jf-violet;
+
+        h3 { font-size: 22px; font-weight: 600; line-height: 26px; }
+    }
+
+    .jf-group-items {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+
+        li { display: flex; flex-direction: column; gap: 2px; }
+        h4 { font-size: 17px; font-weight: 500; line-height: 20px; }
+    }
+
+    // Skills
+    .jf-skill {
+        padding: 18px 0;
+
+        h3 { flex: 0 0 280px; font-size: 18px; font-weight: 500; line-height: 22px; }
+        p { flex: 1; line-height: 23px; }
+    }
+
+    // Education, trainings and languages
+    .jf-columns {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 64px;
+    }
+
+    .jf-column {
+        display: flex;
+        flex-direction: column;
+        gap: 56px;
+    }
+
+    .jf-block {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .jf-h2-small {
+        font-size: 28px;
+        font-weight: 600;
+        line-height: 34px;
+        letter-spacing: -0.3px;
+    }
+
+    .jf-education {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        padding-left: 20px;
+        border-left: 2px solid $jf-violet;
+        font-size: 14px;
+
+        h3 { font-size: 18px; font-weight: 500; line-height: 22px; }
+    }
+
+    .jf-languages {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+
+        li {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            min-height: 44px;
+            padding: 0 16px;
+            border-radius: 8px;
+            box-shadow: inset 0 0 0 1px $jf-line;
+        }
+    }
+
+    .jf-language {
+        font-family: $jf-display;
+        font-size: 16px;
+        font-weight: 500;
+        color: $jf-ink;
+    }
+
+    .jf-training {
+        justify-content: space-between;
+        gap: 16px;
+        padding: 12px 0;
+        font-size: 14px;
+    }
+
+    .jf-training-name { color: $jf-ink; font-size: 15px; }
+
+    // Community
+    .jf-community {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 40px;
+    }
+
+    .jf-community-entry {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding-top: 24px;
+        border-top: 1px solid $jf-line;
+
+        h3 { font-size: 20px; font-weight: 500; line-height: 24px; }
+    }
+
+    .jf-recognitions {
+        color: $jf-violet-text;
+        font-size: 14px;
+        line-height: 24px;
+    }
+
+    // Contact and footer
+    .jf-contact {
+        gap: 40px;
+        padding-top: 120px;
+    }
+
+    .jf-contact-lead {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        padding-top: 48px;
+        border-top: 2px solid $jf-violet;
+
+        h2 { font-size: 36px; font-weight: 600; line-height: 43px; letter-spacing: -0.5px; }
+    }
+
+    .jf-contact-email {
+        font-family: $jf-display;
+        font-size: 30px;
+        font-weight: 500;
+        line-height: 36px;
+        color: $jf-violet-text;
+        overflow-wrap: anywhere;
+    }
+
+    .jf-contact-details {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 24px;
+
+        > div {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding-top: 16px;
+            border-top: 1px solid $jf-line;
+        }
+
+        dt { display: flex; align-items: center; gap: 8px; color: $jf-muted; font-size: 13px; font-weight: 400; }
+        dd { margin: 0; color: $jf-ink; font-size: 16px; overflow-wrap: anywhere; }
+    }
+
+    .jf-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin: 40px $jf-gutter 0;
+        padding: 24px 0 64px;
+        border-top: 1px solid $jf-line;
+    }
+
+    .jf-footer-cv {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 44px;
+        color: $jf-violet-text;
+        font-size: 14px;
+    }
+
+    .jf-empty {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        min-height: 70vh;
+        justify-content: center;
+        padding: 0 $jf-gutter;
+    }
+
+    // Tablet: sections stack their columns.
+    @media (max-width: 1199.98px) {
+        .jf-nav-links { display: none; }
+        .jf-menu { display: block; }
+        .jf-portrait { right: 0; width: 420px; opacity: 0.85; }
+        .jf-portrait-glow { width: 440px; height: 440px; }
+        .jf-project, .jf-role { flex-wrap: wrap; gap: 12px 40px; }
+        .jf-project-title { flex-basis: 100%; }
+        .jf-project-tech { flex-basis: 100%; }
+        .jf-role-title { flex-basis: calc(100% - 240px); }
+        .jf-role-location, .jf-role-type { flex: 0 0 auto; }
+        .jf-community { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    // Mobile (390px design): one column, portrait above the text.
+    @media (max-width: 767.98px) {
+        .jf-nav { min-height: 72px; padding: 0 $jf-gutter-mobile; }
+        .jf-wordmark { font-size: 17px; white-space: normal; }
+        .jf-nav-cv, .jf-lang { display: none; }
+        .jf-hero {
+            flex-direction: column-reverse;
+            gap: 32px;
+            min-height: 0;
+            padding: 40px $jf-gutter-mobile 0;
+        }
+        .jf-portrait {
+            position: relative;
+            top: auto;
+            right: auto;
+            width: 100%;
+            height: 340px;
+            overflow: hidden;
+            border-radius: 12px;
+            opacity: 1;
+        }
+        .jf-portrait-glow { left: 50%; top: 0; width: 340px; height: 340px; transform: translateX(-50%); }
+        .jf-portrait-fade { left: 0; right: 0; height: 90px; }
+        .jf-hero-content { gap: 20px; }
+        .jf-name { font-size: 44px; letter-spacing: -1px; }
+        .jf-disciplines { flex-direction: column; align-items: flex-start; gap: 2px; font-size: 19px; }
+        .jf-dot { display: none; }
+        .jf-summary { font-size: 16px; line-height: 26px; }
+        .jf-actions { flex-direction: column; }
+        .jf-actions .jf-button { width: 100%; }
+        .jf-links { flex-direction: column; gap: 0; }
+        .jf-section { padding: 64px $jf-gutter-mobile 0; }
+        .jf-heading h2, .jf-contact-lead h2 { font-size: 30px; line-height: 36px; }
+        .jf-project, .jf-role, .jf-skill { flex-direction: column; gap: 12px; }
+        .jf-project-title, .jf-project-tech, .jf-role-period, .jf-role-location, .jf-role-type, .jf-skill h3 { flex: none; }
+        .jf-role { gap: 6px; }
+        .jf-groups, .jf-columns, .jf-community { grid-template-columns: minmax(0, 1fr); gap: 48px; }
+        .jf-contact { padding-top: 80px; }
+        .jf-contact-email { font-size: 22px; line-height: 28px; }
+        .jf-footer { flex-direction: column; align-items: flex-start; margin: 40px $jf-gutter-mobile 0; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        * { transition: none !important; scroll-behavior: auto !important; }
+    }
 }

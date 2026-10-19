@@ -594,6 +594,11 @@ a {
   }
 }
 
+.portfolio-contact .contact-location {
+  color: $pf-muted;
+  margin-bottom: 1.5rem;
+}
+
 // Respect visitors who ask for less motion.
 @media (prefers-reduced-motion: reduce) {
   *,

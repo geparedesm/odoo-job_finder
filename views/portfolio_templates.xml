@@ -26,7 +26,7 @@
                 <t t-if="profile.get('summary')">
                   <a href="#about" class="nav-link">About</a>
                 </t>
-                <t t-if="profile.get('email') or profile.get('linkedin') or profile.get('github')">
+                <t t-if="profile.get('email') or profile.get('linkedin') or profile.get('github') or profile.get('website') or profile.get('location')">
                   <a href="#contact" class="nav-link">Contact</a>
                 </t>
               </t>
@@ -61,7 +61,7 @@
                   <t t-if="profile.get('projects')">
                     <a href="#projects" class="btn-discover">Discover the work</a>
                   </t>
-                  <t t-if="request.session.uid">
+                  <t t-if="can_download_cv">
                     <a href="/portfolio/cv" class="btn-download-cv">Download CV</a>
                   </t>
                 </div>
@@ -234,9 +234,12 @@
             </t>
 
             <!-- Contact Section -->
-            <t t-if="profile.get('email') or profile.get('linkedin') or profile.get('github') or profile.get('website')">
+            <t t-if="profile.get('email') or profile.get('linkedin') or profile.get('github') or profile.get('website') or profile.get('location')">
               <section id="contact" class="portfolio-contact">
                 <h2>Let's build something that works</h2>
+                <t t-if="profile.get('location')">
+                  <p class="contact-location" t-out="profile.get('location')"/>
+                </t>
                 <div class="contact-links">
                   <t t-if="profile.get('email')">
                     <a t-attf-href="mailto:#{profile.get('email')}" class="contact-link" t-out="profile.get('email')"/>

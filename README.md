@@ -24,7 +24,7 @@ PDF without mocking the parser, then check preservation after empty/invalid inpu
 
 A published job profile is available as a public, bilingual portfolio page at `/` for configured hosts
 (default: `gp-developer.com` and `www.gp-developer.com`). Only `/` is host-gated: on other hosts it keeps
-Odoo's standard behavior. The published CV is downloaded from `/portfolio/cv`, which any logged-in user
+Odoo's standard behavior. The published CV is downloaded from `/portfolio/cv`, which any internal user
 can reach on any host; anonymous visitors are sent to the login page.
 
 ### Publishing a Portfolio
@@ -59,8 +59,8 @@ Invalid or unavailable languages fall back to English.
 
 ### Download CV
 
-Anonymous visitors see a **Login** button. After logging in, the button becomes **Open app** and a **Download CV** button appears.
-Clicking **Download CV** downloads the complete PDF CV (includes email, phone, and location). Only logged-in users can download.
+Anonymous visitors see a **Login** button. After logging in, the button becomes **Open app**; internal users also get a **Download CV** button in the hero.
+Clicking **Download CV** downloads the complete PDF CV (includes email, phone, and location). Only internal users can download; portal and other external accounts get 403 Forbidden.
 
 ### Configuring Hosts
 

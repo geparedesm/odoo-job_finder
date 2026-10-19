@@ -181,7 +181,7 @@ class PortfolioPageTestCase(HttpCase):
         self.assertEqual(len(actions), 1)
         self.assertEqual(
             actions[0].xpath("t[@t-if=\"profile.get('projects')\"]/a[@class='btn-discover']/@href"), ["#projects"])
-        cv = actions[0].xpath("t[@t-if='request.session.uid']/a[@href='/portfolio/cv']")
+        cv = actions[0].xpath("t[@t-if='can_download_cv']/a[@href='/portfolio/cv']")
         self.assertEqual(len(cv), 1)
         # HttpCase does not carry an authenticated session into requests that override the Host header, so the
         # logged-in branch is checked on the arch; the anonymous rendering is covered by the HTTP tests above.
@@ -230,6 +230,36 @@ class PortfolioPageTestCase(HttpCase):
         self.assertIn("attachment", disposition)
         self.assertIn("filename*=UTF-8''Ana%20QA%20X-Injected%201%20Test-cv.pdf", disposition)
         self.assertNotIn('"QA"', disposition)
+
+    def _portal_user(self):
+        return self.env["res.users"].create({
+            "name": "Portal Visitor", "login": "portal_visitor", "password": "portal_visitor",
+            "group_ids": [(6, 0, [self.env.ref("base.group_portal").id])],
+        })
+
+    def test_portfolio_cv_forbidden_for_portal_users(self):
+        """Portal (external) users cannot download the CV."""
+        self._portal_user()
+        self.authenticate("portal_visitor", "portal_visitor")
+        response = self.url_open("/portfolio/cv", allow_redirects=False)
+        self.assertEqual(response.status_code, 403)
+        self.assertNotEqual(response.headers.get("Content-Type"), "application/pdf")
+
+    def test_portfolio_page_no_download_cv_for_portal_users(self):
+        """Portal users see the portfolio without the Download CV button."""
+        self.env["ir.config_parameter"].set_param("job_finder.portfolio_hosts", "gp-developer.com,127.0.0.1")
+        self._portal_user()
+        self.authenticate("portal_visitor", "portal_visitor")
+        text = self.url_open("/").text
+        self.assertIn("Systems Developer", text)
+        self.assertNotIn("/portfolio/cv", text)
+
+    def test_portfolio_contact_shows_location(self):
+        """The contact section shows the location, even when it is the only contact detail."""
+        self.profile.write({"email": False, "linkedin": False, "github": False, "website": False})
+        text = self.url_open("/", headers={"Host": "gp-developer.com"}).text
+        start = text.index('id="contact"')
+        self.assertIn("San Francisco, CA", text[start:text.index("</section>", start)])
 
     def test_portfolio_cv_not_found_when_nothing_published(self):
         """GET /portfolio/cv returns 404 when nothing is published."""

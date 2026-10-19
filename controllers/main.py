@@ -2,10 +2,11 @@
 
 import re
 
-from werkzeug.exceptions import NotFound
+from werkzeug.exceptions import Forbidden, NotFound
 
 from odoo import http
 from odoo.addons.web.controllers.home import Home
+from odoo.addons.web.controllers.utils import is_user_internal
 from odoo.http import content_disposition, request
 
 from ..models.portfolio_content import normalize_host, parse_hosts
@@ -58,6 +59,8 @@ class PortfolioHome(Home):
                     "profile": published._get_portfolio_values() if published else {},
                     "is_published": bool(published),
                     "current_lang": lang,
+                    # Download CV is for internal users only; portal and other external accounts do not get it.
+                    "can_download_cv": bool(request.session.uid) and is_user_internal(request.session.uid),
                 },
             )
             # Set a cookie to remember the language choice
@@ -80,7 +83,9 @@ class PortfolioCV(http.Controller):
 
     @http.route("/portfolio/cv", auth="user")
     def download_cv(self):
-        """Download the published profile's CV as PDF."""
+        """Download the published profile's CV as PDF (internal users only)."""
+        if not request.env.user._is_internal():
+            raise Forbidden("The CV is available to internal users only.")
         # Minimal sudo: search for published profile (record rules restrict users to their own)
         published = request.env["job.profile"].sudo().search(
             [("is_published_as_portfolio", "=", True)], limit=1
@@ -88,7 +93,7 @@ class PortfolioCV(http.Controller):
         if not published:
             raise NotFound("No portfolio published.")
 
-        # Minimal sudo: any logged-in user can download the published owner's CV
+        # Minimal sudo: any internal user can download the published owner's CV
         pdf_content, _filename = request.env["ir.actions.report"].sudo()._render_qweb_pdf(
             "job_finder.report_job_profile", published.ids
         )

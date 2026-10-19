@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+  <record id="portfolio_hosts_param" model="ir.config_parameter">
+    <field name="key">job_finder.portfolio_hosts</field>
+    <field name="value">gp-developer.com,www.gp-developer.com</field>
+  </record>
+</odoo>

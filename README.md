@@ -67,11 +67,16 @@ Languages are the website's languages (Website › Configuration › Settings): 
 including the fixed texts from `i18n/es.po` and the translated profile texts. The domain is the website's
 **Website Domain** setting; DNS, TLS and the reverse proxy are configured outside this module.
 
-### Download CV
+### Portfolio and CV access
 
-**Download CV** opens `/portfolio/cv`. Anonymous visitors are sent to log in first; internal users download the
-complete PDF; portal and other external accounts get 403 Forbidden. Only the published profile's photo is public,
-at `/portfolio/photo`.
+The public portfolio does not show CV download links. `/portfolio/cv` remains available to signed-in internal users;
+anonymous visitors are sent to log in first, and portal and other external accounts get 403 Forbidden. Only the
+published profile's photo is public, at `/portfolio/photo`.
+
+For an isolated visual preview, run `.hermes/preview-seed.py` in an Odoo shell connected to a disposable preview
+database, setting `JOB_FINDER_PREVIEW_DATABASE` to that database's exact name. The hook creates or updates a
+dedicated synthetic profile with a deliberately long email address. To preview the no-email state, clear the email
+on the synthetic `Portfolio Preview` profile in that same isolated database.
 
 ## Complete CV
 

@@ -60,6 +60,8 @@ class PortfolioPageTestCase(HttpCase):
                          "Vice Chair, IEEEXtreme Public Relations Committee", "Contact",
                          "gabrielparedesmendoza@gmail.com", 'href="/portfolio/photo"' if False else 'src="/portfolio/photo"'):
             self.assertIn(expected, text)
+        self.assertIn('href="mailto:gabrielparedesmendoza@gmail.com"', text)
+        self.assertNotRegex(text, r'href=["\'][^"\']*/portfolio/cv')
         # Navigation lists the sections that have content.
         for anchor in ("#work", "#experience", "#research", "#skills", "#education", "#community", "#contact"):
             self.assertIn(f'href="{anchor}"', text)
@@ -114,9 +116,30 @@ class PortfolioPageTestCase(HttpCase):
         self.env.ref("website.default_website").language_ids = [(4, lang.id)]
         self.env["ir.module.module"]._load_module_terms(["job_finder"], ["es_ES"], overwrite=True)
         text = self.page("/es/portfolio")
-        for expected in ("Trabajo destacado", "Experiencia", "Contacto", "Descargar CV", "Nativo"):
+        for expected in ("Trabajo destacado", "Experiencia", "Contacto", "Nativo"):
             self.assertIn(expected, text)
         self.assertIn('hreflang="en"', text)
+        self.assertIn('href="mailto:gabrielparedesmendoza@gmail.com"', text)
+        self.assertNotRegex(text, r'href=["\'][^"\']*/portfolio/cv')
+        self.profile.email = False
+        text_without_email = self.page("/es/portfolio")
+        self.assertNotIn("mailto:", text_without_email)
+        self.assertNotRegex(text_without_email, r'href=["\'][^"\']*/portfolio/cv')
+
+    def test_no_email_hides_hero_action_and_contact_link(self):
+        self.profile.email = False
+        text = self.page("/portfolio")
+        self.assertNotIn("mailto:", text)
+        self.assertNotRegex(text, r'href=["\'][^"\']*/portfolio/cv')
+        self.assertIn('class="jf-actions"', text)
+
+    def test_long_contact_email_is_kept_as_a_mailto_link(self):
+        email = "long.address.for.responsive.preview." + "segment." * 8 + "@example.com"
+        self.profile.email = email
+        text = self.page("/portfolio")
+        self.assertIn(f'href="mailto:{email}"', text)
+        self.assertIn('class="jf-contact-email"', text)
+        self.assertNotRegex(text, r'href=["\'][^"\']*/portfolio/cv')
 
     def test_cv_requires_login_and_an_internal_user(self):
         response = self.url_open("/portfolio/cv", allow_redirects=False)

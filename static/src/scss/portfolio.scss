@@ -547,10 +547,12 @@ $jf-gutter-mobile: 24px;
 
     .jf-contact-email {
         font-family: $jf-display;
-        font-size: 30px;
+        font-size: 20px;
         font-weight: 500;
-        line-height: 36px;
+        line-height: 24px;
         color: $jf-violet-text;
+        display: block;
+        max-width: 100%;
         overflow-wrap: anywhere;
     }
 
@@ -581,15 +583,6 @@ $jf-gutter-mobile: 24px;
         border-top: 1px solid $jf-line;
     }
 
-    .jf-footer-cv {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        min-height: 44px;
-        color: $jf-violet-text;
-        font-size: 14px;
-    }
-
     .jf-empty {
         display: flex;
         flex-direction: column;
@@ -617,7 +610,7 @@ $jf-gutter-mobile: 24px;
     @media (max-width: 767.98px) {
         .jf-nav { min-height: 72px; padding: 0 $jf-gutter-mobile; }
         .jf-wordmark { font-size: 17px; white-space: normal; }
-        .jf-nav-cv, .jf-lang { display: none; }
+        .jf-lang { display: none; }
         .jf-hero {
             flex-direction: column-reverse;
             gap: 32px;
@@ -651,7 +644,7 @@ $jf-gutter-mobile: 24px;
         .jf-role { gap: 6px; }
         .jf-groups, .jf-columns, .jf-community { grid-template-columns: minmax(0, 1fr); gap: 48px; }
         .jf-contact { padding-top: 80px; }
-        .jf-contact-email { font-size: 22px; line-height: 28px; }
+        .jf-contact-email { font-size: 17px; line-height: 20.4px; }
         .jf-footer { flex-direction: column; align-items: flex-start; margin: 40px $jf-gutter-mobile 0; }
     }
 

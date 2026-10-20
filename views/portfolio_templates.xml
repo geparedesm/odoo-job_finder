@@ -42,9 +42,6 @@
                                        t-out="lg.url_code.split('_')[0].upper()"/>
                                 </t>
                             </div>
-                            <a href="/portfolio/cv" class="jf-button jf-button-primary jf-nav-cv">
-                                <i class="fa fa-download" aria-hidden="true"/> <span>Download CV</span>
-                            </a>
                             <details class="jf-menu">
                                 <summary aria-label="Menu"><i class="fa fa-bars" aria-hidden="true"/></summary>
                                 <nav class="jf-menu-links" aria-label="Sections">
@@ -55,7 +52,6 @@
                                     <a t-if="p['education'] or p['trainings'] or p['languages']" href="#education">Education</a>
                                     <a t-if="p['volunteering']" href="#community">Community</a>
                                     <a href="#contact">Contact</a>
-                                    <a href="/portfolio/cv">Download CV</a>
                                 </nav>
                             </details>
                         </div>
@@ -76,9 +72,6 @@
                                 <div class="jf-actions">
                                     <a t-if="p['email']" t-attf-href="mailto:#{p['email']}" class="jf-button jf-button-primary jf-button-large">
                                         <i class="fa fa-envelope-o" aria-hidden="true"/> <span>Email me</span>
-                                    </a>
-                                    <a t-else="" href="/portfolio/cv" class="jf-button jf-button-primary jf-button-large">
-                                        <i class="fa fa-download" aria-hidden="true"/> <span>Download CV</span>
                                     </a>
                                     <a t-if="p['featured_projects']" href="#work" class="jf-button jf-button-outline jf-button-large">See selected work</a>
                                 </div>
@@ -244,7 +237,6 @@
                         <p class="jf-muted jf-small">
                             <span t-out="p['name']"/><t t-if="p['headline_parts']"> / <t t-out="', '.join(p['headline_parts'])"/></t>
                         </p>
-                        <a href="/portfolio/cv" class="jf-footer-cv"><i class="fa fa-download" aria-hidden="true"/> <span>Download complete CV (PDF)</span></a>
                     </footer>
                 </t>
             </div>

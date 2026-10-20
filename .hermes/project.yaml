@@ -11,3 +11,9 @@ test_environment:
   services: [postgres]
   startup_timeout_seconds: 180
 quality_gate: {build: true, tests: true, full_suite: true}
+
+# Headless UI design; only a secret reference is versioned.
+secrets:
+  - name: PEN_CLI_KEY
+    environment: local
+    delivery: file

@@ -5,7 +5,7 @@ from odoo import fields, models
 
 class Training(models.Model):
     _name = "job_finder.training"
-    _inherit = "job_finder.profile_item"
+    _inherit = ["job_finder.profile_item", "job_finder.cv_area_mixin"]
     _description = "Profile training or credential"
     _order = "sequence, year desc, id"
 

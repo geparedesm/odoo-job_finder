@@ -75,23 +75,33 @@ class TestJobProfileReport(TransactionCase):
         form = etree.fromstring(view["arch"].encode())
         buttons = form.xpath("./header/button[@type='action']")
         self.assertEqual(len(buttons), 1)
-        self.assertEqual(buttons[0].get("name"), str(self.report.id))
+        self.assertEqual(buttons[0].get("name"), str(self.env.ref("job_finder.action_job_finder_cv_download").id))
+        self.assertEqual(self.report.paperformat_id, self.env.ref("job_finder.paperformat_cv"))
         action = self.report.with_user(self.user).report_action(self.profile)
         self.assertEqual(action["report_name"], self.report.report_name)
         self.assertEqual(action["report_type"], "qweb-pdf")
         self.assertEqual(action["context"]["active_ids"], self.profile.ids)
 
     def test_all_professional_fields_and_latest_edits_are_rendered(self):
-        text = "".join(etree.HTML(self.render_html(self.user)).itertext())
-        for value in self.values.values():
+        html = self.render_html(self.user)
+        text = "".join(etree.HTML(html).itertext())
+        for value in ("Report Candidate", "Research Engineer", "candidate@example.com", "+34 600 111 222", "Madrid",
+                      "linkedin.com/in/candidate", "candidate.com", "github.com/candidate",
+                      "Updated professional summary"):
             self.assertIn(value, text)
-        self.assertIn("Website: https://candidate.com", text)
-        for expected in ("Data Engineer", "Acme", "Dec 2021 – Jan 2025", "Full-time", "Cut costs by 30%",
-                         "Led a team of four", "Research prototype", "Internal lab", "Technologies / methods: Python",
-                         "Languages: Python", "Engineering degree", "2014 – 2019", "Graduated",
+        for href in ('href="mailto:candidate@example.com"', 'href="tel:+34600111222"',
+                     'href="https://linkedin.com/in/candidate"', 'href="https://github.com/candidate"'):
+            self.assertIn(href, html)
+        for expected in ("Professional summary", "Skills", "Experience", "Education", "Certifications and training",
+                         "Leadership and volunteering", "Languages", "Data Engineer", "Acme", "Dec 2021 – Jan 2025",
+                         "Full-time", "Cut costs by 30%", "Led a team of four", "Research prototype", "Internal lab",
+                         "Technologies: Python", "Languages: Python", "Engineering degree", "2014 – 2019", "Graduated",
                          "Advanced workshop", "Not renewed", "Community mentoring", "President, RAS chapter",
                          "English", "B2 · Upper intermediate"):
             self.assertIn(expected, text)
+        # The CV is text for ATS parsers: no images and no layout tables.
+        self.assertNotIn("<img", html.split('class="page jf-cv"')[1])
+        self.assertNotIn("<table", html.split('class="page jf-cv"')[1])
         self.role.project_ids.write({"name": "New project after parsing <script>"})
         html = self.render_html(self.user)
         self.assertIn("New project after parsing &lt;script&gt;", html)
@@ -106,7 +116,7 @@ class TestJobProfileReport(TransactionCase):
         self.profile.training_ids.unlink()
         self.profile.experience_ids.unlink()
         html = self.render_html(self.user)
-        self.assertNotIn("<h2>Trainings</h2>", html)
+        self.assertNotIn("<h2>Certifications and training</h2>", html)
         self.assertNotIn("<h2>Experience</h2>", html)
         self.assertNotIn("False", html)
         self.assertIn("Report Candidate", html)

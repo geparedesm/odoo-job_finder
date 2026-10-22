@@ -22,6 +22,7 @@
                             <field name="is_year_only"/>
                             <field name="is_public" widget="boolean_toggle"/>
                             <field name="is_secondary" widget="boolean_toggle" invisible="category != 'work'"/>
+                            <field name="cv_area_ids" widget="many2many_tags"/>
                         </group>
                     </group>
                     <group>
@@ -37,6 +38,7 @@
                             <field name="profile_id" column_invisible="True"/>
                             <field name="technology_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
                             <field name="description" optional="show"/>
+                            <field name="cv_area_ids" widget="many2many_tags" optional="show"/>
                             <field name="is_public" widget="boolean_toggle"/>
                         </list>
                     </field>
@@ -66,6 +68,7 @@
                         <group>
                             <field name="is_featured"/>
                             <field name="is_public" widget="boolean_toggle"/>
+                            <field name="cv_area_ids" widget="many2many_tags"/>
                         </group>
                     </group>
                     <notebook>
@@ -128,6 +131,7 @@
                         <group>
                             <field name="period"/>
                             <field name="is_public" widget="boolean_toggle"/>
+                            <field name="cv_area_ids" widget="many2many_tags"/>
                         </group>
                     </group>
                     <group>

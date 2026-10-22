@@ -13,3 +13,5 @@ access_job_finder_technology_system,job_finder.technology system,model_job_finde
 access_job_finder_project_metric_user,job_finder.project_metric user,model_job_finder_project_metric,base.group_user,1,1,1,1
 access_job_finder_project_step_user,job_finder.project_step user,model_job_finder_project_step,base.group_user,1,1,1,1
 access_job_finder_profile_figure_user,job_finder.profile_figure user,model_job_finder_profile_figure,base.group_user,1,1,1,1
+access_job_finder_cv_area_user,job_finder.cv_area user,model_job_finder_cv_area,base.group_user,1,1,1,1
+access_job_finder_cv_download_user,job_finder.cv_download user,model_job_finder_cv_download,base.group_user,1,1,1,1

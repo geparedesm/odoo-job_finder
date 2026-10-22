@@ -73,6 +73,9 @@ and platforms, cover, key outcomes, overview (the rest of the description), *Wha
 the project link, and the next case study. Sections without content are hidden. Other projects have no page, and
 only the covers of these pages are public, at `/portfolio/project/<id>/cover`.
 
+Architecture flows with four or more components stack vertically so longer pipelines remain readable without
+horizontal scrolling on desktop, tablet and mobile.
+
 The project covers in `ui/assets/cover-*.png` are AI-generated placeholders for the design; upload real screenshots
 or photos as covers.
 
@@ -103,12 +106,29 @@ sign-in page (Odoo's login form, returning to the download) with a link to reque
 download the complete PDF; portal and other external accounts get a 403 page that suggests requesting it by email.
 Only the published profile's photo is public, at `/portfolio/photo`.
 
-## Complete CV
+## CV (PDF)
 
-**Download complete CV** in the form header (or Print › Complete CV) generates the PDF from the saved records:
-roles with highlights and projects, academic research, skills by area, education, trainings, volunteering and
-languages. Entries hidden from the portfolio still appear in the complete CV. Profile access rules apply to
-downloads.
+**Download CV** in the form header opens a dialog to choose CV areas, or none for the complete CV (Print ›
+Complete CV gives the complete one). The PDF is A4, in one column built for applicant tracking systems: real text,
+no images or layout tables, standard section names (Professional summary, Skills, Experience, Projects, Research and
+academic projects, Education, Certifications and training, Leadership and volunteering, Languages) and dates
+aligned on the right, with a violet accent. Entries hidden from the portfolio still appear in the CV. Profile access
+rules apply to downloads.
+
+### CV areas
+
+The **CV areas** tab lists the areas you apply for, such as Frontend, Backend, DevOps or Hospitality, each with an
+optional CV headline and summary (they replace the profile's). Tag roles, projects, skill groups, trainings and
+volunteering with their areas in their tabs (`job_finder.cv_area`, *CV areas* field):
+
+- untagged entries appear in every CV; tagged ones only in the CVs of their areas;
+- a project without areas follows its role; a tagged project brings its role, with only the projects of the chosen
+  areas;
+- education and languages are always included;
+- several areas can be combined, for example Frontend and Backend for a full-stack job.
+
+On the portfolio, **Download CV** shows internal users a page to choose the areas when the profile has some
+(`/portfolio/cv?download=1&area=<id>`); the file name includes the chosen areas.
 
 ## Upgrading to 19.0.1.2.0
 

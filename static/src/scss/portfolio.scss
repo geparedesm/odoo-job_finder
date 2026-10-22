@@ -1365,6 +1365,44 @@ $jf-radius: 14px;
         .jf-button { margin-top: 18px; }
     }
 
+    .jf-cv-choice {
+        width: 100%;
+        max-width: 560px;
+
+        .jf-form { gap: 12px; }
+    }
+
+    .jf-form .jf-check {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        margin: 0;
+        padding: 14px 16px;
+        border: 1px solid $jf-line;
+        border-radius: 10px;
+        background-color: $jf-bg;
+        cursor: pointer;
+
+        input {
+            min-height: 0;
+            width: 18px;
+            height: 18px;
+            margin-top: 2px;
+            padding: 0;
+            accent-color: $jf-violet;
+        }
+
+        &:has(input:checked) { border-color: $jf-violet; background-color: rgba($jf-violet, 0.08); }
+    }
+
+    .jf-check-text {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        font-size: 15px;
+        color: $jf-ink;
+    }
+
     .jf-form-footer {
         display: flex;
         justify-content: space-between;

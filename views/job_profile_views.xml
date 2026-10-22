@@ -9,8 +9,8 @@
                     <button name="action_parse_cv" type="object" string="Analyze CV"
                             class="oe_highlight" invisible="not cv_file"
                             confirm="Analyzing the CV replaces the entries of every section it finds. Continue?"/>
-                    <button name="%(action_report_job_profile)d" type="action"
-                            string="Download complete CV"/>
+                    <button name="%(action_job_finder_cv_download)d" type="action" string="Download CV"
+                            context="{'default_profile_id': id}"/>
                 </header>
                 <sheet>
                     <field name="photo" widget="image" class="oe_avatar" options="{'preview_image': 'photo'}"/>
@@ -54,6 +54,8 @@
                                     <field name="employment_type" optional="show"/>
                                     <field name="category" optional="show"/>
                                     <field name="project_ids" widget="many2many_tags" string="Projects" optional="show"/>
+                                    <field name="profile_id" column_invisible="True"/>
+                                    <field name="cv_area_ids" widget="many2many_tags" optional="show"/>
                                     <field name="is_public" widget="boolean_toggle"/>
                                     <field name="is_secondary" optional="show"/>
                                 </list>
@@ -72,6 +74,7 @@
                                     <field name="technology_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
                                     <field name="description" optional="hide"/>
                                     <field name="url" optional="hide"/>
+                                    <field name="cv_area_ids" widget="many2many_tags" optional="show"/>
                                     <field name="is_public" widget="boolean_toggle"/>
                                 </list>
                             </field>
@@ -82,6 +85,8 @@
                                     <field name="sequence" widget="handle"/>
                                     <field name="name"/>
                                     <field name="technology_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                                    <field name="profile_id" column_invisible="True"/>
+                                    <field name="cv_area_ids" widget="many2many_tags" optional="show"/>
                                     <field name="is_public" widget="boolean_toggle"/>
                                 </list>
                             </field>
@@ -109,6 +114,8 @@
                                     <field name="issuer"/>
                                     <field name="year"/>
                                     <field name="status"/>
+                                    <field name="profile_id" column_invisible="True"/>
+                                    <field name="cv_area_ids" widget="many2many_tags" optional="show"/>
                                     <field name="is_public" widget="boolean_toggle"/>
                                 </list>
                             </field>
@@ -121,6 +128,8 @@
                                     <field name="organisation"/>
                                     <field name="location" optional="show"/>
                                     <field name="period"/>
+                                    <field name="profile_id" column_invisible="True"/>
+                                    <field name="cv_area_ids" widget="many2many_tags" optional="show"/>
                                     <field name="is_public" widget="boolean_toggle"/>
                                 </list>
                             </field>
@@ -132,6 +141,22 @@
                                     <field name="name"/>
                                     <field name="level"/>
                                     <field name="is_public" widget="boolean_toggle"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="CV areas" name="cv_areas">
+                            <div class="alert alert-info" role="status" name="cv_areas_guidance">
+                                Create the areas you apply for (Frontend, Backend, DevOps, Hospitality…) and tag the
+                                roles, projects, skills, trainings and volunteering of each one in their tabs. A CV for
+                                some areas keeps their entries and the untagged ones; education and languages are
+                                always included.
+                            </div>
+                            <field name="cv_area_ids" context="{'default_profile_id': id}">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="headline" placeholder="Defaults to your headline"/>
+                                    <field name="summary" placeholder="Defaults to your summary" optional="show"/>
                                 </list>
                             </field>
                         </page>

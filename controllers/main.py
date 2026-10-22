@@ -18,9 +18,10 @@ def published_project(profile, project_id):
     return profile.project_ids.filtered(lambda p: p.id == project_id and p.is_public and p.is_featured)
 
 
-def cv_filename(full_name):
-    """A download name built from the profile name without quotes, separators or control characters."""
-    name = " ".join(re.sub(r"[^\w .-]+", " ", full_name or "").split())
+def cv_filename(full_name, areas=()):
+    """A download name built from the profile name (and the CV areas) without quotes, separators or control
+    characters."""
+    name = " ".join(re.sub(r"[^\w .-]+", " ", " ".join([full_name or "", *areas])).split())
     return (name or "portfolio") + "-cv.pdf"
 
 
@@ -94,14 +95,23 @@ class Portfolio(http.Controller):
             return request.render("job_finder.cv_sign_in_page", self._layout_values(profile))
         if not request.env.user._is_internal():
             return request.render("job_finder.cv_unavailable_page", self._layout_values(profile), status=403)
+        areas = profile.cv_area_ids
+        if areas and "download" not in kw:
+            # A profile with CV areas lets the user choose the CV first.
+            return request.render("job_finder.cv_choose_page", {
+                **self._layout_values(profile),
+                "areas": [{"id": area.id, "name": area.name, "headline": area.headline or ""} for area in areas],
+            })
+        # Only areas of the published profile count; other values are ignored.
+        chosen = areas.filtered(lambda area: str(area.id) in request.httprequest.args.getlist("area"))
         # Minimal sudo: any internal user can download the published owner's CV.
         pdf_content, _filename = request.env["ir.actions.report"].sudo()._render_qweb_pdf(
-            "job_finder.report_job_profile", profile.ids
+            "job_finder.report_job_profile", profile.ids, data={"area_ids": chosen.ids},
         )
         return request.make_response(
             pdf_content,
             [
                 ("Content-Type", "application/pdf"),
-                ("Content-Disposition", content_disposition(cv_filename(profile.full_name))),
+                ("Content-Disposition", content_disposition(cv_filename(profile.full_name, chosen.mapped("name")))),
             ],
         )

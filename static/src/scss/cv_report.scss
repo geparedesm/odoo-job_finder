@@ -1,0 +1,145 @@
+// CV PDF (report job_finder.report_job_profile): one ATS-friendly column, real text, a violet accent.
+// Rendered by wkhtmltopdf, so layout uses floats and display: table rather than flexbox or grid.
+
+$cv-ink: #14161F;
+$cv-text: #2F3542;
+$cv-muted: #5D6577;
+$cv-line: #D9DCE6;
+$cv-accent: #6B3FD9;
+
+.jf-cv {
+    font-family: Roboto, "DejaVu Sans", Arial, sans-serif;
+    font-size: 10pt;
+    line-height: 1.4;
+    color: $cv-text;
+
+    h1, h2, p, ul {
+        margin: 0;
+    }
+
+    a {
+        color: inherit;
+        text-decoration: none;
+    }
+
+    strong {
+        color: $cv-ink;
+        font-weight: 700;
+    }
+
+    .jf-cv-header {
+        padding-bottom: 10pt;
+        margin-bottom: 12pt;
+        border-bottom: 2pt solid $cv-accent;
+    }
+
+    .jf-cv-name {
+        font-size: 24pt;
+        font-weight: 700;
+        line-height: 1.1;
+        letter-spacing: -0.3pt;
+        color: $cv-ink;
+    }
+
+    .jf-cv-headline {
+        margin-top: 3pt;
+        font-size: 12pt;
+        font-weight: 500;
+        color: $cv-accent;
+    }
+
+    .jf-cv-contact {
+        margin-top: 6pt;
+        font-size: 9pt;
+        color: $cv-muted;
+    }
+
+    .jf-cv-contact-item {
+        white-space: nowrap;
+    }
+
+    .jf-cv-sep {
+        padding: 0 5pt;
+        color: $cv-line;
+    }
+
+    .jf-cv-section {
+        margin-top: 12pt;
+    }
+
+    .jf-cv-section h2 {
+        margin-bottom: 6pt;
+        padding-bottom: 2pt;
+        border-bottom: 0.75pt solid $cv-line;
+        font-size: 10.5pt;
+        font-weight: 700;
+        letter-spacing: 1.2pt;
+        text-transform: uppercase;
+        color: $cv-accent;
+        page-break-after: avoid;
+    }
+
+    .jf-cv-text + .jf-cv-text {
+        margin-top: 4pt;
+    }
+
+    .jf-cv-skill {
+        margin-bottom: 2pt;
+    }
+
+    // Long entries may break across pages; their heading stays with the first lines.
+    .jf-cv-entry {
+        margin-bottom: 8pt;
+    }
+
+    // Title on the left and dates on the right, in reading order for ATS parsers.
+    .jf-cv-entry-head {
+        display: table;
+        width: 100%;
+        page-break-inside: avoid;
+        page-break-after: avoid;
+    }
+
+    .jf-cv-entry-title, .jf-cv-entry-date {
+        display: table-cell;
+        vertical-align: baseline;
+    }
+
+    .jf-cv-entry-title {
+        font-size: 10.5pt;
+    }
+
+    .jf-cv-entry-date {
+        width: 30%;
+        text-align: right;
+        white-space: nowrap;
+        font-size: 9pt;
+        color: $cv-muted;
+    }
+
+    .jf-cv-entry-meta {
+        font-size: 9pt;
+        color: $cv-muted;
+        page-break-after: avoid;
+    }
+
+    .jf-cv-entry .jf-cv-text {
+        margin-top: 3pt;
+    }
+
+    .jf-cv-bullets {
+        margin-top: 3pt;
+        padding-left: 13pt;
+
+        li {
+            margin-bottom: 2.5pt;
+            page-break-inside: avoid;
+        }
+    }
+
+    .jf-cv-tech {
+        display: block;
+        font-size: 8.5pt;
+        color: $cv-muted;
+    }
+}

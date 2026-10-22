@@ -1191,12 +1191,14 @@ $jf-radius: 14px;
             position: relative;
             display: flex;
             flex: 1;
+            min-width: 0;
             flex-direction: column;
             gap: 8px;
             padding: 18px;
             border: 1px solid $jf-line;
             border-radius: 12px;
             background-color: $jf-bg;
+            overflow-wrap: anywhere;
 
             strong { font-family: $jf-display; font-size: 17px; font-weight: 600; color: $jf-ink; }
 
@@ -1215,6 +1217,19 @@ $jf-radius: 14px;
             &.is-accent {
                 border-color: rgba($jf-violet, 0.4);
                 background-color: rgba($jf-violet, 0.08);
+            }
+        }
+
+        // Long pipelines cannot fit beside the section label on smaller desktops.
+        &:has(> li:nth-child(4)) {
+            flex-direction: column;
+            gap: 28px;
+
+            li + li::before {
+                content: "\f07d";
+                top: -24px;
+                left: 50%;
+                transform: translateX(-50%);
             }
         }
     }

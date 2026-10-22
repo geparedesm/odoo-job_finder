@@ -63,6 +63,37 @@ class CaseStudyPageTestCase(HttpCase):
         for hidden in ("Key outcomes", "What I built", "Architecture", "/cover"):
             self.assertNotIn(hidden, text.split('class="jf-next"')[0])
 
+    def test_long_architecture_fits_desktop_and_mobile(self):
+        self.zkteco.step_ids.unlink()
+        self.zkteco.write({"step_ids": [(0, 0, {
+            "sequence": index,
+            "name": name,
+            "detail": "Location processing, device commands and notifications for connected GPS trackers.",
+        }) for index, name in enumerate((
+            "GPS devices", "API and TCP services", "AWS backend",
+            "Firebase Realtime Database", "Flutter applications",
+        ))]})
+        for width in (1200, 1440, 390):
+            with self.subTest(width=width):
+                self.browser_size = f"{width}x900"
+                self.browser_js(self.zkteco._get_portfolio_path(), """
+                    const page = document.documentElement;
+                    const flow = document.querySelector('.jf-flow');
+                    if (flow.children.length !== 5) {
+                        throw new Error('Expected all five architecture components');
+                    }
+                    if (page.scrollWidth > page.clientWidth + 1) {
+                        throw new Error('The case study overflows the viewport');
+                    }
+                    for (const step of flow.children) {
+                        if (step.getBoundingClientRect().right > page.clientWidth + 1 ||
+                            step.scrollWidth > step.clientWidth + 1) {
+                            throw new Error('Architecture content overflows its container');
+                        }
+                    }
+                    console.log('test successful');
+                """, ready="document.querySelector('.jf-flow')")
+
     def test_old_slug_redirects_to_the_current_one(self):
         response = self.url_open(f"/portfolio/project/old-name-{self.zkteco.id}", allow_redirects=False)
         self.assertEqual(response.status_code, 301)

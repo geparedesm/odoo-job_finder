@@ -322,6 +322,39 @@ Gabriel Paredes Mendoza 6 / 6
         self.assertEqual(result["linkedin"], "https://www.linkedin.com/in/jane")
         self.assertEqual(result["skills"], "")
 
+class TestPageText(unittest.TestCase):
+    """Pages are read in visual order, so bullets stay with their project."""
+
+    class Page:
+        def __init__(self, default, layout=None):
+            self.default, self.layout = default, layout
+
+        def extract_text(self, extraction_mode="plain"):
+            if extraction_mode == "layout":
+                if self.layout is None:
+                    raise TypeError("extraction_mode")  # pypdf without layout mode
+                return self.layout
+            return self.default
+
+    def test_layout_order_keeps_bullets_with_their_project(self):
+        # Some PDFs draw every bullet after all the titles of the page.
+        page = self.Page(
+            default="First\nTechnologies / methods: Python\nSecond\nTechnologies / methods: Dart\n"
+                    "Built the first.\n•\nBuilt the second.\n•",
+            layout="First\nTechnologies / methods: Python\n\u2022 Built the first.\n\n"
+                   "Second\nTechnologies / methods: Dart\n\u2022   Built   the\n    second.\n   ",
+        )
+        text = parser.page_text(page)
+        self.assertEqual(text, "First\nTechnologies / methods: Python\n• Built the first.\n"
+                               "Second\nTechnologies / methods: Dart\n• Built the\nsecond.")
+        result = parser.parse_cv_text("EXPERIENCE\nDeveloper\nAcme | Perth | 2020 - 2021 | Full-time\n" + text)
+        self.assertIn("First\nTechnologies / methods: Python\n• Built the first.", result["experience"])
+
+    def test_default_extraction_without_layout_mode(self):
+        self.assertEqual(parser.page_text(self.Page(default="Kept  as\n | \nextracted")), "Kept  as\n | \nextracted")
+        self.assertEqual(parser.page_text(self.Page(default=None)), "")
+
+
 class TestCompletePDF(unittest.TestCase):
     def test_all_six_pages_and_every_field(self):
         import json
@@ -332,6 +365,15 @@ class TestCompletePDF(unittest.TestCase):
         reader = pypdf.PdfReader(fixtures / "Gabriel_Paredes_CV_completo.pdf")
         self.assertEqual(len(reader.pages), 6)
         self.assertEqual("\n".join(page.extract_text() or "" for page in reader.pages), text)
+        expected = json.loads((fixtures / "complete_cv_expected.json").read_text())
+        self.assertEqual(parser.parse_cv_text(text), expected)
+
+    def test_layout_extraction_reads_the_same_fields(self):
+        import pypdf
+
+        fixtures = Path(__file__).parent / "fixtures"
+        reader = pypdf.PdfReader(fixtures / "Gabriel_Paredes_CV_completo.pdf")
+        text = "\n".join(parser.page_text(page) for page in reader.pages)
         expected = json.loads((fixtures / "complete_cv_expected.json").read_text())
         self.assertEqual(parser.parse_cv_text(text), expected)
 

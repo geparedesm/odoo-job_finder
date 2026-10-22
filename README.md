@@ -46,10 +46,13 @@ six-page reference PDF, its extracted text and the expected values.
 ## Portfolio website
 
 The module depends on Odoo's `website`. The portfolio is the page `/portfolio`, set as the website's homepage, so
-`/` shows it (and `/es/` in Spanish). It follows the design in `ui/portfolio.pen` (desktop 1440 and mobile 390):
-hero with photo, Selected work, Experience, Research and academic projects, Skills, Education, Training and
-credentials, Languages, Leadership and volunteering, and Contact. Sections and navigation links appear only when
-they have entries shown on the portfolio.
+`/` shows it (and `/es/` in Spanish). It shows the hero with photo, Selected work, Experience, Research and
+academic projects, Skills, Education, Training and credentials, Languages, Leadership and volunteering, and
+Contact. Sections and navigation links appear only when they have entries shown on the portfolio.
+
+The approved redesign is in `ui/ui.pen` (desktop 1440, tablet 768 and mobile 390, the project case-study page, and
+the expanded, CV access and empty states) and is not implemented yet. Its notes list the data model changes it
+needs. The project covers in `ui/assets/cover-*.png` are AI-generated placeholders.
 
 ### Publishing
 

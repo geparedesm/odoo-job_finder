@@ -21,6 +21,7 @@ _SECTIONS = {
     "profile": "summary",
     "personalattributes": "summary",
     "professionalexperience": "experience",
+    "personalprojects": "experience",
     "experience": "experience",
     "workexperience": "experience",
     "education": "education",

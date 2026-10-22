@@ -76,7 +76,6 @@ $cv-accent: #6B3FD9;
         letter-spacing: 1.2pt;
         text-transform: uppercase;
         color: $cv-accent;
-        page-break-after: avoid;
     }
 
     .jf-cv-text + .jf-cv-text {
@@ -87,7 +86,8 @@ $cv-accent: #6B3FD9;
         margin-bottom: 2pt;
     }
 
-    // Long entries may break across pages; their heading stays with the first lines.
+    // Long entries may break across pages. wkhtmltopdf applies page-break-after: avoid to the whole next block, which
+    // pushes long sections to the next page, so only small parts (the heading line, each bullet) avoid breaks.
     .jf-cv-entry {
         margin-bottom: 8pt;
     }
@@ -97,7 +97,6 @@ $cv-accent: #6B3FD9;
         display: table;
         width: 100%;
         page-break-inside: avoid;
-        page-break-after: avoid;
     }
 
     .jf-cv-entry-title, .jf-cv-entry-date {
@@ -120,7 +119,6 @@ $cv-accent: #6B3FD9;
     .jf-cv-entry-meta {
         font-size: 9pt;
         color: $cv-muted;
-        page-break-after: avoid;
     }
 
     .jf-cv-entry .jf-cv-text {

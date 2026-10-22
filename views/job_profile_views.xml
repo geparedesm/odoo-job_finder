@@ -55,12 +55,13 @@
                                     <field name="category" optional="show"/>
                                     <field name="project_ids" widget="many2many_tags" string="Projects" optional="show"/>
                                     <field name="is_public" widget="boolean_toggle"/>
+                                    <field name="is_secondary" optional="show"/>
                                 </list>
                             </field>
                         </page>
                         <page string="Projects" name="projects">
                             <field name="project_ids" context="{'default_profile_id': id}">
-                                <list editable="bottom">
+                                <list>
                                     <field name="sequence" widget="handle"/>
                                     <field name="is_featured" widget="boolean_favorite" nolabel="1"/>
                                     <field name="name"/>
@@ -136,8 +137,27 @@
                         </page>
                         <page string="Portfolio" name="portfolio">
                             <group name="portfolio_options">
+                                <field name="tagline" placeholder="Defaults to the first sentence of your summary"/>
+                                <field name="availability_note" placeholder="Open to software &amp; ICT roles"/>
+                                <field name="secondary_experience_title" placeholder="Other experience"/>
                                 <field name="is_phone_public"/>
                             </group>
+                            <group string="Section headlines" name="headlines">
+                                <field name="work_heading" placeholder="Selected work"/>
+                                <field name="experience_heading" placeholder="Experience"/>
+                                <field name="skills_heading" placeholder="Skills"/>
+                                <field name="about_heading" placeholder="Background"/>
+                                <field name="contact_heading" placeholder="Let's work together."/>
+                            </group>
+                            <separator string="Key figures"/>
+                            <field name="figure_ids" context="{'default_profile_id': id}">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="value" placeholder="55k+"/>
+                                    <field name="label" placeholder="App downloads"/>
+                                    <field name="is_public" widget="boolean_toggle"/>
+                                </list>
+                            </field>
                             <group string="Search engines and sharing" name="seo">
                                 <field name="website_meta_title" placeholder="Defaults to your name and headline"/>
                                 <field name="website_meta_description" placeholder="Defaults to your summary"/>

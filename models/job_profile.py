@@ -11,11 +11,21 @@ from . import cv_structure
 from .cv_parser import parse_cv_text
 from .portfolio_content import (
     capitalize_first, en_dash_ranges, first_sentence, headline_parts, highlight_lines, paragraphs, safe_url,
-    split_organisation,
+    split_organisation, split_qualification, titled_items,
 )
 
 
 LINK_ICONS = {"linkedin": "fa-linkedin", "github": "fa-github", "website": "fa-globe"}
+# Icon of a skill area on the portfolio, from words of its name; the first match wins.
+SKILL_ICONS = (
+    (("language", "programming"), "fa-code"),
+    (("application", "framework", "web", "mobile"), "fa-window-maximize"),
+    (("data", "infra", "cloud", "devops"), "fa-database"),
+    (("engineering", "hardware", "electronic", "mechatron"), "fa-microchip"),
+    (("ict", "network", "analysis", "security"), "fa-sitemap"),
+)
+# Width of a language's level bar on the portfolio, in percent.
+LANGUAGE_LEVEL_PERCENT = {"native": 100, "c2": 95, "c1": 85, "b2": 70, "b1": 55, "a2": 35, "a1": 20}
 
 
 class JobProfile(models.Model):
@@ -49,6 +59,22 @@ class JobProfile(models.Model):
     summary = fields.Text(string="Summary", translate=True)
     is_phone_public = fields.Boolean(
         string="Show phone on portfolio", help="The phone always appears in the complete CV.")
+    tagline = fields.Char(
+        string="Tagline", translate=True,
+        help="One sentence under your name on the portfolio. Defaults to the first sentence of your summary.")
+    availability_note = fields.Char(
+        string="Availability", translate=True,
+        help="Shown at the top of the portfolio, for example Open to software & ICT roles.")
+    secondary_experience_title = fields.Char(
+        string="Secondary experience title", translate=True,
+        help="Title of the collapsible group of roles shown as secondary. Defaults to Other experience.")
+    figure_ids = fields.One2many("job_finder.profile_figure", "profile_id", string="Key figures")
+    # Headlines of the portfolio sections; each defaults to the section's name.
+    work_heading = fields.Char(string="Selected work headline", translate=True)
+    experience_heading = fields.Char(string="Experience headline", translate=True)
+    skills_heading = fields.Char(string="Skills headline", translate=True)
+    about_heading = fields.Char(string="Background headline", translate=True)
+    contact_heading = fields.Char(string="Contact headline", translate=True)
 
     experience_ids = fields.One2many("job_finder.experience", "profile_id", string="Experience")
     project_ids = fields.One2many("job_finder.project", "profile_id", string="Projects")
@@ -141,6 +167,8 @@ class JobProfile(models.Model):
                                                   "is_current", "is_year_only", "employment_type", "category",
                                                   "description")},
                     "highlights": "\n".join(role["highlights"]),
+                    # Roles without projects (production, hospitality…) go to the portfolio's secondary group.
+                    "is_secondary": role["category"] == "work" and not role["projects"],
                     "project_ids": [Command.create({
                         "profile_id": self.id,
                         "sequence": next(project_sequence),
@@ -213,26 +241,47 @@ class JobProfile(models.Model):
         def first_line(text):
             return first_sentence(next(iter(highlight_lines(text)), ""))
 
+        def skill_icon(name):
+            words = (name or "").casefold()
+            return next((icon for keys, icon in SKILL_ICONS if any(key in words for key in keys)), "fa-cube")
+
         def link(value):
             url = safe_url(value)
             return {"href": url, "label": re.sub(r"^https?://(www\.)?", "", url).rstrip("/")} if url else None
 
         roles = self.experience_ids.filtered("is_public")
         projects = self.project_ids.filtered("is_public")
-        featured = projects.filtered(lambda p: p.is_featured)
+        featured = projects.filtered("is_featured")
         work_roles = roles.filtered(lambda r: r.category == "work")
+        main_roles = work_roles.filtered(lambda r: not r.is_secondary)
+        secondary_roles = work_roles - main_roles
         research_roles = roles.filtered(lambda r: r.category == "research")
-        featured_by_role = {role.id: len(featured.filtered(lambda p, r=role: p.experience_id == r)) for role in work_roles}
+        education = self.education_ids.filtered("is_public")
         links = {name: link(self[name]) for name in ("linkedin", "github", "website")}
         return {
             "name": self.full_name or "",
             "headline_parts": headline_parts(self.headline),
             "location": self.location or "",
+            "availability": self.availability_note or "",
+            "tagline": self.tagline or first_sentence(" ".join(paragraphs(self.summary)[:1])),
+            "headings": {
+                "work": self.work_heading or self.env._("Selected work"),
+                "experience": self.experience_heading or self.env._("Experience"),
+                "skills": self.skills_heading or self.env._("Skills"),
+                "about": self.about_heading or self.env._("Background"),
+                "contact": self.contact_heading or self.env._("Let's work together."),
+            },
             "summary_paragraphs": paragraphs(self.summary),
             "email": self.email or "",
             "phone": self.phone if self.is_phone_public else "",
             "has_photo": bool(self.photo),
             "links": [dict(kind=name, icon=LINK_ICONS[name], **value) for name, value in links.items() if value],
+            "figures": [{"value": figure.value, "label": figure.label}
+                        for figure in self.figure_ids.filtered("is_public")],
+            "latest_qualification": " · ".join(filter(None, [
+                split_qualification(education[:1].qualification)[0],
+                str(education[:1].year_end or "") if education else "",
+            ])),
             "featured_projects": [{
                 "name": project.name,
                 "subtitle": capitalize_first(project.subtitle),
@@ -240,30 +289,54 @@ class JobProfile(models.Model):
                                                    project.experience_id._get_period_label() if project.experience_id else ""])),
                 "description": first_line(project.description),
                 "technologies": ", ".join(project.technology_ids.mapped("name")),
+                "technology_names": project.technology_ids.mapped("name"),
                 "url": project._get_url(),
-            } for project in featured],
+                "area": project.area or "",
+                "index": f"{index:02d}",
+                "metrics": [{"value": metric.value, "label": metric.label} for metric in project.metric_ids[:3]],
+                "cover_url": f"/portfolio/project/{project.id}/cover" if project.cover_image else None,
+                "page_url": project._get_portfolio_path(),
+            } for index, project in enumerate(featured, start=1)],
             "roles": [{
                 "period": role._get_period_label(),
-                "title": " / ".join(filter(None, [role.role, role.company])),
-                "detail": (self.env._("%(count)s projects in Selected work", count=featured_by_role[role.id])
-                           if featured_by_role[role.id] > 1 else
-                           self.env._("1 project in Selected work") if featured_by_role[role.id] == 1 else
-                           first_line(role.highlights) or first_line(role.description)),
+                "title": role.role,
+                "company": role.company or "",
                 "location": role.location or "",
                 "type": selection_label(role, "employment_type") if role.employment_type else "",
-            } for role in work_roles],
+                "highlight": first_line(role.highlights) or first_line(role.description),
+                "projects": [{"name": project.name, "url": project._get_portfolio_path() if project.is_featured else None}
+                             for project in role.project_ids.filtered("is_public")],
+            } for role in main_roles],
+            "secondary_title": self.secondary_experience_title or self.env._("Other experience"),
+            "secondary_period": " – ".join(dict.fromkeys(filter(None, [
+                str(min((d.year for d in secondary_roles.mapped("date_start") if d), default="")),
+                self.env._("Present") if any(secondary_roles.mapped("is_current")) else
+                str(max((d.year for d in secondary_roles.mapped("date_end") if d), default="")),
+            ]))),
+            "secondary_roles": [{
+                "title": role.role,
+                "company": role.company or "",
+                "location": role.location or "",
+                "period": role._get_period_label(),
+            } for role in secondary_roles],
             "research_groups": [{
                 "organisation": split_organisation(role.company)[0] or role.role,
                 "role": role.role if role.company else "",
                 "meta": " / ".join(filter(None, [split_organisation(role.company)[1], role.location,
                                                  role._get_period_label()])),
+                "period": role._get_period_label(),
                 "items": [{"name": project.name, "technologies": ", ".join(project.technology_ids.mapped("name"))}
                           for project in role.project_ids.filtered("is_public")],
             } for role in research_roles],
-            "skills": [{"name": group.name, "items": " / ".join(group.technology_ids.mapped("name"))}
+            "skills": [{"name": group.name, "items": " / ".join(group.technology_ids.mapped("name")),
+                        "technology_names": group.technology_ids.mapped("name"),
+                        "icon": skill_icon(group.with_context(lang="en_US").name)}
                        for group in self.skill_group_ids.filtered("is_public")],
             "education": [{
                 "qualification": entry.qualification,
+                "title": split_qualification(entry.qualification)[0],
+                "specialisation": split_qualification(entry.qualification)[1],
+                "year": str(entry.year_end or entry.year_start or ""),
                 "meta": " / ".join(filter(None, [
                     entry.code,
                     ", ".join(filter(None, [entry.institution, entry.location])),
@@ -271,16 +344,18 @@ class JobProfile(models.Model):
                     " ".join(filter(None, [selection_label(entry, "status") if entry.status else "",
                                            str(entry.year_end) if entry.year_end and not entry.year_start else ""])),
                 ])),
-            } for entry in self.education_ids.filtered("is_public")],
+            } for entry in education],
             "trainings": [{
                 "name": training.name,
                 "meta": " / ".join(filter(None, [training.issuer,
                                                  selection_label(training, "status") if training.status else ""])),
                 "year": str(training.year) if training.year else "",
+                "is_current": training.status == "current",
             } for training in self.training_ids.filtered("is_public")],
             "languages": [{
                 "name": language.name,
                 "level": (selection_label(language, "level").split(" · ")[0] if language.level else ""),
+                "percent": LANGUAGE_LEVEL_PERCENT.get(language.level, 0),
             } for language in self.spoken_language_ids.filtered("is_public")],
             "volunteering": [{
                 "title": entry.title,
@@ -288,6 +363,48 @@ class JobProfile(models.Model):
                 "highlight": first_line(entry.highlights),
                 "recognitions": entry._get_recognition_lines(),
             } for entry in self.volunteering_ids.filtered("is_public")],
+        }
+
+    def _get_case_study_values(self, project):
+        """The case-study page of one of the profile's featured projects shown on the portfolio."""
+        self.ensure_one()
+        featured = self.project_ids.filtered(lambda p: p.is_public and p.is_featured)
+        position = featured.ids.index(project.id)
+        role = project.experience_id
+        text = " ".join((project.description or "").split())
+        lead = first_sentence(text)
+
+        def neighbour(other):
+            return {
+                "name": other.name,
+                "url": other._get_portfolio_path(),
+                "index": f"{featured.ids.index(other.id) + 1:02d}",
+                "cover_url": f"/portfolio/project/{other.id}/cover" if other.cover_image else None,
+            } if other != project else None
+
+        return {
+            "name": project.name,
+            "subtitle": capitalize_first(project.subtitle),
+            "area": project.area or "",
+            "index": f"{position + 1:02d}",
+            "count": f"{len(featured):02d}",
+            "lead": lead,
+            "overview": text[len(lead):].strip(),
+            "facts": [(label, value) for label, value in (
+                (self.env._("Role"), role.role if role else ""),
+                (self.env._("Company"), role.company if role else ""),
+                (self.env._("Period"), role._get_period_label() if role else ""),
+                (self.env._("Platforms"), project.platforms or ""),
+            ) if value],
+            "cover_url": f"/portfolio/project/{project.id}/cover" if project.cover_image else None,
+            "metrics": [{"value": metric.value, "label": metric.label} for metric in project.metric_ids],
+            "highlights": titled_items(project.highlights),
+            "steps": [{"name": step.name, "detail": step.detail or "", "is_highlighted": step.is_highlighted}
+                      for step in project.step_ids],
+            "technology_names": project.technology_ids.mapped("name"),
+            "url": project._get_url(),
+            "previous": neighbour(featured[position - 1]),
+            "next": neighbour(featured[(position + 1) % len(featured)]),
         }
 
     def action_parse_cv(self):

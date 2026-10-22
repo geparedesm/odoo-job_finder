@@ -101,12 +101,18 @@ class PortfolioProfileTestCase(TransactionCase):
             "profile_id": self.profile1.id, "name": "Languages", "technology_ids": [(6, 0, python.ids)]})
         values = self.profile1._get_portfolio_values()
         [project] = values["featured_projects"]
-        self.assertEqual(project, {"name": "Shown", "subtitle": "Internal tool", "source": "Acme / Dec 2021 – Jan 2025",
-                                   "description": "Built it.", "technologies": "Python", "url": None})
+        shown = self.profile1.project_ids.filtered(lambda p: p.name == "Shown")
+        self.assertEqual(project, {
+            "name": "Shown", "subtitle": "Internal tool", "source": "Acme / Dec 2021 – Jan 2025",
+            "description": "Built it.", "technologies": "Python", "technology_names": ["Python"], "url": None,
+            "area": "", "index": "01", "metrics": [], "cover_url": None, "page_url": shown._get_portfolio_path(),
+        })
         [entry] = values["roles"]
-        self.assertEqual((entry["title"], entry["detail"], entry["type"]),
-                         ("Developer / Acme", "1 project in Selected work", "Full-time"))
-        self.assertEqual(values["skills"], [{"name": "Languages", "items": "Python"}])
+        self.assertEqual((entry["title"], entry["company"], entry["highlight"], entry["type"]),
+                         ("Developer", "Acme", "Shipped things.", "Full-time"))
+        self.assertEqual(entry["projects"], [{"name": "Shown", "url": shown._get_portfolio_path()}])
+        self.assertEqual(values["skills"], [{"name": "Languages", "items": "Python", "technology_names": ["Python"],
+                                             "icon": "fa-code"}])
 
     def test_get_portfolio_values_safe_urls(self):
         """Links get https:// and a short label; unsafe ones are dropped."""
@@ -122,8 +128,8 @@ class PortfolioProfileTestCase(TransactionCase):
         user = self.env["res.users"].create({"name": "Empty Test User", "login": "emptytest"})
         values = self.env["job.profile"].create({"user_id": user.id, "full_name": "Empty Profile"})._get_portfolio_values()
         self.assertEqual(values["summary_paragraphs"], [])
-        for section in ("featured_projects", "roles", "research_groups", "skills", "education", "trainings",
-                        "languages", "volunteering", "links"):
+        for section in ("featured_projects", "roles", "secondary_roles", "research_groups", "skills", "education",
+                        "trainings", "languages", "volunteering", "links", "figures"):
             self.assertEqual(values[section], [], section)
 
 if __name__ == "__main__":

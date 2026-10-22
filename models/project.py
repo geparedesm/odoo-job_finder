@@ -28,6 +28,16 @@ class Project(models.Model):
     is_featured = fields.Boolean(
         string="Featured", help="Featured projects are listed in the portfolio's Selected work.",
     )
+    # Case study: featured projects get their own portfolio page.
+    area = fields.Char(string="Area", translate=True, help="Shown above the project name, for example Access control.")
+    cover_image = fields.Image(string="Cover", max_width=1920, max_height=1920)
+    platforms = fields.Char(string="Platforms", translate=True, help="For example Android · iOS · Web.")
+    highlights = fields.Text(
+        string="What I built", translate=True,
+        help="One item per line. 'Title: description' shows the title in bold.",
+    )
+    metric_ids = fields.One2many("job_finder.project_metric", "project_id", string="Key outcomes")
+    step_ids = fields.One2many("job_finder.project_step", "project_id", string="Architecture")
 
     @api.depends("experience_id.category")
     def _compute_category(self):
@@ -44,3 +54,8 @@ class Project(models.Model):
     def _get_url(self):
         self.ensure_one()
         return safe_url(self.url)
+
+    def _get_portfolio_path(self):
+        """The case-study page, for example /portfolio/project/zkteco-platform-12."""
+        self.ensure_one()
+        return f"/portfolio/project/{self.env['ir.http']._slug(self)}"

@@ -322,6 +322,23 @@ Gabriel Paredes Mendoza 6 / 6
         self.assertEqual(result["linkedin"], "https://www.linkedin.com/in/jane")
         self.assertEqual(result["skills"], "")
 
+class TestPersonalProjects(unittest.TestCase):
+    def test_personal_projects_section_continues_the_experience(self):
+        result = parser.parse_cv_text("\n".join([
+            "Ana Example",
+            "PROFESSIONAL EXPERIENCE - SOFTWARE DEVELOPMENT",
+            "Developer",
+            "Acme | Perth | 2019 - 2020 | Full-time",
+            "• Built the tracking system.",
+            "PERSONAL PROJECTS - SOFTWARE DEVELOPMENT",
+            "Independent Developer",
+            "Personal projects | Australia | 2026 - Present",
+        ]))
+        # The heading is a section boundary, not text glued to the previous bullet.
+        self.assertNotIn("PERSONAL PROJECTS", result["experience"])
+        self.assertIn("• Built the tracking system.\nIndependent Developer", result["experience"])
+
+
 class TestPageText(unittest.TestCase):
     """Pages are read in visual order, so bullets stay with their project."""
 

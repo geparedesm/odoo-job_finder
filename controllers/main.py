@@ -32,6 +32,7 @@ class Portfolio(http.Controller):
             "profile": profile,
             "portfolio": profile._get_portfolio_values() if profile else {},
             "is_cv_locked": request.env.user._is_public(),
+            "is_internal_user": request.env.user._is_internal(),
         }
 
     @http.route("/portfolio", type="http", auth="public", website=True, sitemap=True)

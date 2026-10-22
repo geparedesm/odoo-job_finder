@@ -40,6 +40,9 @@ into records:
 - `Category: item, item` lines become skill groups; `Name | Issuer | Year | Status` lines become trainings;
 - PDF line wrapping is joined back.
 
+Pages are read in visual order (pypdf's layout mode), so bullets stay with their project even in PDFs that draw
+every bullet after the titles of the page.
+
 Analyzing replaces the entries of every section the CV contains (after a confirmation) and keeps the others.
 The extracted text stays read-only in **CV import › Imported text**. Regression fixtures include the complete
 six-page reference PDF, its extracted text and the expected values.

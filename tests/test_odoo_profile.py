@@ -18,6 +18,8 @@ from psycopg2 import IntegrityError
 from odoo.tools import mute_logger
 from odoo.exceptions import AccessError
 
+from odoo.addons.job_finder.models.cv_parser import page_text
+
 
 @tagged("post_install", "-at_install")
 class TestProfileScreen(TransactionCase):
@@ -141,7 +143,9 @@ class TestProfileScreen(TransactionCase):
             with self.subTest(field=field):
                 self.assertEqual(profile[field], value)
         self.assertEqual(len(pypdf.PdfReader(fixtures / "Gabriel_Paredes_CV_completo.pdf").pages), 6)
-        self.assertEqual(profile.cv_raw_text, (fixtures / "complete_cv.txt").read_text())
+        # The stored text is read in visual order (layout mode); it gives the same fields as the plain extraction.
+        reader = pypdf.PdfReader(fixtures / "Gabriel_Paredes_CV_completo.pdf")
+        self.assertEqual(profile.cv_raw_text, "\n".join(page_text(page) for page in reader.pages))
         self.assertTrue(profile.cv_parsed_date)
         blank_pdf = BytesIO()
         writer = pypdf.PdfWriter()

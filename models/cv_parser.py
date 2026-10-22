@@ -46,6 +46,21 @@ _WEBSITE = re.compile(
 _PHONE = re.compile(r"(?<!\w)(?:\(\+?\d{1,4}\)|\+?\d)[\d ().-]*\d(?!\w)")
 
 
+def page_text(page) -> str:
+    """The text of a pypdf page in reading order.
+
+    The default extraction follows the PDF's drawing order, and some CVs draw every bullet after all the titles of the
+    page, which separates each project from its bullets. Layout mode follows the visual order; its padding is
+    collapsed to single spaces and blank lines are dropped. pypdf versions without layout mode use the default.
+    """
+    try:
+        text = page.extract_text(extraction_mode="layout")
+    except TypeError:
+        return page.extract_text() or ""
+    lines = (" ".join(line.split()) for line in (text or "").splitlines())
+    return "\n".join(line for line in lines if line)
+
+
 def _heading(line):
     # PDF text extraction can omit spaces between words in condensed headings.
     base = re.split(r"\s+[-–—]\s+", line, maxsplit=1)[0]

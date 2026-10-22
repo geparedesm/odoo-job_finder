@@ -8,7 +8,7 @@ from odoo import Command, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
 from . import cv_structure
-from .cv_parser import parse_cv_text
+from .cv_parser import page_text, parse_cv_text
 from .portfolio_content import (
     capitalize_first, en_dash_ranges, first_sentence, headline_parts, highlight_lines, paragraphs, safe_url,
     split_organisation, split_qualification, titled_items,
@@ -426,7 +426,7 @@ class JobProfile(models.Model):
                 reader = pypdf.PdfReader(BytesIO(base64.b64decode(profile.cv_file)))
                 for page in reader.pages:
                     try:
-                        page_texts.append(page.extract_text() or "")
+                        page_texts.append(page_text(page))
                     except Exception:
                         # A damaged page must not discard other readable pages.
                         continue

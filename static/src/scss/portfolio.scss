@@ -1,89 +1,138 @@
-// Public portfolio, following ui/portfolio.pen ("Portfolio / Desktop / 1440" and "Mobile / 390").
+// Public portfolio, following ui/ui.pen ("Portfolio", "Project detail" and "State" frames at 1440, 768 and 390).
 // Scoped to .jf-portfolio so the rest of the website (login, other pages) keeps its own style.
 
-$jf-bg: #070B12;
-$jf-surface: #101925;
-$jf-line: #243246;
+$jf-bg: #080D17;
+$jf-surface: #0E1626;
+$jf-surface-2: #141F33;
+$jf-line: #22304A;
 $jf-ink: #F4F6FF;
-$jf-body: #B4C0D5;
-$jf-muted: #8E9BB3;
-$jf-violet: #9054FA;
-$jf-violet-text: #B98AFF;
-$jf-cyan: #30D4FF;
+$jf-muted: #A3B1C8;
+$jf-dim: #6F7F99;
+$jf-violet: #9B6DFF;
+$jf-violet-soft: #C1A7FF;
+$jf-cyan: #53D3F4;
+$jf-green: #3DDC97;
+$jf-amber: #F5B85A;
 $jf-display: "Space Grotesk", system-ui, sans-serif;
 $jf-text: "IBM Plex Sans", system-ui, sans-serif;
-$jf-gutter: 80px;
-$jf-gutter-mobile: 24px;
+$jf-mono: "IBM Plex Mono", ui-monospace, monospace;
+$jf-gutter: 72px;
+$jf-gutter-tablet: 44px;
+$jf-gutter-mobile: 20px;
+$jf-radius: 14px;
 
 #wrapwrap.jf-portfolio-page {
     background-color: $jf-bg;
 }
 
 .jf-portfolio {
+    min-height: 100vh;
     background-color: $jf-bg;
-    color: $jf-body;
+    color: $jf-muted;
     font-family: $jf-text;
-    font-size: 15px;
-    line-height: 1.55;
+    font-size: 16px;
+    line-height: 1.6;
 
     h1, h2, h3, h4 {
+        margin: 0;
         font-family: $jf-display;
+        font-weight: 600;
         color: $jf-ink;
+    }
+
+    p, ul, ol, dl, dd, figure {
         margin: 0;
     }
 
-    p, ul, dl {
-        margin: 0;
-    }
-
-    ul {
-        list-style: none;
+    ul, ol {
         padding: 0;
+        list-style: none;
     }
 
     a {
         color: inherit;
         text-decoration: none;
-
-        &:hover {
-            text-decoration: underline;
-            text-underline-offset: 3px;
-        }
-
-        &:focus-visible, summary:focus-visible {
-            outline: 2px solid $jf-cyan;
-            outline-offset: 3px;
-            border-radius: 4px;
-        }
     }
 
-    .jf-muted { color: $jf-muted; }
-    .jf-small { font-size: 13px; line-height: 20px; }
-    .jf-accent { color: $jf-violet-text; }
-    .jf-tech { color: $jf-cyan; font-size: 14px; }
-    .jf-label { color: $jf-muted; font-size: 12px; line-height: 18px; }
+    a:focus-visible, summary:focus-visible, button:focus-visible, input:focus-visible {
+        outline: 2px solid $jf-cyan;
+        outline-offset: 3px;
+        border-radius: 6px;
+    }
 
-    // Buttons: 44px or more, violet primary, outlined secondary.
+    // Type helpers
+    .jf-mono { font-family: $jf-mono; font-size: 13px; line-height: 1.5; }
+    .jf-dim { color: $jf-dim; }
+    .jf-cyan { color: $jf-cyan; }
+    .jf-amber { color: $jf-amber; }
+    .jf-accent { color: $jf-violet-soft; }
+    .jf-right { text-align: right; }
+    .jf-body { color: $jf-muted; font-size: 16px; line-height: 1.65; }
+    .jf-body-large { font-size: 18px; line-height: 1.7; }
+    .jf-lead { color: $jf-muted; font-size: 20px; line-height: 1.55; }
+    .jf-center { text-align: center; align-items: center; justify-content: center; }
+
+    .jf-mono-label {
+        margin: 0;
+        font-family: $jf-mono;
+        font-size: 12px;
+        font-weight: 400;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: $jf-dim;
+    }
+
+    // "01 —— SELECTED WORK"
+    .jf-label {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 28px;
+        font-family: $jf-mono;
+        font-size: 14px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: $jf-muted;
+    }
+
+    .jf-label-index { color: $jf-violet; letter-spacing: 0; }
+    .jf-label-rule { width: 40px; height: 1px; background-color: $jf-violet; }
+
+    .jf-heading {
+        max-width: 14ch;
+        font-size: clamp(40px, 5vw, 72px);
+        line-height: 1;
+        letter-spacing: -0.03em;
+    }
+
+    .jf-heading-xl {
+        max-width: 16ch;
+        font-size: clamp(52px, 7.8vw, 112px);
+        font-weight: 700;
+        line-height: 0.95;
+        letter-spacing: -0.035em;
+    }
+
+    // Buttons and links
     .jf-button {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        gap: 8px;
+        gap: 10px;
         min-height: 44px;
         padding: 0 18px;
-        border-radius: 8px;
-        font-size: 14px;
+        border: 0;
+        border-radius: 6px;
+        font-family: $jf-text;
+        font-size: 15px;
         font-weight: 500;
         white-space: nowrap;
-
-        &:hover { text-decoration: none; }
+        cursor: pointer;
+        transition: background-color 0.15s ease, box-shadow 0.15s ease;
     }
 
-    .jf-button-large {
-        min-height: 48px;
-        padding: 0 20px;
-        font-size: 15px;
-    }
+    .jf-button-large { min-height: 50px; padding: 0 22px; font-size: 16px; }
+    .jf-button-block { width: 100%; }
 
     .jf-button-primary {
         background-color: $jf-violet;
@@ -96,28 +145,118 @@ $jf-gutter-mobile: 24px;
         color: $jf-ink;
         box-shadow: inset 0 0 0 1px $jf-line;
 
-        &:hover { box-shadow: inset 0 0 0 1px lighten($jf-violet, 12%); }
+        &:hover { box-shadow: inset 0 0 0 1px $jf-violet; }
+        .fa-lock { color: $jf-muted; }
+    }
+
+    .jf-text-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: $jf-violet-soft;
+        font-weight: 500;
+
+        &:hover { color: $jf-ink; }
+    }
+
+    .jf-icon-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        box-shadow: inset 0 0 0 1px $jf-line;
+        color: $jf-ink;
+
+        &:hover { box-shadow: inset 0 0 0 1px $jf-violet; }
+    }
+
+    .jf-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        align-self: flex-start;
+        padding: 7px 14px;
+        border: 1px solid $jf-line;
+        border-radius: 999px;
+        background-color: rgba($jf-surface, 0.8);
+        font-family: $jf-mono;
+        font-size: 13px;
+        color: $jf-muted;
+    }
+
+    .jf-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: $jf-green;
+    }
+
+    .jf-dot-amber { background-color: $jf-amber; }
+
+    .jf-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+
+        li {
+            padding: 4px 10px;
+            border: 1px solid $jf-line;
+            border-radius: 4px;
+            background-color: $jf-surface;
+            font-family: $jf-mono;
+            font-size: 13px;
+            color: $jf-muted;
+        }
     }
 
     // Navigation
     .jf-nav {
         position: sticky;
         top: 0;
-        z-index: 10;
+        z-index: 20;
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 24px;
         min-height: 80px;
         padding: 0 $jf-gutter;
-        background-color: rgba($jf-bg, 0.94);
+        background-color: rgba($jf-bg, 0.9);
         border-bottom: 1px solid $jf-line;
-        backdrop-filter: blur(8px);
+        backdrop-filter: blur(10px);
+    }
+
+    .jf-identity {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .jf-monogram {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        background-color: $jf-violet;
+        color: #FFFFFF;
+        font-family: $jf-display;
+        font-size: 15px;
+        font-weight: 700;
+    }
+
+    .jf-monogram-large {
+        width: 84px;
+        height: 84px;
+        border-radius: 20px;
+        font-size: 32px;
     }
 
     .jf-wordmark {
         font-family: $jf-display;
-        font-size: 20px;
+        font-size: 19px;
         font-weight: 600;
         color: $jf-ink;
         white-space: nowrap;
@@ -125,39 +264,43 @@ $jf-gutter-mobile: 24px;
 
     .jf-nav-links {
         display: flex;
-        gap: 28px;
-        font-size: 14px;
+        gap: 32px;
+        font-size: 15px;
 
-        a { color: $jf-body; }
+        a { color: $jf-muted; }
         a:hover { color: $jf-ink; }
     }
 
     .jf-nav-actions {
         display: flex;
         align-items: center;
-        gap: 20px;
+        gap: 16px;
     }
 
+    .jf-nav-cv { min-height: 40px; padding: 0 16px; font-size: 14px; }
+
     .jf-lang {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        font-size: 13px;
-        color: $jf-muted;
+        display: inline-flex;
+        gap: 2px;
+        padding: 3px;
+        border: 1px solid $jf-line;
+        border-radius: 6px;
     }
 
     .jf-lang-link {
-        display: inline-flex;
-        align-items: center;
-        min-height: 44px;
-        padding: 0 2px;
+        padding: 4px 9px;
+        border-radius: 4px;
+        font-family: $jf-mono;
+        font-size: 12px;
+        color: $jf-dim;
 
-        &.is-active { color: $jf-ink; }
+        &.is-active { background-color: $jf-surface-2; color: $jf-ink; }
+        &:hover { color: $jf-ink; }
     }
 
+    // Mobile menu: a disclosure that opens a full-screen panel, no JavaScript.
     .jf-menu {
         display: none;
-        position: relative;
 
         summary {
             display: flex;
@@ -174,488 +317,1177 @@ $jf-gutter-mobile: 24px;
             &::-webkit-details-marker { display: none; }
         }
 
-        .jf-menu-links {
-            position: absolute;
-            right: 0;
-            top: 52px;
-            display: flex;
-            flex-direction: column;
-            min-width: 220px;
-            padding: 8px;
-            background-color: $jf-surface;
-            border: 1px solid $jf-line;
-            border-radius: 8px;
+        .jf-menu-close { display: none; }
 
-            a {
-                display: flex;
-                align-items: center;
-                min-height: 44px;
-                padding: 0 12px;
-                color: $jf-body;
-            }
+        &[open] {
+            summary { background-color: $jf-surface-2; }
+            .jf-menu-open { display: none; }
+            .jf-menu-close { display: inline; }
         }
     }
+
+    .jf-menu-panel {
+        position: fixed;
+        top: 72px;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 32px;
+        padding: 28px $jf-gutter-mobile 32px;
+        overflow-y: auto;
+        background: radial-gradient(ellipse at 90% 0%, rgba($jf-violet, 0.16), rgba($jf-bg, 0) 60%), $jf-bg;
+    }
+
+    .jf-menu-links {
+        display: flex;
+        flex-direction: column;
+
+        a {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 0;
+            border-bottom: 1px solid $jf-line;
+            color: $jf-muted;
+
+            &:hover, &:first-child { color: $jf-ink; }
+            &:first-child .jf-menu-index { color: $jf-violet; }
+            .fa { color: $jf-dim; }
+        }
+
+        .jf-menu-index { font-family: $jf-mono; font-size: 13px; color: $jf-dim; }
+
+        .jf-link-label {
+            flex: 1;
+            font-family: $jf-display;
+            font-size: 38px;
+            font-weight: 600;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+        }
+    }
+
+    .jf-menu-footer {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+
+        .jf-lang { align-self: flex-end; }
+    }
+
+    .jf-note { font-size: 12px; color: $jf-dim; text-align: center; }
 
     // Hero
     .jf-hero {
         position: relative;
-        display: flex;
-        align-items: flex-start;
-        min-height: 600px;
-        padding: 72px $jf-gutter 64px;
+        min-height: 900px;
+        padding: 72px $jf-gutter 96px;
         overflow: hidden;
     }
 
     .jf-hero-content {
         position: relative;
-        z-index: 4;
+        z-index: 3;
         display: flex;
         flex-direction: column;
         gap: 24px;
-        max-width: 700px;
-    }
-
-    .jf-location {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        color: $jf-cyan;
-        font-size: 14px;
+        max-width: 760px;
     }
 
     .jf-name {
-        font-size: 68px;
-        font-weight: 600;
-        line-height: 1.05;
-        letter-spacing: -1.5px;
+        max-width: 8ch;
+        margin-left: -6px;
+        font-size: clamp(64px, 11.4vw, 164px);
+        font-weight: 700;
+        line-height: 0.9;
+        letter-spacing: -0.04em;
     }
 
     .jf-disciplines {
         display: flex;
         flex-wrap: wrap;
         align-items: center;
-        gap: 10px;
-        font-family: $jf-display;
-        font-size: 24px;
-        font-weight: 500;
-        line-height: 1.2;
-        color: $jf-violet-text;
+        gap: 14px;
+        font-family: $jf-mono;
+        font-size: 15px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: $jf-cyan;
     }
 
-    .jf-dot {
+    .jf-square {
         width: 6px;
         height: 6px;
-        border-radius: 3px;
-        background-color: $jf-violet-text;
+        border-radius: 1px;
+        background-color: $jf-violet;
     }
 
-    .jf-summary {
-        max-width: 600px;
-        font-size: 17px;
-        line-height: 27px;
+    .jf-tagline {
+        max-width: 560px;
+        font-size: 21px;
+        line-height: 1.5;
+        color: $jf-muted;
     }
 
     .jf-actions {
         display: flex;
         flex-wrap: wrap;
-        gap: 12px;
+        align-items: center;
+        gap: 14px;
     }
 
     .jf-links {
         display: flex;
         flex-wrap: wrap;
-        gap: 24px;
-        font-size: 14px;
+        gap: 18px;
+        padding-left: 14px;
+        font-size: 15px;
 
         a {
             display: inline-flex;
             align-items: center;
             gap: 8px;
             min-height: 44px;
+            color: $jf-muted;
+
+            &:hover { color: $jf-ink; }
         }
     }
 
     .jf-portrait {
         position: absolute;
+        z-index: 1;
         top: 40px;
-        right: 70px;
-        width: 540px;
-        height: 560px;
+        right: 0;
+        width: 660px;
+        height: 760px;
     }
 
     .jf-portrait-glow {
         position: absolute;
-        top: 20px;
-        left: -10px;
-        width: 560px;
-        height: 560px;
+        top: 0;
+        left: -20px;
+        width: 680px;
+        height: 700px;
         border-radius: 50%;
-        background: radial-gradient(ellipse 50% 50% at 50% 50%, rgba($jf-violet, 0.4) 0%, rgba($jf-cyan, 0.1) 55%, rgba($jf-bg, 0) 100%);
+        background: radial-gradient(closest-side, rgba(#7649BC, 0.4), rgba($jf-bg, 0));
     }
 
     .jf-portrait-photo {
         position: relative;
-        z-index: 2;
         width: 100%;
-        height: 100%;
+        height: 700px;
         object-fit: cover;
         object-position: top center;
     }
 
     .jf-portrait-fade {
         position: absolute;
-        z-index: 3;
-        left: -130px;
-        right: -70px;
-        bottom: 0;
-        height: 130px;
-        background: linear-gradient(180deg, rgba($jf-bg, 0) 0%, $jf-bg 100%);
+        right: 0;
+        bottom: 60px;
+        left: -80px;
+        height: 190px;
+        background: linear-gradient(180deg, rgba($jf-bg, 0), $jf-bg);
+    }
+
+    .jf-portrait-caption {
+        position: absolute;
+        right: 36px;
+        bottom: 96px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        padding: 12px 16px;
+        border: 1px solid $jf-line;
+        border-radius: 8px;
+        background-color: rgba($jf-surface, 0.92);
+        font-size: 14px;
+        color: $jf-ink;
+
+        .jf-mono-label { font-size: 11px; }
+    }
+
+    // Key figures
+    .jf-figures {
+        display: flex;
+        padding: 0 $jf-gutter;
+        border-top: 1px solid $jf-line;
+        border-bottom: 1px solid $jf-line;
+
+        li {
+            display: flex;
+            flex: 1;
+            flex-direction: column;
+            gap: 6px;
+            padding: 36px 0 36px 28px;
+            border-left: 1px solid $jf-line;
+        }
+
+        strong {
+            font-family: $jf-display;
+            font-size: 44px;
+            font-weight: 600;
+            line-height: 1.1;
+            color: $jf-ink;
+        }
+
+        span { font-size: 15px; }
     }
 
     // Sections
     .jf-section {
+        position: relative;
         display: flex;
         flex-direction: column;
-        gap: 32px;
-        padding: 96px $jf-gutter 0;
-        scroll-margin-top: 80px;
+        gap: 64px;
+        padding: 120px $jf-gutter;
     }
 
-    .jf-heading {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-
-        h2 {
-            font-size: 36px;
-            font-weight: 600;
-            line-height: 43px;
-            letter-spacing: -0.5px;
-        }
-    }
-
-    .jf-intro {
-        max-width: 640px;
-        color: $jf-muted;
-        font-size: 16px;
-    }
-
-    .jf-rows {
+    .jf-section-surface {
+        background-color: $jf-surface;
         border-top: 1px solid $jf-line;
-    }
-
-    .jf-row {
-        display: flex;
-        gap: 40px;
         border-bottom: 1px solid $jf-line;
     }
 
+    .jf-section-header {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 32px;
+    }
+
     // Selected work
-    .jf-project {
-        padding: 28px 0;
+    .jf-case {
+        display: grid;
+        gap: 56px;
+        align-items: center;
+    }
+
+    .jf-case-feature {
+        grid-template-columns: minmax(0, 780px) minmax(0, 1fr);
+
+        &.jf-case-reverse {
+            grid-template-columns: minmax(0, 1fr) minmax(0, 780px);
+
+            .jf-cover { order: 2; }
+        }
+
+        .jf-cover { height: 560px; }
+    }
+
+    .jf-case-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 56px 32px;
+    }
+
+    .jf-case-compact {
+        gap: 22px;
+        align-content: start;
+
+        .jf-cover { height: 340px; }
+        h3 { font-size: 32px; }
+    }
+
+    .jf-cover {
+        position: relative;
+        display: block;
+        overflow: hidden;
+        border: 1px solid $jf-line;
+        border-radius: $jf-radius;
+        background-color: $jf-surface;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        &:hover img { transform: scale(1.02); }
+    }
+
+    .jf-cover-placeholder {
+        position: absolute;
+        right: 32px;
+        bottom: 16px;
+        font-family: $jf-display;
+        font-size: 160px;
+        font-weight: 700;
+        line-height: 1;
+        color: rgba($jf-violet, 0.18);
+    }
+
+    .jf-case-content {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 22px;
 
         h3 {
-            font-size: 22px;
-            font-weight: 600;
-            line-height: 26px;
+            font-size: 44px;
+            line-height: 1.05;
+            letter-spacing: -0.02em;
+
+            a:hover { color: $jf-violet-soft; }
         }
     }
 
-    .jf-project-title {
+    .jf-meta {
         display: flex;
-        flex: 0 0 360px;
-        flex-direction: column;
-        gap: 6px;
+        gap: 16px;
+        font-family: $jf-mono;
+        font-size: 13px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: $jf-cyan;
     }
 
-    .jf-project-description {
-        flex: 1;
-        line-height: 23px;
-    }
+    .jf-meta-index { color: $jf-violet; letter-spacing: 0; }
 
-    .jf-project-tech {
-        display: flex;
-        flex: 0 0 300px;
-        flex-direction: column;
-        gap: 6px;
+    .jf-results {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 28px;
+        align-self: stretch;
+        padding: 22px 0;
+        border-top: 1px solid $jf-line;
+        border-bottom: 1px solid $jf-line;
+
+        dt {
+            font-family: $jf-display;
+            font-size: 34px;
+            font-weight: 600;
+            line-height: 1.1;
+            color: $jf-ink;
+        }
+
+        dd { font-size: 14px; line-height: 1.4; }
     }
 
     // Experience
-    .jf-role {
-        padding: 20px 0;
-        font-size: 14px;
+    .jf-timeline { display: flex; flex-direction: column; }
 
-        h3 {
-            font-size: 18px;
-            font-weight: 500;
-            line-height: 22px;
+    .jf-role {
+        display: grid;
+        grid-template-columns: 220px 400px minmax(0, 1fr);
+        gap: 48px;
+        padding: 40px 0;
+        border-top: 1px solid $jf-line;
+
+        h3 { font-size: 30px; line-height: 1.15; letter-spacing: -0.01em; }
+    }
+
+    .jf-role-when { display: flex; flex-direction: column; gap: 8px; color: $jf-ink; }
+    .jf-role-what { display: flex; flex-direction: column; gap: 8px; }
+    .jf-role-details { display: flex; flex-direction: column; gap: 20px; }
+
+    .jf-company { font-size: 18px; font-weight: 500; color: $jf-violet-soft; }
+
+    .jf-role-projects { display: flex; flex-direction: column; gap: 10px; }
+
+    .jf-project-pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+
+        > li > a, > li > span {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 12px;
+            border: 1px solid $jf-line;
+            border-radius: 999px;
+            background-color: $jf-bg;
+            font-size: 14px;
+            color: $jf-muted;
+        }
+
+        > li > a.is-linked {
+            border-color: $jf-violet;
+            background-color: rgba($jf-violet, 0.1);
+            color: $jf-violet-soft;
+
+            .fa { font-size: 12px; transform: rotate(-45deg); }
+            &:hover { color: $jf-ink; }
         }
     }
 
-    .jf-role-period { flex: 0 0 200px; }
-    .jf-role-title { display: flex; flex: 1; flex-direction: column; gap: 4px; }
-    .jf-role-location { flex: 0 0 240px; }
-    .jf-role-type { flex: 0 0 160px; }
+    // <details> toggles: "Show roles", "2 more projects", "All 12 credentials".
+    details.jf-more-roles, details.jf-more {
+        > summary {
+            cursor: pointer;
+            list-style: none;
 
-    // Research
-    .jf-groups {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 64px;
+            &::-webkit-details-marker { display: none; }
+        }
+
+        .jf-toggle-hide { display: none; }
+
+        &[open] {
+            .jf-toggle-show { display: none; }
+            .jf-toggle-hide { display: inline; }
+            > summary .fa-plus::before { content: "\f068"; }
+        }
     }
+
+    .jf-more-roles {
+        border-top: 1px solid $jf-line;
+        border-bottom: 1px solid $jf-line;
+
+        > summary {
+            display: grid;
+            grid-template-columns: 220px minmax(0, 1fr) auto;
+            gap: 48px;
+            align-items: center;
+            padding: 28px 0;
+        }
+
+        &[open] .jf-toggle {
+            border-color: $jf-violet;
+            background-color: rgba($jf-violet, 0.1);
+            color: $jf-violet-soft;
+        }
+    }
+
+    .jf-more-summary {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+
+        strong { font-family: $jf-display; font-size: 24px; font-weight: 600; color: $jf-ink; }
+    }
+
+    .jf-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 16px;
+        border: 1px solid $jf-line;
+        border-radius: 999px;
+        font-size: 14px;
+        color: $jf-ink;
+    }
+
+    .jf-roles-table {
+        width: calc(100% - 268px);
+        margin: 0 0 28px 268px;
+        border-collapse: collapse;
+
+        th, td {
+            padding: 14px 12px 14px 0;
+            border-bottom: 1px solid $jf-line;
+            font-weight: 400;
+            vertical-align: top;
+        }
+
+        th { width: 300px; font-weight: 500; color: $jf-ink; }
+    }
+
+    // Skills
+    .jf-toolkit {
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 20px;
+    }
+
+    .jf-tool {
+        display: flex;
+        flex-direction: column;
+        gap: 22px;
+        grid-column: span 2;
+        padding: 32px;
+        border: 1px solid $jf-line;
+        border-radius: $jf-radius;
+        background-color: $jf-surface;
+
+        &.jf-span-3 { grid-column: span 3; }
+        &.jf-span-6 { grid-column: span 6; }
+
+        h3 {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 22px;
+
+            .fa { color: $jf-cyan; font-size: 20px; }
+        }
+
+        &.is-accent {
+            border-color: rgba($jf-violet, 0.35);
+            background-color: rgba($jf-violet, 0.08);
+
+            h3 .fa { color: $jf-violet-soft; }
+        }
+    }
+
+    // Background (research, education, cards)
+    .jf-foundation {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 560px;
+        gap: 72px;
+    }
+
+    .jf-research, .jf-education { display: flex; flex-direction: column; gap: 28px; }
+    .jf-education { gap: 0; }
 
     .jf-group {
         display: flex;
         flex-direction: column;
-        gap: 20px;
+        gap: 14px;
+        padding-top: 24px;
+        border-top: 1px solid $jf-line;
     }
 
-    .jf-group-heading {
+    .jf-group-header {
         display: flex;
-        flex-direction: column;
-        gap: 4px;
-        padding-bottom: 16px;
-        border-bottom: 2px solid $jf-violet;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
 
-        h3 { font-size: 22px; font-weight: 600; line-height: 26px; }
+        h4 { font-size: 22px; }
     }
 
     .jf-group-items {
         display: flex;
         flex-direction: column;
-        gap: 16px;
+        gap: 10px;
 
-        li { display: flex; flex-direction: column; gap: 2px; }
-        h4 { font-size: 17px; font-weight: 500; line-height: 20px; }
+        li {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            padding-left: 18px;
+            position: relative;
+
+            &::before {
+                content: "";
+                position: absolute;
+                top: 10px;
+                left: 0;
+                width: 6px;
+                height: 6px;
+                background-color: $jf-violet;
+            }
+
+            .jf-mono { flex-shrink: 0; max-width: 45%; text-align: right; }
+        }
     }
 
-    // Skills
-    .jf-skill {
-        padding: 18px 0;
-
-        h3 { flex: 0 0 280px; font-size: 18px; font-weight: 500; line-height: 22px; }
-        p { flex: 1; line-height: 23px; }
+    .jf-more > summary {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 6px;
+        font-size: 14px;
+        font-weight: 500;
+        color: $jf-violet-soft;
     }
 
-    // Education, trainings and languages
-    .jf-columns {
+    .jf-more[open] > .jf-group-items, .jf-more[open] > .jf-credential:first-of-type { margin-top: 12px; }
+
+    .jf-degree {
         display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 64px;
+        grid-template-columns: 104px minmax(0, 1fr);
+        gap: 28px;
+        padding: 28px 0;
+        border-bottom: 1px solid $jf-line;
+
+        h4 { font-size: 22px; }
+        .jf-body { font-size: 15px; }
     }
 
-    .jf-column {
-        display: flex;
-        flex-direction: column;
-        gap: 56px;
+    .jf-education .jf-mono-label { padding-bottom: 4px; }
+
+    .jf-year {
+        font-family: $jf-display;
+        font-size: 40px;
+        font-weight: 600;
+        line-height: 1;
+        color: $jf-violet;
     }
 
-    .jf-block {
-        display: flex;
-        flex-direction: column;
+    .jf-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
         gap: 20px;
     }
 
-    .jf-h2-small {
-        font-size: 28px;
-        font-weight: 600;
-        line-height: 34px;
-        letter-spacing: -0.3px;
-    }
-
-    .jf-education {
+    .jf-card {
         display: flex;
         flex-direction: column;
-        gap: 4px;
-        padding-left: 20px;
-        border-left: 2px solid $jf-violet;
-        font-size: 14px;
+        gap: 20px;
+        padding: 32px;
+        border: 1px solid $jf-line;
+        border-radius: $jf-radius;
+        background-color: $jf-bg;
 
-        h3 { font-size: 18px; font-weight: 500; line-height: 22px; }
+        h4 { font-size: 20px; }
+        .jf-body { font-size: 15px; }
     }
 
-    .jf-languages {
+    .jf-card-entry { display: flex; flex-direction: column; gap: 8px; }
+
+    .jf-language { display: flex; flex-direction: column; gap: 10px; }
+
+    .jf-language-row {
         display: flex;
-        flex-wrap: wrap;
-        gap: 12px;
-
-        li {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            min-height: 44px;
-            padding: 0 16px;
-            border-radius: 8px;
-            box-shadow: inset 0 0 0 1px $jf-line;
-        }
-    }
-
-    .jf-language {
-        font-family: $jf-display;
-        font-size: 16px;
-        font-weight: 500;
-        color: $jf-ink;
-    }
-
-    .jf-training {
+        align-items: baseline;
         justify-content: space-between;
-        gap: 16px;
-        padding: 12px 0;
-        font-size: 14px;
+        gap: 12px;
     }
 
-    .jf-training-name { color: $jf-ink; font-size: 15px; }
+    .jf-language-name { font-family: $jf-display; font-size: 22px; font-weight: 600; color: $jf-ink; }
 
-    // Community
-    .jf-community {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 40px;
+    .jf-level {
+        display: block;
+        height: 6px;
+        border-radius: 3px;
+        background-color: $jf-surface-2;
     }
 
-    .jf-community-entry {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        padding-top: 24px;
-        border-top: 1px solid $jf-line;
+    .jf-level-fill {
+        display: block;
+        height: 100%;
+        border-radius: 3px;
+        background-color: $jf-cyan;
 
-        h3 { font-size: 20px; font-weight: 500; line-height: 24px; }
+        &.is-full { background-color: $jf-violet; }
     }
 
-    .jf-recognitions {
-        color: $jf-violet-text;
-        font-size: 14px;
-        line-height: 24px;
-    }
+    .jf-credential { display: flex; flex-direction: column; gap: 4px; }
+    .jf-credential-name { font-weight: 500; color: $jf-ink; }
+    .jf-more .jf-credential { margin-top: 16px; }
 
-    // Contact and footer
+    // Contact
     .jf-contact {
         gap: 40px;
-        padding-top: 120px;
+        min-height: 720px;
+        justify-content: center;
+        overflow: hidden;
+
+        > * { position: relative; }
+        .jf-label { margin-bottom: 0; }
     }
 
-    .jf-contact-lead {
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-        padding-top: 48px;
-        border-top: 2px solid $jf-violet;
-
-        h2 { font-size: 36px; font-weight: 600; line-height: 43px; letter-spacing: -0.5px; }
+    .jf-contact-glow {
+        position: absolute !important;
+        top: 120px;
+        right: -100px;
+        width: 900px;
+        height: 700px;
+        border-radius: 50%;
+        background: radial-gradient(closest-side, rgba($jf-violet, 0.2), rgba($jf-bg, 0));
     }
 
     .jf-contact-email {
+        display: inline-flex;
+        align-items: center;
+        gap: 16px;
+        align-self: flex-start;
+        padding-bottom: 10px;
+        border-bottom: 2px solid $jf-violet;
         font-family: $jf-display;
-        font-size: 30px;
+        font-size: clamp(20px, 2.6vw, 36px);
         font-weight: 500;
-        line-height: 36px;
-        color: $jf-violet-text;
+        color: $jf-violet-soft;
         overflow-wrap: anywhere;
+
+        .fa { transform: rotate(-45deg); font-size: 0.8em; }
+        &:hover { color: $jf-ink; }
     }
 
-    .jf-contact-details {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    .jf-contact-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
         gap: 24px;
-
-        > div {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            padding-top: 16px;
-            border-top: 1px solid $jf-line;
-        }
-
-        dt { display: flex; align-items: center; gap: 8px; color: $jf-muted; font-size: 13px; font-weight: 400; }
-        dd { margin: 0; color: $jf-ink; font-size: 16px; overflow-wrap: anywhere; }
+        padding-top: 20px;
     }
+
+    .jf-contact-where { text-align: right; color: $jf-ink; }
 
     .jf-footer {
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 16px;
-        margin: 40px $jf-gutter 0;
-        padding: 24px 0 64px;
+        padding: 28px $jf-gutter;
+        border-top: 1px solid $jf-line;
+        font-size: 14px;
+        color: $jf-dim;
+    }
+
+    .jf-footer-top:hover { color: $jf-ink; }
+
+    // Case-study page
+    .jf-breadcrumb {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 28px $jf-gutter;
+        font-size: 14px;
+
+        p { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        a { color: $jf-muted; }
+        a:hover { color: $jf-ink; }
+        [aria-current] { color: $jf-ink; }
+    }
+
+    .jf-pager { flex-shrink: 0; gap: 12px !important; }
+
+    .jf-case-header {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 340px;
+        gap: 72px;
+        align-items: end;
+        padding: 40px $jf-gutter 56px;
+
+        h1 {
+            font-size: clamp(42px, 6.2vw, 88px);
+            font-weight: 700;
+            line-height: 0.98;
+            letter-spacing: -0.035em;
+        }
+
+        .jf-label { letter-spacing: 2px; }
+        .jf-lead { margin-top: 28px; font-size: 21px; }
+    }
+
+    .jf-facts {
+        border-top: 1px solid $jf-line;
+
+        div {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 16px 0;
+            border-bottom: 1px solid $jf-line;
+        }
+
+        dt {
+            font-family: $jf-mono;
+            font-size: 12px;
+            font-weight: 400;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: $jf-dim;
+        }
+
+        dd { font-size: 15px; color: $jf-ink; text-align: right; }
+    }
+
+    .jf-case-cover {
+        padding: 0 $jf-gutter;
+
+        img {
+            width: 100%;
+            max-height: 640px;
+            object-fit: cover;
+            border: 1px solid $jf-line;
+            border-radius: 18px;
+        }
+    }
+
+    .jf-case-block { padding: 96px $jf-gutter; }
+
+    .jf-outcomes .jf-label { margin-bottom: 36px; }
+
+    .jf-outcome-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        border-top: 1px solid $jf-line;
+        border-bottom: 1px solid $jf-line;
+
+        div {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding: 32px 24px;
+            border-left: 1px solid $jf-line;
+
+            &:first-child { border-left: 0; }
+        }
+
+        dt {
+            font-family: $jf-display;
+            font-size: 56px;
+            font-weight: 600;
+            line-height: 1.05;
+            letter-spacing: -0.02em;
+            color: $jf-ink;
+        }
+
+        .is-accent dt { color: $jf-violet-soft; }
+        dd { font-size: 15px; line-height: 1.4; }
+    }
+
+    .jf-split {
+        display: grid;
+        grid-template-columns: 300px minmax(0, 1fr);
+        gap: 72px;
         border-top: 1px solid $jf-line;
     }
 
-    .jf-footer-cv {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        min-height: 44px;
-        color: $jf-violet-text;
-        font-size: 14px;
-    }
-
-    .jf-empty {
+    .jf-side-label {
         display: flex;
         flex-direction: column;
         gap: 12px;
-        min-height: 70vh;
+        font-family: $jf-mono;
+        font-size: 14px;
+        font-weight: 400;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: $jf-muted;
+
+        &::after { content: ""; width: 40px; height: 1px; background-color: $jf-violet; }
+    }
+
+    .jf-built {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px;
+
+        li {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 28px;
+            border: 1px solid $jf-line;
+            border-radius: $jf-radius;
+            background-color: $jf-bg;
+        }
+
+        h3 { font-size: 22px; }
+        .jf-body { font-size: 15px; }
+    }
+
+    .jf-built-index {
+        display: inline-flex;
+        align-items: center;
         justify-content: center;
-        padding: 0 $jf-gutter;
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        background-color: rgba($jf-violet, 0.12);
+        font-family: $jf-mono;
+        font-size: 14px;
+        color: $jf-violet-soft;
     }
 
-    // Tablet: sections stack their columns.
-    @media (max-width: 1199.98px) {
-        .jf-nav-links { display: none; }
-        .jf-menu { display: block; }
-        .jf-portrait { right: 0; width: 420px; opacity: 0.85; }
-        .jf-portrait-glow { width: 440px; height: 440px; }
-        .jf-project, .jf-role { flex-wrap: wrap; gap: 12px 40px; }
-        .jf-project-title { flex-basis: 100%; }
-        .jf-project-tech { flex-basis: 100%; }
-        .jf-role-title { flex-basis: calc(100% - 240px); }
-        .jf-role-location, .jf-role-type { flex: 0 0 auto; }
-        .jf-community { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    }
+    .jf-flow {
+        display: flex;
+        align-items: stretch;
+        gap: 40px;
+        padding: 32px;
+        border: 1px solid $jf-line;
+        border-radius: 16px;
+        background-color: $jf-surface;
 
-    // Mobile (390px design): one column, portrait above the text.
-    @media (max-width: 767.98px) {
-        .jf-nav { min-height: 72px; padding: 0 $jf-gutter-mobile; }
-        .jf-wordmark { font-size: 17px; white-space: normal; }
-        .jf-nav-cv, .jf-lang { display: none; }
-        .jf-hero {
-            flex-direction: column-reverse;
-            gap: 32px;
-            min-height: 0;
-            padding: 40px $jf-gutter-mobile 0;
-        }
-        .jf-portrait {
+        li {
             position: relative;
-            top: auto;
-            right: auto;
-            width: 100%;
-            height: 340px;
-            overflow: hidden;
+            display: flex;
+            flex: 1;
+            flex-direction: column;
+            gap: 8px;
+            padding: 18px;
+            border: 1px solid $jf-line;
             border-radius: 12px;
-            opacity: 1;
+            background-color: $jf-bg;
+
+            strong { font-family: $jf-display; font-size: 17px; font-weight: 600; color: $jf-ink; }
+
+            // The arrow between two steps.
+            & + li::before {
+                content: "\f07e";
+                position: absolute;
+                top: 50%;
+                left: -30px;
+                font-family: FontAwesome;
+                font-size: 16px;
+                color: $jf-dim;
+                transform: translateY(-50%);
+            }
+
+            &.is-accent {
+                border-color: rgba($jf-violet, 0.4);
+                background-color: rgba($jf-violet, 0.08);
+            }
         }
-        .jf-portrait-glow { left: 50%; top: 0; width: 340px; height: 340px; transform: translateX(-50%); }
-        .jf-portrait-fade { left: 0; right: 0; height: 90px; }
-        .jf-hero-content { gap: 20px; }
-        .jf-name { font-size: 44px; letter-spacing: -1px; }
-        .jf-disciplines { flex-direction: column; align-items: flex-start; gap: 2px; font-size: 19px; }
-        .jf-dot { display: none; }
-        .jf-summary { font-size: 16px; line-height: 26px; }
-        .jf-actions { flex-direction: column; }
-        .jf-actions .jf-button { width: 100%; }
-        .jf-links { flex-direction: column; gap: 0; }
-        .jf-section { padding: 64px $jf-gutter-mobile 0; }
-        .jf-heading h2, .jf-contact-lead h2 { font-size: 30px; line-height: 36px; }
-        .jf-project, .jf-role, .jf-skill { flex-direction: column; gap: 12px; }
-        .jf-project-title, .jf-project-tech, .jf-role-period, .jf-role-location, .jf-role-type, .jf-skill h3 { flex: none; }
-        .jf-role { gap: 6px; }
-        .jf-groups, .jf-columns, .jf-community { grid-template-columns: minmax(0, 1fr); gap: 48px; }
-        .jf-contact { padding-top: 80px; }
-        .jf-contact-email { font-size: 22px; line-height: 28px; }
-        .jf-footer { flex-direction: column; align-items: flex-start; margin: 40px $jf-gutter-mobile 0; }
+    }
+
+    .jf-split .jf-chips { margin-bottom: 20px; }
+
+    .jf-next {
+        position: relative;
+        display: flex;
+        align-items: center;
+        min-height: 300px;
+        margin: 0 $jf-gutter 96px;
+        overflow: hidden;
+        border: 1px solid $jf-line;
+        border-radius: 18px;
+        background-color: $jf-surface;
+
+        img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        &::before {
+            content: "";
+            position: absolute;
+            z-index: 1;
+            inset: 0;
+            background: linear-gradient(90deg, rgba($jf-bg, 0.95) 35%, rgba($jf-bg, 0.2));
+        }
+
+        strong {
+            font-family: $jf-display;
+            font-size: clamp(30px, 3.9vw, 56px);
+            font-weight: 700;
+            line-height: 1.05;
+            letter-spacing: -0.03em;
+            color: $jf-ink;
+        }
+
+        &:hover .jf-text-link { color: $jf-ink; }
+    }
+
+    .jf-next-content {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        padding: 48px;
+
+        .jf-mono { letter-spacing: 2px; text-transform: uppercase; }
+    }
+
+    // Sign-in, 403 and empty states
+    .jf-state {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: calc(100vh - 160px);
+        padding: 72px $jf-gutter;
+        background: radial-gradient(ellipse at 50% 30%, rgba($jf-violet, 0.14), rgba($jf-bg, 0) 60%);
+
+        h1 {
+            font-size: clamp(32px, 3.6vw, 52px);
+            font-weight: 700;
+            line-height: 1.04;
+            letter-spacing: -0.03em;
+        }
+    }
+
+    .jf-empty {
+        min-height: 100vh;
+
+        h1 { font-size: clamp(44px, 6.7vw, 96px); letter-spacing: -0.04em; }
+    }
+
+    .jf-state-body {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+        max-width: 720px;
+
+        &.jf-center { align-items: center; text-align: center; }
+        &.jf-center .jf-pill { align-self: center; }
+    }
+
+    .jf-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 64px;
+        height: 64px;
+        border: 1px solid rgba($jf-violet, 0.35);
+        border-radius: 16px;
+        background-color: rgba($jf-violet, 0.12);
+        font-size: 26px;
+        color: $jf-violet;
+    }
+
+    .jf-badge-amber {
+        border-color: rgba($jf-amber, 0.35);
+        background-color: rgba($jf-amber, 0.12);
+        color: $jf-amber;
+    }
+
+    .jf-sign-in {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 440px;
+        gap: 80px;
+        align-items: center;
+        max-width: 1040px;
+        width: 100%;
+    }
+
+    .jf-sign-in-text {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 22px;
+    }
+
+    .jf-form {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding: 32px;
+        border: 1px solid $jf-line;
+        border-radius: 16px;
+        background-color: $jf-surface;
+
+        label { margin-top: 8px; font-size: 14px; font-weight: 500; color: $jf-muted; }
+
+        input {
+            min-height: 48px;
+            padding: 0 14px;
+            border: 1px solid $jf-line;
+            border-radius: 8px;
+            background-color: $jf-bg;
+            color: $jf-ink;
+            font-size: 15px;
+
+            &::placeholder { color: $jf-dim; }
+        }
+
+        .jf-button { margin-top: 18px; }
+    }
+
+    .jf-form-footer {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        margin-top: 8px;
+        font-size: 14px;
+
+        a:hover { color: $jf-ink; }
+    }
+
+    // Tablet
+    @media (max-width: 1199.98px) {
+        .jf-nav, .jf-figures, .jf-footer, .jf-breadcrumb, .jf-case-cover { padding-left: $jf-gutter-tablet; padding-right: $jf-gutter-tablet; }
+        .jf-nav-links { display: none; }
+        .jf-hero { min-height: 0; padding: 32px $jf-gutter-tablet 72px; }
+        .jf-portrait { position: relative; top: 0; width: auto; height: 520px; margin: -32px (-$jf-gutter-tablet) 0; overflow: hidden; }
+        .jf-portrait-photo { height: 100%; }
+        .jf-portrait-fade { left: 0; bottom: 0; }
+        .jf-portrait-glow { left: 50%; width: 600px; height: 520px; transform: translateX(-50%); }
+        .jf-portrait-caption { display: none; }
+        .jf-hero-content { margin-top: -40px; }
+        .jf-section, .jf-case-block { padding: 88px $jf-gutter-tablet; gap: 44px; }
+        .jf-case-feature, .jf-case-feature.jf-case-reverse { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+        .jf-case-feature.jf-case-reverse .jf-cover { order: 0; }
+        .jf-case-feature .jf-cover { height: 360px; }
+        .jf-case-content h3 { font-size: 34px; }
+        .jf-case-compact .jf-cover { height: 220px; }
+        .jf-case-compact h3 { font-size: 26px; }
+        .jf-role { grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 16px 32px; }
+        .jf-role-when { grid-column: 1 / -1; flex-direction: row; gap: 16px; }
+        .jf-more-roles > summary { grid-template-columns: minmax(0, 1fr) auto; gap: 16px; }
+        .jf-more-roles > summary .jf-role-when { display: none; }
+        .jf-roles-table { width: 100%; margin-left: 0; }
+        .jf-toolkit { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .jf-tool, .jf-tool.jf-span-3, .jf-tool.jf-span-6 { grid-column: auto; padding: 24px; }
+        .jf-foundation { grid-template-columns: minmax(0, 1fr); gap: 48px; }
+        .jf-case-header { grid-template-columns: minmax(0, 1fr); gap: 32px; padding: 24px $jf-gutter-tablet 48px; }
+        .jf-split { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+        .jf-flow { flex-direction: column; gap: 28px; }
+        .jf-flow li + li::before { content: "\f07d"; top: -24px; left: 50%; transform: translateX(-50%); }
+        .jf-next { margin: 0 $jf-gutter-tablet 72px; }
+        .jf-sign-in { grid-template-columns: minmax(0, 1fr); gap: 40px; }
+    }
+
+    // Mobile
+    @media (max-width: 767.98px) {
+        .jf-nav, .jf-figures, .jf-footer, .jf-breadcrumb, .jf-case-cover { padding-left: $jf-gutter-mobile; padding-right: $jf-gutter-mobile; }
+        .jf-nav { min-height: 72px; }
+        .jf-nav-actions > .jf-lang, .jf-nav-cv { display: none; }
+        .jf-menu { display: block; }
+        .jf-wordmark { font-size: 17px; }
+        .jf-hero { padding: 20px $jf-gutter-mobile 48px; }
+        .jf-portrait { height: 400px; margin: -20px (-$jf-gutter-mobile) 0; }
+        .jf-portrait-glow { width: 470px; height: 420px; }
+        .jf-portrait-fade { left: 0; bottom: 0; height: 120px; }
+        .jf-hero-content { margin-top: 0; gap: 20px; }
+        .jf-hero .jf-pill { font-size: 11px; }
+        .jf-name { max-width: none; margin-left: -2px; }
+        .jf-disciplines { gap: 8px; font-size: 12px; letter-spacing: 1.5px; }
+        .jf-tagline { font-size: 17px; }
+        .jf-actions .jf-button-large { width: 100%; }
+        .jf-links { padding-left: 0; }
+        .jf-figures { flex-wrap: wrap; padding: 0; }
+        .jf-figures li { flex-basis: 50%; padding: 22px $jf-gutter-mobile; border-left: 0; }
+        .jf-figures li:nth-child(even) { border-left: 1px solid $jf-line; }
+        .jf-figures li:nth-child(n+3) { border-top: 1px solid $jf-line; }
+        .jf-figures strong { font-size: 32px; }
+        .jf-figures span { font-size: 13px; }
+        .jf-section, .jf-case-block { padding: 64px $jf-gutter-mobile; gap: 36px; }
+        .jf-label { margin-bottom: 18px; font-size: 12px; }
+        .jf-heading { font-size: 40px; max-width: none; }
+        .jf-section-header { flex-direction: column; align-items: flex-start; }
+        .jf-case-feature .jf-cover, .jf-case-compact .jf-cover { height: 220px; }
+        .jf-case-grid { grid-template-columns: minmax(0, 1fr); gap: 44px; }
+        .jf-case-content { gap: 16px; }
+        .jf-case-content h3, .jf-case-compact h3 { font-size: 28px; }
+        .jf-results { gap: 12px; padding: 14px 0; }
+        .jf-results dt { font-size: 24px; }
+        .jf-results dd { font-size: 12px; }
+        .jf-role { grid-template-columns: minmax(0, 1fr); gap: 10px; padding: 24px 0; }
+        .jf-role-when { flex-direction: column; gap: 2px; }
+        .jf-role h3 { font-size: 22px; }
+        .jf-company { font-size: 16px; }
+        .jf-more-summary strong { font-size: 18px; }
+        .jf-toggle-show, .jf-toggle-hide { display: none !important; }
+        .jf-toggle { width: 36px; height: 36px; padding: 0; justify-content: center; }
+        .jf-roles-table th, .jf-roles-table td { display: block; padding: 2px 0; border: 0; }
+        .jf-roles-table tr { display: block; padding: 12px 0; border-bottom: 1px solid $jf-line; }
+        .jf-roles-table .jf-right { text-align: left; }
+        .jf-toolkit { grid-template-columns: minmax(0, 1fr); }
+        .jf-group-items li { flex-direction: column; gap: 2px; }
+        .jf-group-items li .jf-mono { max-width: none; text-align: left; }
+        .jf-degree { grid-template-columns: 68px minmax(0, 1fr); gap: 16px; padding: 18px 0; }
+        .jf-degree h4 { font-size: 18px; }
+        .jf-year { font-size: 26px; }
+        .jf-card { padding: 20px; }
+        .jf-contact { min-height: 0; }
+        .jf-heading-xl { font-size: 52px; }
+        .jf-contact-email { font-size: 18px; }
+        .jf-contact-row { flex-direction: column; align-items: stretch; }
+        .jf-contact-row .jf-button { flex: 1; }
+        .jf-contact-where { text-align: left; font-family: $jf-mono; font-size: 12px; color: $jf-dim; }
+        .jf-footer { flex-direction: column; align-items: flex-start; }
+        .jf-breadcrumb p:first-child span { display: none; }
+        .jf-case-header { padding: 20px $jf-gutter-mobile 28px; }
+        .jf-case-header .jf-lead { margin-top: 20px; font-size: 16px; }
+        .jf-case-cover img { max-height: 240px; border-radius: 14px; }
+        .jf-outcome-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .jf-outcome-row div { padding: 18px 16px; border-left: 0; border-bottom: 1px solid $jf-line; }
+        .jf-outcome-row div:nth-child(even) { border-left: 1px solid $jf-line; }
+        .jf-outcome-row div:last-child:nth-child(odd) { grid-column: span 2; }
+        .jf-outcome-row dt { font-size: 34px; }
+        .jf-built { grid-template-columns: minmax(0, 1fr); }
+        .jf-built li { padding: 16px; }
+        .jf-flow { padding: 0; border: 0; background: none; }
+        .jf-next { min-height: 220px; margin: 0 $jf-gutter-mobile 48px; }
+        .jf-next-content { padding: 20px; }
+        .jf-state { padding: 48px $jf-gutter-mobile; }
+        .jf-form { padding: 20px; }
     }
 
     @media (prefers-reduced-motion: reduce) {
-        * { transition: none !important; scroll-behavior: auto !important; }
+        .jf-cover img, .jf-button { transition: none; }
     }
 }

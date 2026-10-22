@@ -21,6 +21,7 @@
                             <field name="date_end" invisible="is_current"/>
                             <field name="is_year_only"/>
                             <field name="is_public" widget="boolean_toggle"/>
+                            <field name="is_secondary" widget="boolean_toggle" invisible="category != 'work'"/>
                         </group>
                     </group>
                     <group>
@@ -39,6 +40,73 @@
                             <field name="is_public" widget="boolean_toggle"/>
                         </list>
                     </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_job_finder_project_form" model="ir.ui.view">
+        <field name="name">job_finder.project.form</field>
+        <field name="model">job_finder.project</field>
+        <field name="arch" type="xml">
+            <form string="Project">
+                <sheet>
+                    <field name="profile_id" invisible="1"/>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Project name"/></h1>
+                        <field name="subtitle" placeholder="Client or a short description"/>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="experience_id"/>
+                            <field name="category"/>
+                            <field name="technology_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                            <field name="url" widget="url"/>
+                        </group>
+                        <group>
+                            <field name="is_featured"/>
+                            <field name="is_public" widget="boolean_toggle"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description" name="description">
+                            <field name="description" placeholder="What the project is and what you did. The first sentence is the summary."/>
+                        </page>
+                        <page string="Case study" name="case_study">
+                            <div class="alert alert-info" role="status" invisible="is_featured">
+                                Mark the project as Featured to publish its case-study page on the portfolio.
+                            </div>
+                            <group>
+                                <group>
+                                    <field name="area" placeholder="Access control"/>
+                                    <field name="platforms" placeholder="Android · iOS · Web"/>
+                                </group>
+                                <group>
+                                    <field name="cover_image" widget="image" options="{'size': [240, 135]}"/>
+                                </group>
+                            </group>
+                            <group>
+                                <field name="highlights" placeholder="Device protocol layer: Direct communication with the terminals."/>
+                            </group>
+                            <separator string="Key outcomes"/>
+                            <field name="metric_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="value" placeholder="+40%"/>
+                                    <field name="label" placeholder="Operations per minute"/>
+                                </list>
+                            </field>
+                            <separator string="Architecture"/>
+                            <field name="step_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="detail"/>
+                                    <field name="is_highlighted"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
                 </sheet>
             </form>
         </field>

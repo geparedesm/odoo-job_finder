@@ -10,8 +10,9 @@ LinkedIn, GitHub, website, summary) and these records, each with a sequence and 
 
 | Model | Content |
 | --- | --- |
-| `job_finder.experience` | Roles: professional experience or academic research, with company, location, start and end (or *I currently work here*, or *Show years only*), employment type, description, and highlights (one per line). |
-| `job_finder.project` | Projects, usually inside a role: subtitle (client or short description), description, technologies, link, and **Featured** (listed in the portfolio's Selected work). |
+| `job_finder.experience` | Roles: professional experience or academic research, with company, location, start and end (or *I currently work here*, or *Show years only*), employment type, description, highlights (one per line), and **Show as secondary** (listed in the portfolio's collapsible group of other experience). |
+| `job_finder.project` | Projects, usually inside a role: subtitle (client or short description), description, technologies, link, and **Featured** (listed in the portfolio's Selected work, with a case-study page). The **Case study** tab adds an area, platforms, a cover image, *What I built* (one item per line, `Title: description`), key outcomes (`job_finder.project_metric`: value and label) and architecture steps (`job_finder.project_step`). |
+| `job_finder.profile_figure` | Key figures shown under the portfolio's introduction, for example *55k+ App downloads*. |
 | `job_finder.technology` | Technologies and methods shared by projects and skill groups (Job Finder › Configuration › Technologies). |
 | `job_finder.skill_group` | Skill areas, each with its technologies. |
 | `job_finder.education` | Qualifications: code, institution, location, years, status. |
@@ -46,21 +47,41 @@ six-page reference PDF, its extracted text and the expected values.
 ## Portfolio website
 
 The module depends on Odoo's `website`. The portfolio is the page `/portfolio`, set as the website's homepage, so
-`/` shows it (and `/es/` in Spanish). It shows the hero with photo, Selected work, Experience, Research and
-academic projects, Skills, Education, Training and credentials, Languages, Leadership and volunteering, and
-Contact. Sections and navigation links appear only when they have entries shown on the portfolio.
+`/` shows it (and `/es/` in Spanish). It follows the design in `ui/ui.pen` (desktop 1440, tablet 768 and mobile 390):
 
-The approved redesign is in `ui/ui.pen` (desktop 1440, tablet 768 and mobile 390, the project case-study page, and
-the expanded, CV access and empty states) and is not implemented yet. Its notes list the data model changes it
-needs. The project covers in `ui/assets/cover-*.png` are AI-generated placeholders.
+- **Introduction**: photo, availability and location, name, headline, tagline (the first sentence of the summary
+  unless a tagline is set), links, and the key figures.
+- **Selected work**: the featured projects; the first two as large cases with their first three key outcomes, the
+  others as cards. Each opens its case-study page.
+- **Experience**: the professional roles with their first highlight and their projects; roles shown as secondary are
+  grouped in a collapsible row (*Other experience* unless the profile sets a title).
+- **Skills**, **Background** (research and academic projects, education, leadership and volunteering, languages,
+  training and credentials, with *more* toggles) and **Contact**.
+
+Sections and navigation links appear only when they have entries shown on the portfolio. The large section
+headlines default to the section names; set your own in the **Portfolio** tab. The toggles and the mobile menu use
+HTML disclosure elements, without JavaScript.
+
+### Case-study pages
+
+Each featured project shown on the portfolio has a page at `/portfolio/project/<name>-<id>` (an older name
+redirects to the current one): area, title, summary (the first sentence of the description), role, company, period
+and platforms, cover, key outcomes, overview (the rest of the description), *What I built*, architecture, stack,
+the project link, and the next case study. Sections without content are hidden. Other projects have no page, and
+only the covers of these pages are public, at `/portfolio/project/<id>/cover`.
+
+The project covers in `ui/assets/cover-*.png` are AI-generated placeholders for the design; upload real screenshots
+or photos as covers.
 
 ### Publishing
 
 1. Complete the profile (or import the CV) and add a photo.
 2. As an administrator, switch on **Publish as portfolio** next to the headline, and save.
-3. Optionally, in the **Portfolio** tab: show the phone (hidden by default; it always appears in the complete CV)
-   and adjust the search engine and sharing title, description and image (they default to the name and headline,
-   the summary, and the photo).
+3. Optionally, in the **Portfolio** tab: write a tagline, an availability note, the section headlines, the title of
+   the secondary experience and the key figures; show the phone (hidden by default; it always appears in the
+   complete CV); and adjust the search engine and sharing title, description and image (they default to the name
+   and headline, the summary, and the photo).
+4. For each featured project, fill in its **Case study** tab and upload a cover.
 
 Only one profile can be published at a time.
 
@@ -72,9 +93,10 @@ including the fixed texts from `i18n/es.po` and the translated profile texts. Th
 
 ### Download CV
 
-**Download CV** opens `/portfolio/cv`. Anonymous visitors are sent to log in first; internal users download the
-complete PDF; portal and other external accounts get 403 Forbidden. Only the published profile's photo is public,
-at `/portfolio/photo`.
+**Download CV** opens `/portfolio/cv`; for visitors who are not signed in it shows a lock. Anonymous visitors get a
+sign-in page (Odoo's login form, returning to the download) with a link to request the CV by email; internal users
+download the complete PDF; portal and other external accounts get a 403 page that suggests requesting it by email.
+Only the published profile's photo is public, at `/portfolio/photo`.
 
 ## Complete CV
 
@@ -82,6 +104,11 @@ at `/portfolio/photo`.
 roles with highlights and projects, academic research, skills by area, education, trainings, volunteering and
 languages. Entries hidden from the portfolio still appear in the complete CV. Profile access rules apply to
 downloads.
+
+## Upgrading to 19.0.1.2.0
+
+A CV import marks professional roles without projects (production, hospitality…) as secondary. The migration to
+19.0.1.2.0 applies the same rule to the existing roles; change **Show as secondary** on any role afterwards.
 
 ## Upgrading from 19.0.1.0.0
 

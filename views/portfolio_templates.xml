@@ -1,253 +1,577 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="portfolio_page" name="Portfolio">
+    <!-- Shared frame of the portfolio pages (ui/ui.pen): fonts, navigation, footer. Pages call it with their body. -->
+    <template id="portfolio_layout" name="Portfolio layout">
         <t t-call="website.layout">
             <t t-set="no_header" t-value="True"/>
             <t t-set="no_footer" t-value="True"/>
             <t t-set="pageName" t-value="'jf-portfolio-page'"/>
-            <!-- The page title is the person, not the website's default name ("My Website"). -->
-            <t t-set="title" t-value="(profile and profile.website_meta_title) or ' | '.join(filter(None, [portfolio.get('name'), ', '.join(portfolio.get('headline_parts') or [])])) or 'Portfolio'"/>
             <t t-set="head">
                 <link rel="preconnect" href="https://fonts.googleapis.com"/>
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
-                <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600&amp;display=swap"/>
+                <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap"/>
             </t>
             <t t-set="p" t-value="portfolio"/>
             <div id="wrap" class="jf-portfolio">
-                <t t-if="not profile">
-                    <section class="jf-empty">
-                        <h1>Portfolio coming soon</h1>
-                        <p>Check back soon.</p>
-                    </section>
-                </t>
-                <t t-else="">
+                <t t-if="profile">
                     <header class="jf-nav" role="banner">
-                        <a href="#home" class="jf-wordmark" t-out="p['name']"/>
+                        <a href="/portfolio#home" class="jf-identity">
+                            <span class="jf-monogram" aria-hidden="true" t-out="''.join(word[:1] for word in p['name'].split()[:2]).upper()"/>
+                            <span class="jf-wordmark" t-out="' '.join(p['name'].split()[:2])"/>
+                        </a>
                         <nav class="jf-nav-links" aria-label="Sections">
-                            <a t-if="p['featured_projects']" href="#work">Work</a>
-                            <a t-if="p['roles']" href="#experience">Experience</a>
-                            <a t-if="p['research_groups']" href="#research">Research</a>
-                            <a t-if="p['skills']" href="#skills">Skills</a>
-                            <a t-if="p['education'] or p['trainings'] or p['languages']" href="#education">Education</a>
-                            <a t-if="p['volunteering']" href="#community">Community</a>
-                            <a href="#contact">Contact</a>
+                            <t t-call="job_finder.portfolio_section_links"/>
                         </nav>
                         <div class="jf-nav-actions">
-                            <div t-if="len(frontend_languages) &gt; 1" class="jf-lang" aria-label="Language">
-                                <t t-foreach="frontend_languages.values()" t-as="lg">
-                                    <span t-if="not lg_first" class="jf-lang-sep" aria-hidden="true">/</span>
-                                    <a t-att-href="url_localized(lang_code=lg.code, prefetch_langs=True, force_default_lang=True)"
-                                       t-att-hreflang="lg.url_code" t-att-aria-current="'true' if lg.code == lang else None"
-                                       t-attf-class="jf-lang-link #{'is-active' if lg.code == lang else ''}"
-                                       t-out="lg.url_code.split('_')[0].upper()"/>
-                                </t>
-                            </div>
-                            <a href="/portfolio/cv" class="jf-button jf-button-primary jf-nav-cv">
-                                <i class="fa fa-download" aria-hidden="true"/> <span>Download CV</span>
-                            </a>
+                            <t t-call="job_finder.portfolio_language_switch"/>
+                            <t t-call="job_finder.portfolio_cv_button"><t t-set="cv_class" t-value="'jf-nav-cv'"/></t>
                             <details class="jf-menu">
-                                <summary aria-label="Menu"><i class="fa fa-bars" aria-hidden="true"/></summary>
-                                <nav class="jf-menu-links" aria-label="Sections">
-                                    <a t-if="p['featured_projects']" href="#work">Work</a>
-                                    <a t-if="p['roles']" href="#experience">Experience</a>
-                                    <a t-if="p['research_groups']" href="#research">Research</a>
-                                    <a t-if="p['skills']" href="#skills">Skills</a>
-                                    <a t-if="p['education'] or p['trainings'] or p['languages']" href="#education">Education</a>
-                                    <a t-if="p['volunteering']" href="#community">Community</a>
-                                    <a href="#contact">Contact</a>
-                                    <a href="/portfolio/cv">Download CV</a>
-                                </nav>
+                                <summary aria-label="Menu">
+                                    <i class="fa fa-bars jf-menu-open" aria-hidden="true"/>
+                                    <i class="fa fa-times jf-menu-close" aria-hidden="true"/>
+                                </summary>
+                                <div class="jf-menu-panel">
+                                    <nav class="jf-menu-links" aria-label="Sections">
+                                        <t t-call="job_finder.portfolio_section_links"><t t-set="numbered" t-value="True"/></t>
+                                    </nav>
+                                    <div class="jf-menu-footer">
+                                        <t t-call="job_finder.portfolio_language_switch"/>
+                                        <a t-if="p['email']" t-attf-href="mailto:#{p['email']}" class="jf-button jf-button-primary jf-button-block">
+                                            <span>Email me</span> <i class="fa fa-envelope-o" aria-hidden="true"/>
+                                        </a>
+                                        <t t-call="job_finder.portfolio_cv_button"><t t-set="cv_class" t-value="'jf-button-block'"/></t>
+                                        <p t-if="is_cv_locked" class="jf-note">The CV download requires signing in.</p>
+                                    </div>
+                                </div>
                             </details>
                         </div>
                     </header>
+                </t>
+                <t t-out="0"/>
+                <footer t-if="profile" class="jf-footer">
+                    <span>© <t t-out="datetime.date.today().year"/> <t t-out="p['name']"/></span>
+                    <a href="#wrapwrap" class="jf-footer-top">Back to top <i class="fa fa-arrow-up" aria-hidden="true"/></a>
+                </footer>
+            </div>
+        </t>
+    </template>
 
-                    <main>
-                        <section id="home" class="jf-hero">
-                            <div class="jf-hero-content">
-                                <p t-if="p['location']" class="jf-location"><i class="fa fa-map-marker" aria-hidden="true"/> <span t-out="p['location']"/></p>
-                                <h1 class="jf-name" t-out="p['name']"/>
-                                <p t-if="p['headline_parts']" class="jf-disciplines">
-                                    <t t-foreach="p['headline_parts']" t-as="part">
-                                        <span t-if="not part_first" class="jf-dot" aria-hidden="true"/>
-                                        <span t-out="part"/>
-                                    </t>
-                                </p>
-                                <p t-foreach="p['summary_paragraphs']" t-as="paragraph" class="jf-summary" t-out="paragraph"/>
-                                <div class="jf-actions">
-                                    <a t-if="p['email']" t-attf-href="mailto:#{p['email']}" class="jf-button jf-button-primary jf-button-large">
-                                        <i class="fa fa-envelope-o" aria-hidden="true"/> <span>Email me</span>
-                                    </a>
-                                    <a t-else="" href="/portfolio/cv" class="jf-button jf-button-primary jf-button-large">
-                                        <i class="fa fa-download" aria-hidden="true"/> <span>Download CV</span>
-                                    </a>
-                                    <a t-if="p['featured_projects']" href="#work" class="jf-button jf-button-outline jf-button-large">See selected work</a>
-                                </div>
-                                <ul t-if="p['links']" class="jf-links">
-                                    <li t-foreach="p['links']" t-as="item">
-                                        <a t-att-href="item['href']" target="_blank" rel="noopener">
-                                            <i t-attf-class="fa #{item['icon']}" aria-hidden="true"/>
-                                            <span t-out="item['label']"/>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div t-if="p['has_photo']" class="jf-portrait">
-                                <div class="jf-portrait-glow" aria-hidden="true"/>
-                                <img src="/portfolio/photo" t-att-alt="p['name']" class="jf-portrait-photo" width="540" height="560"/>
-                                <div class="jf-portrait-fade" aria-hidden="true"/>
-                            </div>
-                        </section>
+    <template id="portfolio_section_links" name="Portfolio section links">
+        <t t-set="links" t-value="[(href, label) for href, label, shown in (
+            ('/portfolio#work', 'work', p['featured_projects']),
+            ('/portfolio#experience', 'experience', p['roles'] or p['secondary_roles']),
+            ('/portfolio#skills', 'skills', p['skills']),
+            ('/portfolio#about', 'about', p['research_groups'] or p['education'] or p['trainings'] or p['languages'] or p['volunteering']),
+            ('/portfolio#contact', 'contact', True),
+        ) if shown]"/>
+        <a t-foreach="links" t-as="link" t-att-href="link[0]">
+            <span t-if="numbered" class="jf-menu-index" t-out="'%02d' % (link_index + 1)"/>
+            <span class="jf-link-label">
+                <t t-if="link[1] == 'work'">Work</t>
+                <t t-elif="link[1] == 'experience'">Experience</t>
+                <t t-elif="link[1] == 'skills'">Skills</t>
+                <t t-elif="link[1] == 'about'">Background</t>
+                <t t-else="">Contact</t>
+            </span>
+            <i t-if="numbered" class="fa fa-arrow-right" aria-hidden="true"/>
+        </a>
+    </template>
 
-                        <section t-if="p['featured_projects']" id="work" class="jf-section">
-                            <div class="jf-heading">
-                                <h2>Selected work</h2>
-                                <p class="jf-intro">Projects from my professional roles.</p>
-                            </div>
-                            <div class="jf-rows">
-                                <article t-foreach="p['featured_projects']" t-as="project" class="jf-row jf-project">
-                                    <div class="jf-project-title">
-                                        <h3>
-                                            <a t-if="project['url']" t-att-href="project['url']" target="_blank" rel="noopener" t-out="project['name']"/>
-                                            <t t-else="" t-out="project['name']"/>
-                                        </h3>
-                                        <p t-if="project['subtitle']" class="jf-accent" t-out="project['subtitle']"/>
-                                        <p t-if="project['source']" class="jf-muted jf-small" t-out="project['source']"/>
-                                    </div>
-                                    <p class="jf-project-description" t-out="project['description']"/>
-                                    <div t-if="project['technologies']" class="jf-project-tech">
-                                        <span class="jf-label">Technologies</span>
-                                        <span class="jf-tech" t-out="project['technologies']"/>
-                                    </div>
-                                </article>
-                            </div>
-                        </section>
+    <template id="portfolio_language_switch" name="Portfolio language switch">
+        <div t-if="len(frontend_languages) &gt; 1" class="jf-lang" aria-label="Language">
+            <a t-foreach="frontend_languages.values()" t-as="lg"
+               t-att-href="url_localized(lang_code=lg.code, prefetch_langs=True, force_default_lang=True)"
+               t-att-hreflang="lg.url_code" t-att-aria-current="'true' if lg.code == lang else None"
+               t-attf-class="jf-lang-link #{'is-active' if lg.code == lang else ''}"
+               t-out="lg.url_code.split('_')[0].upper()"/>
+        </div>
+    </template>
 
-                        <section t-if="p['roles']" id="experience" class="jf-section">
-                            <div class="jf-heading"><h2>Experience</h2></div>
-                            <div class="jf-rows">
-                                <article t-foreach="p['roles']" t-as="role" class="jf-row jf-role">
-                                    <span class="jf-role-period jf-accent" t-out="role['period']"/>
-                                    <div class="jf-role-title">
-                                        <h3 t-out="role['title']"/>
-                                        <p t-if="role['detail']" class="jf-muted" t-out="role['detail']"/>
-                                    </div>
-                                    <span class="jf-role-location" t-out="role['location']"/>
-                                    <span class="jf-role-type jf-muted" t-out="role['type']"/>
-                                </article>
-                            </div>
-                        </section>
+    <!-- Visitors who are not signed in see a lock: the CV opens a sign-in page first. -->
+    <template id="portfolio_cv_button" name="Portfolio CV button">
+        <a href="/portfolio/cv" t-attf-class="jf-button jf-button-outline #{cv_class or ''}"
+           t-att-title="'Sign-in required to download' if is_cv_locked else None">
+            <i t-attf-class="fa #{'fa-lock' if is_cv_locked else 'fa-download'}" aria-hidden="true"/>
+            <span>Download CV</span>
+        </a>
+    </template>
 
-                        <section t-if="p['research_groups']" id="research" class="jf-section">
-                            <div class="jf-heading"><h2>Research and academic projects</h2></div>
-                            <div class="jf-groups">
-                                <div t-foreach="p['research_groups']" t-as="group" class="jf-group">
-                                    <div class="jf-group-heading">
-                                        <h3 t-out="group['organisation']"/>
-                                        <p t-if="group['role']" class="jf-accent" t-out="group['role']"/>
-                                        <p t-if="group['meta']" class="jf-muted jf-small" t-out="group['meta']"/>
-                                    </div>
-                                    <ul class="jf-group-items">
-                                        <li t-foreach="group['items']" t-as="item">
-                                            <h4 t-out="item['name']"/>
-                                            <span t-if="item['technologies']" class="jf-tech" t-out="item['technologies']"/>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </section>
+    <template id="portfolio_label" name="Portfolio section label">
+        <p class="jf-label">
+            <span class="jf-label-index" t-out="'%02d' % number"/>
+            <span class="jf-label-rule" aria-hidden="true"/>
+            <span t-out="label"/>
+        </p>
+    </template>
 
-                        <section t-if="p['skills']" id="skills" class="jf-section">
-                            <div class="jf-heading"><h2>Skills</h2></div>
-                            <div class="jf-rows">
-                                <div t-foreach="p['skills']" t-as="skill" class="jf-row jf-skill">
-                                    <h3 t-out="skill['name']"/>
-                                    <p t-out="skill['items']"/>
-                                </div>
-                            </div>
-                        </section>
+    <template id="portfolio_case" name="Portfolio case card">
+        <a t-att-href="project['page_url']" class="jf-cover" tabindex="-1" aria-hidden="true">
+            <img t-if="project['cover_url']" t-att-src="project['cover_url']" alt="" loading="lazy"/>
+            <span t-else="" class="jf-cover-placeholder" t-out="project['index']"/>
+        </a>
+        <div class="jf-case-content">
+            <p class="jf-meta">
+                <span class="jf-meta-index" t-out="project['index']"/>
+                <span t-if="project['area'] or project['subtitle']" t-out="project['area'] or project['subtitle']"/>
+            </p>
+            <h3><a t-att-href="project['page_url']" t-out="project['name']"/></h3>
+            <p t-if="project['description']" class="jf-body" t-out="project['description']"/>
+            <dl t-if="project['metrics'] and is_feature" class="jf-results">
+                <div t-foreach="project['metrics']" t-as="metric">
+                    <dt t-out="metric['value']"/>
+                    <dd t-out="metric['label']"/>
+                </div>
+            </dl>
+            <ul t-if="project['technology_names']" class="jf-chips">
+                <li t-foreach="project['technology_names']" t-as="tech" t-out="tech"/>
+            </ul>
+            <a t-att-href="project['page_url']" class="jf-text-link">
+                <span>Read case study</span> <i class="fa fa-arrow-right" aria-hidden="true"/>
+            </a>
+        </div>
+    </template>
 
-                        <section t-if="p['education'] or p['trainings'] or p['languages']" id="education" class="jf-section jf-columns">
-                            <div class="jf-column">
-                                <div t-if="p['education']" class="jf-block">
-                                    <h2 class="jf-h2-small">Education</h2>
-                                    <div t-foreach="p['education']" t-as="entry" class="jf-education">
-                                        <h3 t-out="entry['qualification']"/>
-                                        <p class="jf-muted" t-out="entry['meta']"/>
-                                    </div>
-                                </div>
-                                <div t-if="p['languages']" class="jf-block">
-                                    <h2 class="jf-h2-small">Languages</h2>
-                                    <ul class="jf-languages">
-                                        <li t-foreach="p['languages']" t-as="language">
-                                            <span class="jf-language" t-out="language['name']"/>
-                                            <span t-if="language['level']" class="jf-tech" t-out="language['level']"/>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div t-if="p['trainings']" class="jf-column jf-block">
-                                <h2 class="jf-h2-small">Training and credentials</h2>
-                                <div class="jf-rows">
-                                    <div t-foreach="p['trainings']" t-as="training" class="jf-row jf-training">
-                                        <div>
-                                            <p class="jf-training-name" t-out="training['name']"/>
-                                            <p t-if="training['meta']" class="jf-muted jf-small" t-out="training['meta']"/>
-                                        </div>
-                                        <span class="jf-accent" t-out="training['year']"/>
-                                    </div>
-                                </div>
-                            </div>
-                        </section>
-
-                        <section t-if="p['volunteering']" id="community" class="jf-section">
-                            <div class="jf-heading"><h2>Leadership and volunteering</h2></div>
-                            <div class="jf-community">
-                                <article t-foreach="p['volunteering']" t-as="entry" class="jf-community-entry">
-                                    <h3 t-out="entry['title']"/>
-                                    <p t-if="entry['meta']" class="jf-muted jf-small" t-out="entry['meta']"/>
-                                    <p t-if="entry['highlight']" t-out="entry['highlight']"/>
-                                    <ul t-if="entry['recognitions']" class="jf-recognitions">
-                                        <li t-foreach="entry['recognitions']" t-as="line" t-out="line"/>
-                                    </ul>
-                                </article>
-                            </div>
-                        </section>
-
-                        <section id="contact" class="jf-section jf-contact">
-                            <div class="jf-contact-lead">
-                                <h2>Contact</h2>
-                                <a t-if="p['email']" t-attf-href="mailto:#{p['email']}" class="jf-contact-email" t-out="p['email']"/>
-                            </div>
-                            <dl class="jf-contact-details">
-                                <div t-if="p['phone']">
-                                    <dt><i class="fa fa-phone" aria-hidden="true"/> Phone</dt>
-                                    <dd><a t-attf-href="tel:#{p['phone'].replace(' ', '')}" t-out="p['phone']"/></dd>
-                                </div>
-                                <div t-if="p['location']">
-                                    <dt><i class="fa fa-map-marker" aria-hidden="true"/> Location</dt>
-                                    <dd t-out="p['location']"/>
-                                </div>
-                                <div t-foreach="p['links']" t-as="item">
-                                    <dt>
+    <template id="portfolio_page" name="Portfolio">
+        <t t-call="job_finder.portfolio_layout">
+            <!-- The page title is the person, not the website's default name ("My Website"). -->
+            <t t-set="title" t-value="(profile and profile.website_meta_title) or ' | '.join(filter(None, [portfolio.get('name'), ', '.join(portfolio.get('headline_parts') or [])])) or 'Portfolio'"/>
+            <t t-set="p" t-value="portfolio"/>
+            <t t-if="not profile">
+                <main class="jf-state jf-empty">
+                    <div class="jf-state-body jf-center">
+                        <span class="jf-monogram jf-monogram-large" aria-hidden="true">
+                            <i class="fa fa-briefcase"/>
+                        </span>
+                        <p class="jf-pill"><span class="jf-dot jf-dot-amber" aria-hidden="true"/> In progress</p>
+                        <h1>Portfolio coming soon</h1>
+                        <p class="jf-lead">Projects, experience and contact details are being prepared. Please check back shortly.</p>
+                    </div>
+                </main>
+            </t>
+            <main t-else="">
+                <t t-set="number" t-value="0"/>
+                <section id="home" class="jf-hero">
+                    <div t-if="p['has_photo']" class="jf-portrait">
+                        <div class="jf-portrait-glow" aria-hidden="true"/>
+                        <img src="/portfolio/photo" t-att-alt="p['name']" class="jf-portrait-photo" width="660" height="700"/>
+                        <div class="jf-portrait-fade" aria-hidden="true"/>
+                        <p t-if="p['latest_qualification']" class="jf-portrait-caption">
+                            <span class="jf-mono-label">Latest qualification</span>
+                            <span t-out="p['latest_qualification']"/>
+                        </p>
+                    </div>
+                    <div class="jf-hero-content">
+                        <p t-if="p['availability'] or p['location']" class="jf-pill">
+                            <span t-if="p['availability']" class="jf-dot" aria-hidden="true"/>
+                            <span t-out="' · '.join(filter(None, [p['availability'], p['location']]))"/>
+                        </p>
+                        <h1 class="jf-name" t-out="p['name']"/>
+                        <p t-if="p['headline_parts']" class="jf-disciplines">
+                            <t t-foreach="p['headline_parts']" t-as="part">
+                                <span t-if="not part_first" class="jf-square" aria-hidden="true"/>
+                                <span t-out="part"/>
+                            </t>
+                        </p>
+                        <p t-if="p['tagline']" class="jf-tagline" t-out="p['tagline']"/>
+                        <div class="jf-actions">
+                            <a t-if="p['featured_projects']" href="#work" class="jf-button jf-button-primary jf-button-large">
+                                <span>See selected work</span> <i class="fa fa-arrow-right" aria-hidden="true"/>
+                            </a>
+                            <a t-if="p['email']" t-attf-href="mailto:#{p['email']}" class="jf-button jf-button-outline jf-button-large">
+                                <i class="fa fa-envelope-o" aria-hidden="true"/> <span>Email me</span>
+                            </a>
+                            <ul t-if="p['links']" class="jf-links">
+                                <li t-foreach="p['links']" t-as="item">
+                                    <a t-att-href="item['href']" target="_blank" rel="noopener">
                                         <i t-attf-class="fa #{item['icon']}" aria-hidden="true"/>
                                         <t t-if="item['kind'] == 'linkedin'">LinkedIn</t>
                                         <t t-elif="item['kind'] == 'github'">GitHub</t>
-                                        <t t-else="">Website</t>
-                                    </dt>
-                                    <dd><a t-att-href="item['href']" target="_blank" rel="noopener" t-out="item['label']"/></dd>
-                                </div>
-                            </dl>
-                        </section>
-                    </main>
+                                        <t t-else="" t-out="item['label']"/>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
 
-                    <footer class="jf-footer">
-                        <p class="jf-muted jf-small">
-                            <span t-out="p['name']"/><t t-if="p['headline_parts']"> / <t t-out="', '.join(p['headline_parts'])"/></t>
+                <ul t-if="p['figures']" class="jf-figures">
+                    <li t-foreach="p['figures']" t-as="figure">
+                        <strong t-out="figure['value']"/>
+                        <span t-out="figure['label']"/>
+                    </li>
+                </ul>
+
+                <section t-if="p['featured_projects']" id="work" class="jf-section">
+                    <t t-set="number" t-value="number + 1"/>
+                    <div class="jf-section-header">
+                        <div>
+                            <t t-call="job_finder.portfolio_label"><t t-set="label">Selected work</t></t>
+                            <h2 class="jf-heading" t-out="p['headings']['work']"/>
+                        </div>
+                    </div>
+                    <article t-foreach="p['featured_projects'][:2]" t-as="project"
+                             t-attf-class="jf-case jf-case-feature #{'jf-case-reverse' if project_index == 1 else ''}">
+                        <t t-call="job_finder.portfolio_case"><t t-set="is_feature" t-value="True"/></t>
+                    </article>
+                    <div t-if="len(p['featured_projects']) &gt; 2" class="jf-case-grid">
+                        <article t-foreach="p['featured_projects'][2:]" t-as="project" class="jf-case jf-case-compact">
+                            <t t-call="job_finder.portfolio_case"/>
+                        </article>
+                    </div>
+                </section>
+
+                <section t-if="p['roles'] or p['secondary_roles']" id="experience" class="jf-section jf-section-surface">
+                    <t t-set="number" t-value="number + 1"/>
+                    <div class="jf-section-header">
+                        <div>
+                            <t t-call="job_finder.portfolio_label"><t t-set="label">Experience</t></t>
+                            <h2 class="jf-heading" t-out="p['headings']['experience']"/>
+                        </div>
+                        <t t-call="job_finder.portfolio_cv_button"/>
+                    </div>
+                    <div class="jf-timeline">
+                        <article t-foreach="p['roles']" t-as="role" class="jf-role">
+                            <div class="jf-role-when">
+                                <p class="jf-mono" t-out="role['period']"/>
+                                <p class="jf-mono jf-dim" t-out="' · '.join(filter(None, [role['type'], role['location']]))"/>
+                            </div>
+                            <div class="jf-role-what">
+                                <h3 t-out="role['title']"/>
+                                <p t-if="role['company']" class="jf-company" t-out="role['company']"/>
+                            </div>
+                            <div class="jf-role-details">
+                                <p t-if="role['highlight']" class="jf-body" t-out="role['highlight']"/>
+                                <div t-if="role['projects']" class="jf-role-projects">
+                                    <p class="jf-mono-label">Projects</p>
+                                    <ul class="jf-project-pills">
+                                        <li t-foreach="role['projects']" t-as="item">
+                                            <a t-if="item['url']" t-att-href="item['url']" class="is-linked">
+                                                <span t-out="item['name']"/> <i class="fa fa-arrow-right" aria-hidden="true"/>
+                                            </a>
+                                            <span t-else="" t-out="item['name']"/>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </article>
+                        <details t-if="p['secondary_roles']" class="jf-more-roles">
+                            <summary>
+                                <span class="jf-mono jf-dim jf-role-when" t-out="p['secondary_period']"/>
+                                <span class="jf-more-summary">
+                                    <strong t-out="p['secondary_title']"/>
+                                    <span class="jf-mono jf-dim"><t t-out="len(p['secondary_roles'])"/> roles</span>
+                                </span>
+                                <span class="jf-toggle">
+                                    <span class="jf-toggle-show">Show roles</span>
+                                    <span class="jf-toggle-hide">Hide roles</span>
+                                    <i class="fa fa-plus" aria-hidden="true"/>
+                                </span>
+                            </summary>
+                            <table class="jf-roles-table">
+                                <tr t-foreach="p['secondary_roles']" t-as="role">
+                                    <th scope="row" t-out="role['title']"/>
+                                    <td t-out="role['company']"/>
+                                    <td class="jf-mono jf-dim" t-out="role['location']"/>
+                                    <td class="jf-mono jf-dim jf-right" t-out="role['period']"/>
+                                </tr>
+                            </table>
+                        </details>
+                    </div>
+                </section>
+
+                <section t-if="p['skills']" id="skills" class="jf-section">
+                    <t t-set="number" t-value="number + 1"/>
+                    <div class="jf-section-header">
+                        <div>
+                            <t t-call="job_finder.portfolio_label"><t t-set="label">Skills</t></t>
+                            <h2 class="jf-heading" t-out="p['headings']['skills']"/>
+                        </div>
+                    </div>
+                    <div class="jf-toolkit">
+                        <!-- Three cards per row; the cards of an incomplete last row share its width. -->
+                        <t t-set="last_row" t-value="len(p['skills']) % 3"/>
+                        <div t-foreach="p['skills']" t-as="skill"
+                             t-attf-class="jf-tool #{'is-accent' if skill_first else ''} #{'jf-span-%s' % (6 // last_row) if last_row and skill_index &gt;= len(p['skills']) - last_row else ''}">
+                            <h3>
+                                <i t-attf-class="fa #{skill['icon']}" aria-hidden="true"/>
+                                <span t-out="skill['name']"/>
+                            </h3>
+                            <ul class="jf-chips">
+                                <li t-foreach="skill['technology_names']" t-as="tech" t-out="tech"/>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <section t-if="p['research_groups'] or p['education'] or p['trainings'] or p['languages'] or p['volunteering']"
+                         id="about" class="jf-section jf-section-surface">
+                    <t t-set="number" t-value="number + 1"/>
+                    <div class="jf-section-header">
+                        <div>
+                            <t t-call="job_finder.portfolio_label"><t t-set="label">Background</t></t>
+                            <h2 class="jf-heading" t-out="p['headings']['about']"/>
+                        </div>
+                    </div>
+                    <div class="jf-foundation">
+                        <div t-if="p['research_groups']" class="jf-research">
+                            <h3 class="jf-mono-label">Research and academic projects</h3>
+                            <div t-foreach="p['research_groups']" t-as="group" class="jf-group">
+                                <div class="jf-group-header">
+                                    <h4 t-out="group['organisation']"/>
+                                    <span class="jf-mono jf-dim" t-out="group['period']"/>
+                                </div>
+                                <p t-if="group['role']" class="jf-company" t-out="group['role']"/>
+                                <ul class="jf-group-items">
+                                    <li t-foreach="group['items'][:3]" t-as="item">
+                                        <span t-out="item['name']"/>
+                                        <span class="jf-mono jf-dim" t-out="item['technologies']"/>
+                                    </li>
+                                </ul>
+                                <details t-if="len(group['items']) &gt; 3" class="jf-more">
+                                    <summary>
+                                        <span class="jf-toggle-show"><t t-out="len(group['items']) - 3"/> more projects</span>
+                                        <span class="jf-toggle-hide">Show fewer</span>
+                                        <i class="fa fa-plus" aria-hidden="true"/>
+                                    </summary>
+                                    <ul class="jf-group-items">
+                                        <li t-foreach="group['items'][3:]" t-as="item">
+                                            <span t-out="item['name']"/>
+                                            <span class="jf-mono jf-dim" t-out="item['technologies']"/>
+                                        </li>
+                                    </ul>
+                                </details>
+                            </div>
+                        </div>
+                        <div t-if="p['education']" class="jf-education">
+                            <h3 class="jf-mono-label">Education</h3>
+                            <div t-foreach="p['education']" t-as="entry" class="jf-degree">
+                                <span class="jf-year" t-out="entry['year']"/>
+                                <div>
+                                    <h4 t-out="entry['title']"/>
+                                    <p t-if="entry['specialisation']" class="jf-body" t-out="entry['specialisation']"/>
+                                    <p class="jf-mono jf-dim" t-out="entry['meta']"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div t-if="p['volunteering'] or p['languages'] or p['trainings']" class="jf-cards">
+                        <div t-if="p['volunteering']" class="jf-card">
+                            <h3 class="jf-mono-label">Leadership and volunteering</h3>
+                            <div t-foreach="p['volunteering'][:2]" t-as="entry" class="jf-card-entry">
+                                <h4 t-out="entry['title']"/>
+                                <p t-if="entry['highlight']" class="jf-body" t-out="entry['highlight']"/>
+                                <p t-if="entry['recognitions']" class="jf-mono jf-accent" t-out="entry['recognitions'][0]"/>
+                            </div>
+                        </div>
+                        <div t-if="p['languages']" class="jf-card">
+                            <h3 class="jf-mono-label">Languages</h3>
+                            <div t-foreach="p['languages']" t-as="language" class="jf-language">
+                                <p class="jf-language-row">
+                                    <span class="jf-language-name" t-out="language['name']"/>
+                                    <span class="jf-mono jf-dim" t-out="language['level']"/>
+                                </p>
+                                <span t-if="language['percent']" class="jf-level" aria-hidden="true">
+                                    <span t-attf-class="jf-level-fill #{'is-full' if language['percent'] == 100 else ''}" t-attf-style="width: #{language['percent']}%"/>
+                                </span>
+                            </div>
+                        </div>
+                        <div t-if="p['trainings']" class="jf-card">
+                            <h3 class="jf-mono-label">Training and credentials</h3>
+                            <div t-foreach="p['trainings'][:3]" t-as="training" class="jf-credential">
+                                <p class="jf-credential-name" t-out="training['name']"/>
+                                <p class="jf-mono jf-dim" t-out="' · '.join(filter(None, [training['meta'], training['year']]))"/>
+                            </div>
+                            <details t-if="len(p['trainings']) &gt; 3" class="jf-more">
+                                <summary>
+                                    <span class="jf-toggle-show">All <t t-out="len(p['trainings'])"/> credentials</span>
+                                    <span class="jf-toggle-hide">Show fewer</span>
+                                    <i class="fa fa-plus" aria-hidden="true"/>
+                                </summary>
+                                <div t-foreach="p['trainings'][3:]" t-as="training" class="jf-credential">
+                                    <p class="jf-credential-name" t-out="training['name']"/>
+                                    <p class="jf-mono jf-dim" t-out="' · '.join(filter(None, [training['meta'], training['year']]))"/>
+                                </div>
+                            </details>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="contact" class="jf-section jf-contact">
+                    <t t-set="number" t-value="number + 1"/>
+                    <div class="jf-contact-glow" aria-hidden="true"/>
+                    <t t-call="job_finder.portfolio_label"><t t-set="label">Contact</t></t>
+                    <h2 class="jf-heading jf-heading-xl" t-out="p['headings']['contact']"/>
+                    <a t-if="p['email']" t-attf-href="mailto:#{p['email']}" class="jf-contact-email">
+                        <span t-out="p['email']"/> <i class="fa fa-arrow-right" aria-hidden="true"/>
+                    </a>
+                    <div class="jf-contact-row">
+                        <div class="jf-actions">
+                            <a t-foreach="p['links']" t-as="item" t-att-href="item['href']" target="_blank" rel="noopener"
+                               class="jf-button jf-button-outline">
+                                <i t-attf-class="fa #{item['icon']}" aria-hidden="true"/>
+                                <t t-if="item['kind'] == 'linkedin'">LinkedIn</t>
+                                <t t-elif="item['kind'] == 'github'">GitHub</t>
+                                <t t-else="" t-out="item['label']"/>
+                            </a>
+                            <t t-call="job_finder.portfolio_cv_button"/>
+                        </div>
+                        <div class="jf-contact-where">
+                            <p t-if="p['phone']"><a t-attf-href="tel:#{p['phone'].replace(' ', '')}" t-out="p['phone']"/></p>
+                            <p t-if="p['location']" t-out="p['location']"/>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </t>
+    </template>
+
+    <template id="case_study_page" name="Portfolio case study">
+        <t t-call="job_finder.portfolio_layout">
+            <t t-set="title" t-value="' | '.join(filter(None, [case['name'], portfolio.get('name')]))"/>
+            <main class="jf-case-study">
+                <nav class="jf-breadcrumb" aria-label="Breadcrumb">
+                    <p>
+                        <a href="/portfolio#work"><i class="fa fa-arrow-left" aria-hidden="true"/> Selected work</a>
+                        <span class="jf-dim" aria-hidden="true">/</span>
+                        <span aria-current="page" t-out="case['name']"/>
+                    </p>
+                    <p class="jf-pager">
+                        <span class="jf-mono jf-dim"><t t-out="case['index']"/> / <t t-out="case['count']"/></span>
+                        <a t-if="case['previous']" t-att-href="case['previous']['url']" class="jf-icon-button" aria-label="Previous case study"><i class="fa fa-chevron-left" aria-hidden="true"/></a>
+                        <a t-if="case['next']" t-att-href="case['next']['url']" class="jf-icon-button" aria-label="Next case study"><i class="fa fa-chevron-right" aria-hidden="true"/></a>
+                    </p>
+                </nav>
+                <header class="jf-case-header">
+                    <div class="jf-case-title">
+                        <p class="jf-label">
+                            <span class="jf-label-index" t-out="case['index']"/>
+                            <span class="jf-label-rule" aria-hidden="true"/>
+                            <span class="jf-cyan" t-out="case['area'] or case['subtitle']"/>
                         </p>
-                        <a href="/portfolio/cv" class="jf-footer-cv"><i class="fa fa-download" aria-hidden="true"/> <span>Download complete CV (PDF)</span></a>
-                    </footer>
-                </t>
-            </div>
+                        <h1 t-out="case['name']"/>
+                        <p t-if="case['lead']" class="jf-lead" t-out="case['lead']"/>
+                    </div>
+                    <dl t-if="case['facts']" class="jf-facts">
+                        <div t-foreach="case['facts']" t-as="fact">
+                            <dt t-out="fact[0]"/>
+                            <dd t-out="fact[1]"/>
+                        </div>
+                    </dl>
+                </header>
+                <div t-if="case['cover_url']" class="jf-case-cover">
+                    <img t-att-src="case['cover_url']" t-att-alt="case['name']"/>
+                </div>
+                <section t-if="case['metrics']" class="jf-case-block jf-outcomes">
+                    <p class="jf-label"><span>Key outcomes</span><span class="jf-label-rule" aria-hidden="true"/></p>
+                    <dl class="jf-outcome-row">
+                        <div t-foreach="case['metrics']" t-as="metric" t-attf-class="#{'is-accent' if metric_index &gt;= 3 else ''}">
+                            <dt t-out="metric['value']"/>
+                            <dd t-out="metric['label']"/>
+                        </div>
+                    </dl>
+                </section>
+                <section t-if="case['overview']" class="jf-case-block jf-split">
+                    <h2 class="jf-side-label">Overview</h2>
+                    <p class="jf-body jf-body-large" t-out="case['overview']"/>
+                </section>
+                <section t-if="case['highlights']" class="jf-case-block jf-split jf-section-surface">
+                    <h2 class="jf-side-label">What I built</h2>
+                    <ul class="jf-built">
+                        <li t-foreach="case['highlights']" t-as="item">
+                            <span class="jf-built-index" t-out="'%02d' % (item_index + 1)"/>
+                            <h3 t-if="item['title']" t-out="item['title']"/>
+                            <p class="jf-body" t-out="item['description']"/>
+                        </li>
+                    </ul>
+                </section>
+                <section t-if="case['steps']" class="jf-case-block jf-split">
+                    <h2 class="jf-side-label">Architecture</h2>
+                    <ol class="jf-flow">
+                        <li t-foreach="case['steps']" t-as="step" t-attf-class="#{'is-accent' if step['is_highlighted'] else ''}">
+                            <strong t-out="step['name']"/>
+                            <span t-if="step['detail']" class="jf-mono jf-dim" t-out="step['detail']"/>
+                        </li>
+                    </ol>
+                </section>
+                <section t-if="case['technology_names'] or case['url']" class="jf-case-block jf-split">
+                    <h2 class="jf-side-label">Stack</h2>
+                    <div>
+                        <ul class="jf-chips">
+                            <li t-foreach="case['technology_names']" t-as="tech" t-out="tech"/>
+                        </ul>
+                        <a t-if="case['url']" t-att-href="case['url']" target="_blank" rel="noopener" class="jf-text-link">
+                            <span>Visit project</span> <i class="fa fa-external-link" aria-hidden="true"/>
+                        </a>
+                    </div>
+                </section>
+                <a t-if="case['next']" t-att-href="case['next']['url']" class="jf-next">
+                    <img t-if="case['next']['cover_url']" t-att-src="case['next']['cover_url']" alt="" loading="lazy"/>
+                    <span class="jf-next-content">
+                        <span class="jf-mono jf-cyan">Next case study · <t t-out="case['next']['index']"/></span>
+                        <strong t-out="case['next']['name']"/>
+                        <span class="jf-text-link"><span>Read case study</span> <i class="fa fa-arrow-right" aria-hidden="true"/></span>
+                    </span>
+                </a>
+            </main>
+        </t>
+    </template>
+
+    <!-- /portfolio/cv for visitors who are not signed in: Odoo's sign-in form, returning to the download. -->
+    <template id="cv_sign_in_page" name="Portfolio CV sign-in">
+        <t t-call="job_finder.portfolio_layout">
+            <t t-set="title" t-value="' | '.join(filter(None, ['Download CV', portfolio.get('name')]))"/>
+            <main class="jf-state">
+                <div class="jf-state-body jf-sign-in">
+                    <div class="jf-sign-in-text">
+                        <span class="jf-badge" aria-hidden="true"><i class="fa fa-lock"/></span>
+                        <h1>Sign in to download the complete CV</h1>
+                        <p class="jf-lead">The complete CV includes every role, project and contact detail, so it is only available to signed-in users.</p>
+                        <p t-if="portfolio['email']" class="jf-body">No account?
+                            <a t-attf-href="mailto:#{portfolio['email']}?subject=CV%20request" class="jf-text-link">
+                                <span>Request the CV by email</span> <i class="fa fa-envelope-o" aria-hidden="true"/>
+                            </a>
+                        </p>
+                    </div>
+                    <form action="/web/login" method="post" class="jf-form">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <input type="hidden" name="redirect" value="/portfolio/cv"/>
+                        <label for="jf-login">Email</label>
+                        <input id="jf-login" type="text" name="login" autocomplete="username" required="required" autocapitalize="off" placeholder="you@company.com"/>
+                        <label for="jf-password">Password</label>
+                        <input id="jf-password" type="password" name="password" autocomplete="current-password" required="required"/>
+                        <button type="submit" class="jf-button jf-button-primary jf-button-block">
+                            <span>Sign in and download</span> <i class="fa fa-download" aria-hidden="true"/>
+                        </button>
+                        <p class="jf-form-footer">
+                            <a href="/web/reset_password" class="jf-accent">Forgot password?</a>
+                            <a href="/portfolio">Back to portfolio</a>
+                        </p>
+                    </form>
+                </div>
+            </main>
+        </t>
+    </template>
+
+    <!-- /portfolio/cv for portal and other external accounts (status 403). -->
+    <template id="cv_unavailable_page" name="Portfolio CV unavailable">
+        <t t-call="job_finder.portfolio_layout">
+            <t t-set="title" t-value="' | '.join(filter(None, ['Download CV', portfolio.get('name')]))"/>
+            <main class="jf-state">
+                <div class="jf-state-body jf-center">
+                    <span class="jf-badge jf-badge-amber" aria-hidden="true"><i class="fa fa-shield"/></span>
+                    <p class="jf-mono jf-amber">403 · Access restricted</p>
+                    <h1>The complete CV is not available for this account</h1>
+                    <p class="jf-lead">You are signed in, but only internal users can download it. Request a copy by email instead.</p>
+                    <div class="jf-actions jf-center">
+                        <a t-if="portfolio['email']" t-attf-href="mailto:#{portfolio['email']}?subject=CV%20request" class="jf-button jf-button-primary jf-button-large">
+                            <span>Request CV by email</span> <i class="fa fa-envelope-o" aria-hidden="true"/>
+                        </a>
+                        <a href="/portfolio" class="jf-button jf-button-outline jf-button-large">
+                            <i class="fa fa-arrow-left" aria-hidden="true"/> <span>Back to portfolio</span>
+                        </a>
+                    </div>
+                </div>
+            </main>
         </t>
     </template>
 </odoo>

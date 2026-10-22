@@ -1,7 +1,7 @@
 {
     "name": "Job Finder",
     "summary": "Foundation for an online portfolio and job search",
-    "version": "19.0.1.1.0",
+    "version": "19.0.1.2.0",
     "category": "Human Resources",
     "depends": ["base", "web", "website"],
     "external_dependencies": {"python": ["pypdf"]},

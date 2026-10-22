@@ -74,3 +74,22 @@ def highlight_lines(text: Optional[str]) -> list[str]:
     """Non-empty lines of a highlights field, without leading bullets."""
     lines = (line.strip().lstrip("•-*").strip() for line in (text or "").splitlines())
     return [line for line in lines if line]
+
+
+def titled_items(text: Optional[str]) -> list[dict]:
+    """'Device protocol layer: Direct terminal communication.' -> {'title': ..., 'description': ...}.
+
+    A line without ': ' becomes a description without a title.
+    """
+    items = []
+    for line in highlight_lines(text):
+        title, sep, description = line.partition(": ")
+        items.append({"title": title, "description": description} if sep and description
+                     else {"title": "", "description": line})
+    return items
+
+
+def split_qualification(qualification: Optional[str]) -> tuple[str, str]:
+    """'Diploma of Information Technology (Cybersecurity)' -> ('Diploma of Information Technology', 'Cybersecurity')."""
+    match = re.fullmatch(r"(.+?)\s*\(([^()]+)\)", (qualification or "").strip())
+    return (match.group(1), match.group(2)) if match else ((qualification or "").strip(), "")

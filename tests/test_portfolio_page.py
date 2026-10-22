@@ -52,17 +52,19 @@ class PortfolioPageTestCase(HttpCase):
     def test_sections_render_the_public_records(self):
         text = self.page("/portfolio")
         for expected in ("Software development", "Mechatronics", "Selected work", "Custom ERP modules",
-                         "Ecuadorian Navy", "Duodata / Dec 2021 – Jan 2025", "Experience",
-                         "5 projects in Selected work", "Research and academic projects",
-                         "Universidad Técnica del Norte", "Passive exoskeleton development", "Skills",
-                         "Data &amp; infrastructure", "Education", "ICT60220", "Training and credentials",
-                         "Forklift Licence (LF)", "Languages", "Native", "Leadership and volunteering",
-                         "Vice Chair, IEEEXtreme Public Relations Committee", "Contact",
-                         "gabrielparedesmendoza@gmail.com", 'href="/portfolio/photo"' if False else 'src="/portfolio/photo"'):
+                         "Ecuadorian Navy", "Dec 2021 – Jan 2025", "Duodata", "Experience",
+                         "Research and academic projects", "Universidad Técnica del Norte",
+                         "Passive exoskeleton development", "Skills", "Data &amp; infrastructure", "Education",
+                         "ICT60220", "Training and credentials", "Forklift Licence (LF)", "Languages", "Native",
+                         "Leadership and volunteering", "Vice Chair, IEEEXtreme Public Relations Committee",
+                         "Contact", "gabrielparedesmendoza@gmail.com", 'src="/portfolio/photo"'):
             self.assertIn(expected, text)
         # Navigation lists the sections that have content.
-        for anchor in ("#work", "#experience", "#research", "#skills", "#education", "#community", "#contact"):
-            self.assertIn(f'href="{anchor}"', text)
+        for anchor in ("#work", "#experience", "#skills", "#about", "#contact"):
+            self.assertIn(f'href="/portfolio{anchor}"', text)
+        # Featured projects link to their case-study pages.
+        erp = self.profile.project_ids.filtered(lambda p: p.name == "Custom ERP modules")
+        self.assertIn(f'href="{erp._get_portfolio_path()}"', text)
 
     def test_hidden_entries_and_phone_stay_private(self):
         role = self.profile.experience_ids.filtered(lambda e: e.company == "AJ Fencing Supplies")
@@ -73,7 +75,6 @@ class PortfolioPageTestCase(HttpCase):
         self.assertNotIn("AJ Fencing Supplies", text)
         self.assertNotIn("Frecuento", text)
         self.assertNotIn("Leadership and volunteering", text)
-        self.assertNotIn('href="#community"', text)
         self.assertNotIn("+61 415 530 419", text)
         self.profile.is_phone_public = True
         self.assertIn("+61 415 530 419", self.page("/portfolio"))
@@ -118,13 +119,24 @@ class PortfolioPageTestCase(HttpCase):
             self.assertIn(expected, text)
         self.assertIn('hreflang="en"', text)
 
-    def test_cv_requires_login_and_an_internal_user(self):
-        response = self.url_open("/portfolio/cv", allow_redirects=False)
-        self.assertIn(response.status_code, (302, 303))
-        self.assertIn("/web/login", response.headers.get("Location", ""))
+    def test_cv_asks_visitors_to_sign_in(self):
+        text = self.page("/portfolio/cv")
+        self.assertIn("Sign in to download the complete CV", text)
+        self.assertIn('action="/web/login"', text)
+        self.assertIn('name="redirect" value="/portfolio/cv"', text)
+        self.assertIn('name="csrf_token"', text)
+        self.assertIn("mailto:gabrielparedesmendoza@gmail.com?subject=CV%20request", text)
+        self.assertNotIn("%PDF", text)
+        # Visitors see a lock on the CV buttons.
+        self.assertIn("fa-lock", self.page("/portfolio"))
+
+    def test_cv_is_refused_to_portal_users(self):
         self._portal_user()
         self.authenticate("portal_visitor", "portal_visitor")
-        self.assertEqual(self.url_open("/portfolio/cv", allow_redirects=False).status_code, 403)
+        response = self.url_open("/portfolio/cv", allow_redirects=False)
+        self.assertEqual(response.status_code, 403)
+        self.assertIn("The complete CV is not available for this account", response.text)
+        self.assertNotIn("%PDF", response.text)
 
     def test_cv_download_for_internal_users(self):
         self.profile.full_name = 'Ana "QA"\r\nX-Injected: 1 / Test'

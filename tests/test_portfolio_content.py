@@ -58,6 +58,22 @@ class PortfolioContentTestCase(unittest.TestCase):
         self.assertEqual(portfolio_content.highlight_lines("• One\n\n- Two\n  Three  "), ["One", "Two", "Three"])
         self.assertEqual(portfolio_content.highlight_lines(False), [])
 
+    def test_titled_items(self):
+        self.assertEqual(portfolio_content.titled_items("• Device layer: Talks to terminals.\nPlain line"), [
+            {"title": "Device layer", "description": "Talks to terminals."},
+            {"title": "", "description": "Plain line"},
+        ])
+        self.assertEqual(portfolio_content.titled_items("Ends with a colon:"),
+                         [{"title": "", "description": "Ends with a colon:"}])
+        self.assertEqual(portfolio_content.titled_items(None), [])
+
+    def test_split_qualification(self):
+        split = portfolio_content.split_qualification
+        self.assertEqual(split("Diploma of Information Technology (Cybersecurity)"),
+                         ("Diploma of Information Technology", "Cybersecurity"))
+        self.assertEqual(split("Degree in Mechatronics Engineering"), ("Degree in Mechatronics Engineering", ""))
+        self.assertEqual(split(None), ("", ""))
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -44,6 +44,10 @@ class Experience(models.Model):
         help="One achievement per line, shown as bullets on the portfolio and the CV.",
     )
     project_ids = fields.One2many("job_finder.project", "experience_id", string="Projects")
+    is_secondary = fields.Boolean(
+        string="Show as secondary",
+        help="Listed in the portfolio's collapsible group of other experience instead of the main timeline.",
+    )
 
     @api.constrains("date_start", "date_end", "is_current")
     def _check_dates(self):

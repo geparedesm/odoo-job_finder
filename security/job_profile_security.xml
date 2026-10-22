@@ -106,4 +106,40 @@
         <field name="groups" eval="[(4, ref('base.group_system'))]"/>
         <field name="domain_force">[(1, '=', 1)]</field>
     </record>
+    <record id="project_metric_rule_user" model="ir.rule">
+        <field name="name">Own project key outcomes</field>
+        <field name="model_id" ref="model_job_finder_project_metric"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">[('project_id.profile_id.user_id', '=', user.id)]</field>
+    </record>
+    <record id="project_metric_rule_system" model="ir.rule">
+        <field name="name">All project key outcomes for administrators</field>
+        <field name="model_id" ref="model_job_finder_project_metric"/>
+        <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+    <record id="project_step_rule_user" model="ir.rule">
+        <field name="name">Own project architecture steps</field>
+        <field name="model_id" ref="model_job_finder_project_step"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">[('project_id.profile_id.user_id', '=', user.id)]</field>
+    </record>
+    <record id="project_step_rule_system" model="ir.rule">
+        <field name="name">All project architecture steps for administrators</field>
+        <field name="model_id" ref="model_job_finder_project_step"/>
+        <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+    <record id="profile_figure_rule_user" model="ir.rule">
+        <field name="name">Own profile key figures</field>
+        <field name="model_id" ref="model_job_finder_profile_figure"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">[('profile_id.user_id', '=', user.id)]</field>
+    </record>
+    <record id="profile_figure_rule_system" model="ir.rule">
+        <field name="name">All profile key figures for administrators</field>
+        <field name="model_id" ref="model_job_finder_profile_figure"/>
+        <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
 </odoo>

@@ -3,6 +3,9 @@ from . import technology
 from . import job_profile
 from . import experience
 from . import project
+from . import project_metric
+from . import project_step
+from . import profile_figure
 from . import skill_group
 from . import education
 from . import training

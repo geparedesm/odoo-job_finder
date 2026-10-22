@@ -1,6 +1,9 @@
 """CVs for some areas of a profile: their content, the download wizard, the PDF, access, and the portfolio."""
 
+import json
+from io import BytesIO
 import unittest
+from urllib.parse import quote
 
 try:
     from odoo.exceptions import AccessError, ValidationError
@@ -118,10 +121,10 @@ class CvAreasTestCase(TransactionCase):
         })
         action = wizard.action_download()
         self.assertEqual(action["report_name"], "job_finder.report_job_profile")
-        self.assertEqual(action["data"], {"area_ids": self.backend.ids})
+        self.assertEqual(action["data"], {"profile_ids": self.profile.ids, "area_ids": self.backend.ids})
         # Another profile's areas never reach the report.
         wizard.sudo().area_ids = [(6, 0, (self.backend | other_backend).ids)]
-        self.assertEqual(wizard.action_download()["data"], {"area_ids": self.backend.ids})
+        self.assertEqual(wizard.action_download()["data"]["area_ids"], self.backend.ids)
 
     def test_pdf_report_uses_the_areas_of_its_data(self):
         report = self.env.ref("job_finder.action_report_job_profile").with_user(self.user).with_context(lang="en_US")
@@ -155,6 +158,34 @@ class CvAreasPortfolioTestCase(HttpCase):
         self.assertIn("Area%20Candidate%20Backend%20Frontend-cv.pdf", response.headers.get("Content-Disposition", ""))
         response = self.url_open("/portfolio/cv?download=1")
         self.assertIn("Area%20Candidate-cv.pdf", response.headers.get("Content-Disposition", ""))
+
+    def pdf_text(self, response):
+        """The text of a downloaded report. Under --test-enable, Odoo returns the report's HTML instead of running
+        wkhtmltopdf, with the PDF content type."""
+        import pypdf
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.headers.get("Content-Type"), "application/pdf")
+        if response.content.startswith(b"%PDF"):
+            return "".join(page.extract_text() for page in pypdf.PdfReader(BytesIO(response.content)).pages)
+        return "".join(etree.HTML(response.content).itertext())
+
+    def test_dialog_download_url_renders_the_cv(self):
+        # The web client downloads a report action with data as /report/pdf/<report>?options=<data>, without ids.
+        self.authenticate("admin", "admin")
+        report_name = "job_finder.report_job_profile"
+        # The data of the dialog (see test_wizard_downloads_the_cv_of_the_chosen_areas).
+        data = {"profile_ids": self.profile.ids, "area_ids": self.backend.ids}
+        url = f"/report/pdf/{report_name}?options={quote(json.dumps(data))}"
+        text = self.pdf_text(self.url_open(url))
+        self.assertIn("Area Candidate", text)
+        self.assertIn("Backend Developer", text)
+        self.assertNotIn("Frontend app", text)
+        # Data without the profile: the active records of the context.
+        context = {"active_model": "job.profile", "active_ids": self.profile.ids}
+        url = (f"/report/pdf/{report_name}?options={quote(json.dumps({'area_ids': self.backend.ids}))}"
+               f"&context={quote(json.dumps(context))}")
+        self.assertIn("Area Candidate", self.pdf_text(self.url_open(url)))
 
     def test_visitors_still_sign_in_first(self):
         response = self.url_open("/portfolio/cv?download=1")

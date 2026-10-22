@@ -1,118 +1,125 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- A role or a research collaboration: title, company and dates, then highlights and projects as bullets. -->
     <template id="report_job_profile_role">
-        <div class="jf-role" style="page-break-inside: avoid; margin-bottom: 12px;">
-            <div style="display: flex; justify-content: space-between;">
-                <strong t-field="role.role"/>
-                <span t-out="role._get_period_label()"/>
-            </div>
-            <div class="text-muted">
-                <span t-field="role.company"/>
-                <t t-if="role.location"> · <span t-field="role.location"/></t>
-                <t t-if="role.employment_type"> · <span t-field="role.employment_type"/></t>
-            </div>
-            <p t-if="role.description" t-field="role.description" style="white-space: pre-wrap; margin: 4px 0;"/>
-            <ul t-if="role.highlights" style="margin: 4px 0;">
-                <li t-foreach="role._get_highlight_lines()" t-as="line" t-out="line"/>
-            </ul>
-            <div t-foreach="role.project_ids" t-as="project" style="margin: 6px 0 0 12px;">
-                <strong t-field="project.name"/><t t-if="project.subtitle"> · <span t-field="project.subtitle"/></t>
-                <div t-if="project.technology_ids" class="text-muted">
-                    <span>Technologies / methods</span>: <t t-out="', '.join(project.technology_ids.mapped('name'))"/>
+        <div class="jf-cv-entry">
+            <div class="jf-cv-entry-head">
+                <div class="jf-cv-entry-title">
+                    <strong t-out="role['title']"/><t t-if="role['company']"> — <span t-out="role['company']"/></t>
                 </div>
-                <p t-if="project.description" t-field="project.description" style="white-space: pre-wrap; margin: 2px 0;"/>
+                <div class="jf-cv-entry-date" t-out="role['period']"/>
             </div>
+            <p t-if="role['location'] or role['type']" class="jf-cv-entry-meta"
+               t-out="' · '.join(filter(None, [role['location'], role['type']]))"/>
+            <p t-if="role['description']" class="jf-cv-text" t-out="role['description']"/>
+            <ul t-if="role['highlights'] or role['projects']" class="jf-cv-bullets">
+                <li t-foreach="role['highlights']" t-as="line" t-out="line"/>
+                <li t-foreach="role['projects']" t-as="project">
+                    <t t-call="job_finder.report_job_profile_project"/>
+                </li>
+            </ul>
         </div>
+    </template>
+
+    <template id="report_job_profile_project">
+        <strong t-out="project['name']"/><t t-if="project['subtitle']"> (<t t-out="project['subtitle']"/>)</t><t t-if="project['description']">: <t t-out="project['description']"/></t>
+        <span t-if="project['technologies']" class="jf-cv-tech"><span>Technologies</span>: <t t-out="project['technologies']"/></span>
     </template>
 
     <template id="report_job_profile">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="profile">
+                <t t-set="cv" t-value="cvs[profile.id]"/>
                 <t t-call="web.basic_layout">
-                    <div class="page">
-                        <h1>Complete CV</h1>
-                        <h2 t-if="profile.full_name" t-field="profile.full_name"/>
-                        <p t-if="profile.headline" t-field="profile.headline"/>
-                        <h2>Contact details</h2>
-                        <p t-if="profile.email"><strong><span>Email</span>: </strong><span t-field="profile.email"/></p>
-                        <p t-if="profile.phone"><strong><span>Phone</span>: </strong><span t-field="profile.phone"/></p>
-                        <p t-if="profile.location"><strong><span>Location</span>: </strong><span t-field="profile.location"/></p>
-                        <p t-if="profile.linkedin"><strong><span>LinkedIn</span>: </strong><span t-field="profile.linkedin"/></p>
-                        <p t-if="profile.website"><strong><span>Website</span>: </strong><span t-field="profile.website"/></p>
-                        <p t-if="profile.github"><strong><span>GitHub</span>: </strong><span t-field="profile.github"/></p>
-                        <div t-if="profile.summary">
-                            <h2>Summary</h2>
-                            <div t-field="profile.summary" style="white-space: pre-wrap; overflow-wrap: break-word;"/>
-                        </div>
-                        <t t-set="work_roles" t-value="profile.experience_ids.filtered(lambda e: e.category == 'work')"/>
-                        <div t-if="work_roles">
-                            <h2>Experience</h2>
-                            <t t-foreach="work_roles" t-as="role" t-call="job_finder.report_job_profile_role"/>
-                        </div>
-                        <t t-set="research_roles" t-value="profile.experience_ids.filtered(lambda e: e.category == 'research')"/>
-                        <div t-if="research_roles">
-                            <h2>Academic research and projects</h2>
-                            <t t-foreach="research_roles" t-as="role" t-call="job_finder.report_job_profile_role"/>
-                        </div>
-                        <t t-set="other_projects" t-value="profile.project_ids.filtered(lambda p: not p.experience_id)"/>
-                        <div t-if="other_projects">
-                            <h2>Projects</h2>
-                            <div t-foreach="other_projects" t-as="project" style="margin-bottom: 6px;">
-                                <strong t-field="project.name"/><t t-if="project.subtitle"> · <span t-field="project.subtitle"/></t>
-                                <p t-if="project.description" t-field="project.description" style="white-space: pre-wrap; margin: 2px 0;"/>
-                            </div>
-                        </div>
-                        <div t-if="profile.skill_group_ids">
+                    <div class="page jf-cv">
+                        <header class="jf-cv-header">
+                            <h1 class="jf-cv-name" t-out="cv['name']"/>
+                            <p t-if="cv['headline']" class="jf-cv-headline" t-out="cv['headline']"/>
+                            <p t-if="cv['contact']" class="jf-cv-contact">
+                                <t t-foreach="cv['contact']" t-as="item">
+                                    <span t-if="not item_first" class="jf-cv-sep">|</span>
+                                    <a t-if="item['href']" t-att-href="item['href']" class="jf-cv-contact-item" t-out="item['label']"/>
+                                    <span t-else="" class="jf-cv-contact-item" t-out="item['label']"/>
+                                </t>
+                            </p>
+                        </header>
+
+                        <section t-if="cv['summary_paragraphs']" class="jf-cv-section">
+                            <h2>Professional summary</h2>
+                            <p t-foreach="cv['summary_paragraphs']" t-as="paragraph" class="jf-cv-text" t-out="paragraph"/>
+                        </section>
+
+                        <section t-if="cv['skills']" class="jf-cv-section">
                             <h2>Skills</h2>
-                            <p t-foreach="profile.skill_group_ids" t-as="group" style="margin: 2px 0;">
-                                <strong t-field="group.name"/>: <t t-out="', '.join(group.technology_ids.mapped('name'))"/>
+                            <p t-foreach="cv['skills']" t-as="skill" class="jf-cv-skill">
+                                <strong t-out="skill['name']"/>: <t t-out="skill['items']"/>
                             </p>
-                        </div>
-                        <div t-if="profile.education_ids">
+                        </section>
+
+                        <section t-if="cv['roles']" class="jf-cv-section">
+                            <h2>Experience</h2>
+                            <t t-foreach="cv['roles']" t-as="role" t-call="job_finder.report_job_profile_role"/>
+                        </section>
+
+                        <section t-if="cv['projects']" class="jf-cv-section">
+                            <h2>Projects</h2>
+                            <ul class="jf-cv-bullets">
+                                <li t-foreach="cv['projects']" t-as="project">
+                                    <t t-call="job_finder.report_job_profile_project"/>
+                                </li>
+                            </ul>
+                        </section>
+
+                        <section t-if="cv['research']" class="jf-cv-section">
+                            <h2>Research and academic projects</h2>
+                            <t t-foreach="cv['research']" t-as="role" t-call="job_finder.report_job_profile_role"/>
+                        </section>
+
+                        <section t-if="cv['education']" class="jf-cv-section">
                             <h2>Education</h2>
-                            <div t-foreach="profile.education_ids" t-as="entry" style="margin-bottom: 6px;">
-                                <strong t-field="entry.qualification"/>
-                                <div class="text-muted">
-                                    <t t-if="entry.code"><span t-field="entry.code"/> · </t>
-                                    <span t-field="entry.institution"/>
-                                    <t t-if="entry.location"> · <span t-field="entry.location"/></t>
-                                    <t t-if="entry._get_period_label()"> · <t t-out="entry._get_period_label()"/></t>
-                                    <t t-if="entry.status"> · <span t-field="entry.status"/></t>
+                            <div t-foreach="cv['education']" t-as="entry" class="jf-cv-entry">
+                                <div class="jf-cv-entry-head">
+                                    <div class="jf-cv-entry-title"><strong t-out="entry['qualification']"/></div>
+                                    <div class="jf-cv-entry-date" t-out="entry['period']"/>
                                 </div>
+                                <p t-if="entry['institution'] or entry['details']" class="jf-cv-entry-meta"
+                                   t-out="' · '.join(filter(None, [entry['institution'], entry['details']]))"/>
                             </div>
-                        </div>
-                        <div t-if="profile.training_ids">
-                            <h2>Trainings</h2>
-                            <p t-foreach="profile.training_ids" t-as="training" style="margin: 2px 0;">
-                                <span t-field="training.name"/>
-                                <t t-if="training.issuer"> · <span t-field="training.issuer"/></t>
-                                <t t-if="training.year"> · <t t-out="training.year"/></t>
-                                <t t-if="training.status"> · <span t-field="training.status"/></t>
-                            </p>
-                        </div>
-                        <div t-if="profile.volunteering_ids">
-                            <h2>Volunteering</h2>
-                            <div t-foreach="profile.volunteering_ids" t-as="entry" style="margin-bottom: 8px; page-break-inside: avoid;">
-                                <strong t-field="entry.title"/>
-                                <div class="text-muted">
-                                    <span t-field="entry.organisation"/>
-                                    <t t-if="entry.location"> · <span t-field="entry.location"/></t>
-                                    <t t-if="entry.period"> · <span t-field="entry.period"/></t>
+                        </section>
+
+                        <section t-if="cv['trainings']" class="jf-cv-section">
+                            <h2>Certifications and training</h2>
+                            <ul class="jf-cv-bullets">
+                                <li t-foreach="cv['trainings']" t-as="training">
+                                    <strong t-out="training['name']"/><t t-if="training['details']"> · <t t-out="training['details']"/></t>
+                                </li>
+                            </ul>
+                        </section>
+
+                        <section t-if="cv['volunteering']" class="jf-cv-section">
+                            <h2>Leadership and volunteering</h2>
+                            <div t-foreach="cv['volunteering']" t-as="entry" class="jf-cv-entry">
+                                <div class="jf-cv-entry-head">
+                                    <div class="jf-cv-entry-title">
+                                        <strong t-out="entry['title']"/><t t-if="entry['organisation']"> — <span t-out="entry['organisation']"/></t>
+                                    </div>
+                                    <div class="jf-cv-entry-date" t-out="entry['period']"/>
                                 </div>
-                                <ul t-if="entry.recognitions" style="margin: 4px 0;">
-                                    <li t-foreach="entry._get_recognition_lines()" t-as="line" t-out="line"/>
-                                </ul>
-                                <ul t-if="entry.highlights" style="margin: 4px 0;">
-                                    <li t-foreach="entry._get_highlight_lines()" t-as="line" t-out="line"/>
+                                <ul t-if="entry['recognitions'] or entry['highlights']" class="jf-cv-bullets">
+                                    <li t-foreach="entry['recognitions']" t-as="line" t-out="line"/>
+                                    <li t-foreach="entry['highlights']" t-as="line" t-out="line"/>
                                 </ul>
                             </div>
-                        </div>
-                        <div t-if="profile.spoken_language_ids">
+                        </section>
+
+                        <section t-if="cv['languages']" class="jf-cv-section">
                             <h2>Languages</h2>
-                            <p t-foreach="profile.spoken_language_ids" t-as="language" style="margin: 2px 0;">
-                                <span t-field="language.name"/><t t-if="language.level"> · <span t-field="language.level"/></t>
+                            <p class="jf-cv-text">
+                                <t t-foreach="cv['languages']" t-as="language">
+                                    <t t-if="not language_first"> · </t><strong t-out="language['name']"/><t t-if="language['level']"> (<t t-out="language['level']"/>)</t>
+                                </t>
                             </p>
-                        </div>
+                        </section>
                     </div>
                 </t>
             </t>

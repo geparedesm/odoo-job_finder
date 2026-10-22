@@ -11,7 +11,7 @@ from .portfolio_content import highlight_lines
 
 class Experience(models.Model):
     _name = "job_finder.experience"
-    _inherit = "job_finder.profile_item"
+    _inherit = ["job_finder.profile_item", "job_finder.cv_area_mixin"]
     _description = "Profile experience"
     _order = "sequence, date_start desc, id"
 

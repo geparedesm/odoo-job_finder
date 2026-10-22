@@ -11,6 +11,7 @@
         "data/website_data.xml",
         "report/job_profile_templates.xml",
         "report/job_profile_report.xml",
+        "wizards/cv_download_views.xml",
         "views/profile_item_views.xml",
         "views/job_profile_views.xml",
         "views/job_profile_menus.xml",
@@ -19,6 +20,9 @@
     "assets": {
         "web.assets_frontend": [
             "job_finder/static/src/scss/portfolio.scss",
+        ],
+        "web.report_assets_common": [
+            "job_finder/static/src/scss/cv_report.scss",
         ],
     },
     "installable": True,

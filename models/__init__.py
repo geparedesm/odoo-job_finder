@@ -1,4 +1,6 @@
 from . import profile_item
+from . import cv_area
+from . import cv_area_mixin
 from . import technology
 from . import job_profile
 from . import experience
@@ -11,3 +13,4 @@ from . import education
 from . import training
 from . import volunteering
 from . import spoken_language
+from . import cv_report

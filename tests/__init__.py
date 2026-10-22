@@ -6,6 +6,7 @@ except ImportError:  # plain unittest discovers the standard-library tests itsel
     pass
 else:
     from . import test_case_study_page  # noqa: F401
+    from . import test_cv_areas  # noqa: F401
     from . import test_job_profile_report  # noqa: F401
     from . import test_odoo_profile  # noqa: F401
     from . import test_portfolio_content  # noqa: F401

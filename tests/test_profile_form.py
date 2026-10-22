@@ -30,7 +30,7 @@ class TestStructuredProfileForm(HttpCase):
         form, models = self._form(self.user)
         pages = form.xpath("./sheet/notebook/page/@name")
         self.assertEqual(pages, ["summary", "experience", "projects", "skills", "education", "trainings",
-                                 "volunteering", "languages", "portfolio", "cv_import"])
+                                 "volunteering", "languages", "cv_areas", "portfolio", "cv_import"])
         for name in ("experience_ids", "project_ids", "skill_group_ids", "education_ids", "training_ids",
                      "volunteering_ids", "spoken_language_ids"):
             [field] = form.xpath(f"./sheet/notebook/page/field[@name='{name}']")

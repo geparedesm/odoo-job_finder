@@ -563,6 +563,38 @@
         </t>
     </template>
 
+    <!-- /portfolio/cv for internal users when the profile has CV areas: choose the CV to download. -->
+    <template id="cv_choose_page" name="Portfolio CV choice">
+        <t t-call="job_finder.portfolio_layout">
+            <t t-set="title" t-value="' | '.join(filter(None, ['Download CV', portfolio.get('name')]))"/>
+            <main class="jf-state">
+                <div class="jf-state-body jf-cv-choice">
+                    <span class="jf-badge" aria-hidden="true"><i class="fa fa-file-text-o"/></span>
+                    <h1>Choose your CV</h1>
+                    <p class="jf-lead">Pick the areas of the job you apply for. The CV keeps their entries and the
+                        general ones; without areas you get the complete CV.</p>
+                    <form action="/portfolio/cv" method="get" class="jf-form">
+                        <input type="hidden" name="download" value="1"/>
+                        <label t-foreach="areas" t-as="area" class="jf-check">
+                            <input type="checkbox" name="area" t-att-value="area['id']"/>
+                            <span class="jf-check-text">
+                                <strong t-out="area['name']"/>
+                                <span t-if="area['headline']" class="jf-mono jf-dim" t-out="area['headline']"/>
+                            </span>
+                        </label>
+                        <button type="submit" class="jf-button jf-button-primary jf-button-block">
+                            <span>Download PDF</span> <i class="fa fa-download" aria-hidden="true"/>
+                        </button>
+                        <p class="jf-form-footer">
+                            <a href="/portfolio/cv?download=1" class="jf-accent">Complete CV</a>
+                            <a href="/portfolio">Back to portfolio</a>
+                        </p>
+                    </form>
+                </div>
+            </main>
+        </t>
+    </template>
+
     <!-- /portfolio/cv for portal and other external accounts (status 403). -->
     <template id="cv_unavailable_page" name="Portfolio CV unavailable">
         <t t-call="job_finder.portfolio_layout">

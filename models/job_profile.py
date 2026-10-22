@@ -83,6 +83,7 @@ class JobProfile(models.Model):
     training_ids = fields.One2many("job_finder.training", "profile_id", string="Trainings")
     volunteering_ids = fields.One2many("job_finder.volunteering", "profile_id", string="Volunteering")
     spoken_language_ids = fields.One2many("job_finder.spoken_language", "profile_id", string="Languages")
+    cv_area_ids = fields.One2many("job_finder.cv_area", "profile_id", string="CV areas")
     completeness = fields.Integer(string="Completeness", compute="_compute_completeness")
     completeness_hints = fields.Text(string="Missing information", compute="_compute_completeness")
 
@@ -405,6 +406,90 @@ class JobProfile(models.Model):
             "url": project._get_url(),
             "previous": neighbour(featured[position - 1]),
             "next": neighbour(featured[(position + 1) % len(featured)]),
+        }
+
+    def _get_cv_values(self, areas=None):
+        """The CV for the PDF: every entry, or those of these CV areas.
+
+        Untagged entries are in every CV and tagged ones only in the CVs of their areas. A project without areas
+        follows its role; a tagged project brings its role with it. Entries hidden from the portfolio stay in the CV.
+        """
+        self.ensure_one()
+        areas = (areas or self.env["job_finder.cv_area"]) & self.cv_area_ids
+
+        def selection_label(record, field):
+            return dict(record._fields[field]._description_selection(self.env)).get(record[field], "")
+
+        def link(value):
+            url = safe_url(value)
+            return {"href": url, "label": re.sub(r"^https?://(www\.)?", "", url).rstrip("/")} if url else None
+
+        roles = self.experience_ids._filter_for_cv(areas)
+        projects = self.project_ids.filtered(
+            lambda p: bool(p.cv_area_ids & areas) if areas and p.cv_area_ids
+            else not p.experience_id or p.experience_id in roles
+        )
+        roles = self.experience_ids.filtered(lambda r: r in roles or r in projects.experience_id)
+
+        def project_values(project):
+            return {
+                "name": project.name,
+                "subtitle": capitalize_first(project.subtitle),
+                "description": " ".join((project.description or "").split()),
+                "technologies": ", ".join(project.technology_ids.mapped("name")),
+            }
+
+        def role_values(role):
+            return {
+                "title": role.role,
+                "company": role.company or "",
+                "location": role.location or "",
+                "period": role._get_period_label(),
+                "type": selection_label(role, "employment_type") if role.employment_type else "",
+                "description": " ".join(paragraphs(role.description)),
+                "highlights": role._get_highlight_lines(),
+                "projects": [project_values(project) for project in projects if project.experience_id == role],
+            }
+
+        headlines = [area.headline for area in areas if area.headline]
+        summaries = [area.summary for area in areas if area.summary]
+        contact = [{"label": self.location, "href": None} if self.location else None,
+                   {"label": self.phone, "href": "tel:" + self.phone.replace(" ", "")} if self.phone else None,
+                   {"label": self.email, "href": "mailto:" + self.email} if self.email else None,
+                   link(self.linkedin), link(self.github), link(self.website)]
+        return {
+            "name": self.full_name or "",
+            "headline": " · ".join(headline_parts(" | ".join(headlines) if headlines else self.headline)),
+            "areas": areas.mapped("name"),
+            "contact": [item for item in contact if item],
+            "summary_paragraphs": paragraphs("\n\n".join(summaries) if summaries else self.summary),
+            "skills": [{"name": group.name, "items": ", ".join(group.technology_ids.mapped("name"))}
+                       for group in self.skill_group_ids._filter_for_cv(areas)],
+            "roles": [role_values(role) for role in roles if role.category == "work"],
+            "research": [role_values(role) for role in roles if role.category == "research"],
+            "projects": [project_values(project) for project in projects if not project.experience_id],
+            "education": [{
+                "qualification": entry.qualification,
+                "institution": ", ".join(filter(None, [entry.institution, entry.location])),
+                "period": entry._get_period_label(),
+                "details": " · ".join(filter(None, [entry.code,
+                                                    selection_label(entry, "status") if entry.status else ""])),
+            } for entry in self.education_ids],
+            "trainings": [{
+                "name": training.name,
+                "details": " · ".join(filter(None, [training.issuer, str(training.year) if training.year else "",
+                                                    selection_label(training, "status") if training.status else ""])),
+            } for training in self.training_ids._filter_for_cv(areas)],
+            "volunteering": [{
+                "title": entry.title,
+                "organisation": ", ".join(filter(None, [entry.organisation, entry.location])),
+                "period": en_dash_ranges(entry.period),
+                "recognitions": entry._get_recognition_lines(),
+                "highlights": entry._get_highlight_lines(),
+            } for entry in self.volunteering_ids._filter_for_cv(areas)],
+            "languages": [{"name": language.name,
+                           "level": selection_label(language, "level") if language.level else ""}
+                          for language in self.spoken_language_ids],
         }
 
     def action_parse_cv(self):

@@ -8,7 +8,7 @@ from .portfolio_content import safe_url
 
 class Project(models.Model):
     _name = "job_finder.project"
-    _inherit = "job_finder.profile_item"
+    _inherit = ["job_finder.profile_item", "job_finder.cv_area_mixin"]
     _description = "Profile project"
 
     name = fields.Char(string="Name", required=True, translate=True)

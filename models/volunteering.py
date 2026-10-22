@@ -7,7 +7,7 @@ from .portfolio_content import highlight_lines
 
 class Volunteering(models.Model):
     _name = "job_finder.volunteering"
-    _inherit = "job_finder.profile_item"
+    _inherit = ["job_finder.profile_item", "job_finder.cv_area_mixin"]
     _description = "Profile volunteering"
 
     title = fields.Char(string="Title", required=True, translate=True)

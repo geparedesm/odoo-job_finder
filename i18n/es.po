@@ -38,6 +38,24 @@ msgid "<i class=\"fa fa-envelope-o\" aria-hidden=\"true\"/> <span>Email me</span
 msgstr "<i class=\"fa fa-envelope-o\" aria-hidden=\"true\"/> <span>Escríbeme</span>"
 
 #. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.portfolio_login_button
+msgid ""
+"<i class=\"fa fa-sign-in\" aria-hidden=\"true\"/>\n"
+"            <span>Log in</span>"
+msgstr ""
+"<i class=\"fa fa-sign-in\" aria-hidden=\"true\"/>\n"
+"            <span>Iniciar sesión</span>"
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.portfolio_login_button
+msgid ""
+"<i class=\"fa fa-th-large\" aria-hidden=\"true\"/>\n"
+"            <span>Open Odoo</span>"
+msgstr ""
+"<i class=\"fa fa-th-large\" aria-hidden=\"true\"/>\n"
+"            <span>Abrir Odoo</span>"
+
+#. module: job_finder
 #: model_terms:ir.ui.view,arch_db:job_finder.case_study_page
 msgid "<span class=\"jf-dim\" aria-hidden=\"true\">/</span>"
 msgstr "<span class=\"jf-dim\" aria-hidden=\"true\">/</span>"
@@ -1465,11 +1483,6 @@ msgstr "Tecnologías"
 #: model:ir.model,name:job_finder.model_job_finder_technology
 msgid "Technology or method"
 msgstr "Tecnología o método"
-
-#. module: job_finder
-#: model_terms:ir.ui.view,arch_db:job_finder.portfolio_layout
-msgid "The CV download requires signing in."
-msgstr "Para descargar el CV hay que iniciar sesión."
 
 #. module: job_finder
 #: model_terms:ir.ui.view,arch_db:job_finder.cv_sign_in_page

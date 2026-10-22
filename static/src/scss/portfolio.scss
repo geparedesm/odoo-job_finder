@@ -277,7 +277,7 @@ $jf-radius: 14px;
         gap: 16px;
     }
 
-    .jf-nav-cv { min-height: 40px; padding: 0 16px; font-size: 14px; }
+    .jf-nav-button { min-height: 40px; padding: 0 16px; font-size: 14px; }
 
     .jf-lang {
         display: inline-flex;
@@ -378,7 +378,6 @@ $jf-radius: 14px;
         .jf-lang { align-self: flex-end; }
     }
 
-    .jf-note { font-size: 12px; color: $jf-dim; text-align: center; }
 
     // Hero
     .jf-hero {
@@ -1414,7 +1413,7 @@ $jf-radius: 14px;
     @media (max-width: 767.98px) {
         .jf-nav, .jf-figures, .jf-footer, .jf-breadcrumb, .jf-case-cover { padding-left: $jf-gutter-mobile; padding-right: $jf-gutter-mobile; }
         .jf-nav { min-height: 72px; }
-        .jf-nav-actions > .jf-lang, .jf-nav-cv { display: none; }
+        .jf-nav-actions > .jf-lang, .jf-nav-button { display: none; }
         .jf-menu { display: block; }
         .jf-wordmark { font-size: 17px; }
         .jf-hero { padding: 20px $jf-gutter-mobile 48px; }

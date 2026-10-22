@@ -96,7 +96,9 @@ including the fixed texts from `i18n/es.po` and the translated profile texts. Th
 
 ### Download CV
 
-**Download CV** opens `/portfolio/cv`; for visitors who are not signed in it shows a lock. Anonymous visitors get a
+The navigation shows **Log in** (Odoo's login page) to visitors and **Open Odoo** (the backend) to internal users;
+portal users, who have no backend, get no button there. **Download CV**, in Experience and Contact, opens
+`/portfolio/cv`; for visitors who are not signed in it shows a lock. Anonymous visitors get a
 sign-in page (Odoo's login form, returning to the download) with a link to request the CV by email; internal users
 download the complete PDF; portal and other external accounts get a 403 page that suggests requesting it by email.
 Only the published profile's photo is public, at `/portfolio/photo`.

@@ -115,7 +115,7 @@ class PortfolioPageTestCase(HttpCase):
         self.env.ref("website.default_website").language_ids = [(4, lang.id)]
         self.env["ir.module.module"]._load_module_terms(["job_finder"], ["es_ES"], overwrite=True)
         text = self.page("/es/portfolio")
-        for expected in ("Trabajo destacado", "Experiencia", "Contacto", "Descargar CV", "Nativo"):
+        for expected in ("Trabajo destacado", "Experiencia", "Contacto", "Descargar CV", "Nativo", "Iniciar sesión"):
             self.assertIn(expected, text)
         self.assertIn('hreflang="en"', text)
 
@@ -129,6 +129,26 @@ class PortfolioPageTestCase(HttpCase):
         self.assertNotIn("%PDF", text)
         # Visitors see a lock on the CV buttons.
         self.assertIn("fa-lock", self.page("/portfolio"))
+
+    def test_navigation_button_opens_odoo(self):
+        # Visitors sign in to Odoo; the CV buttons of the page stay.
+        text = self.page("/portfolio")
+        self.assertIn('href="/web/login"', text)
+        self.assertIn("Log in", text)
+        self.assertNotIn('href="/odoo"', text)
+        self.assertIn('href="/portfolio/cv"', text)
+        # Internal users open the backend.
+        self.authenticate("admin", "admin")
+        text = self.page("/portfolio")
+        self.assertIn('href="/odoo"', text)
+        self.assertIn("Open Odoo", text)
+        self.assertNotIn('href="/web/login"', text)
+        # Portal users have no backend: no button.
+        self._portal_user()
+        self.authenticate("portal_visitor", "portal_visitor")
+        text = self.page("/portfolio")
+        self.assertNotIn('href="/odoo"', text)
+        self.assertNotIn('href="/web/login"', text)
 
     def test_cv_is_refused_to_portal_users(self):
         self._portal_user()

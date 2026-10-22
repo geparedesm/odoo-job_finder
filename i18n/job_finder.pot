@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0-20260926\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-22 08:23+0000\n"
-"PO-Revision-Date: 2026-10-22 08:23+0000\n"
+"POT-Creation-Date: 2026-10-22 09:45+0000\n"
+"PO-Revision-Date: 2026-10-22 09:45+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -40,6 +40,20 @@ msgstr ""
 #. module: job_finder
 #: model_terms:ir.ui.view,arch_db:job_finder.portfolio_page
 msgid "<i class=\"fa fa-envelope-o\" aria-hidden=\"true\"/> <span>Email me</span>"
+msgstr ""
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.portfolio_login_button
+msgid ""
+"<i class=\"fa fa-sign-in\" aria-hidden=\"true\"/>\n"
+"            <span>Log in</span>"
+msgstr ""
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.portfolio_login_button
+msgid ""
+"<i class=\"fa fa-th-large\" aria-hidden=\"true\"/>\n"
+"            <span>Open Odoo</span>"
 msgstr ""
 
 #. module: job_finder
@@ -1456,11 +1470,6 @@ msgstr ""
 #. module: job_finder
 #: model:ir.model,name:job_finder.model_job_finder_technology
 msgid "Technology or method"
-msgstr ""
-
-#. module: job_finder
-#: model_terms:ir.ui.view,arch_db:job_finder.portfolio_layout
-msgid "The CV download requires signing in."
 msgstr ""
 
 #. module: job_finder

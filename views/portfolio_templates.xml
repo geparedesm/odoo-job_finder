@@ -24,7 +24,7 @@
                         </nav>
                         <div class="jf-nav-actions">
                             <t t-call="job_finder.portfolio_language_switch"/>
-                            <t t-call="job_finder.portfolio_cv_button"><t t-set="cv_class" t-value="'jf-nav-cv'"/></t>
+                            <t t-call="job_finder.portfolio_login_button"><t t-set="button_class" t-value="'jf-nav-button'"/></t>
                             <details class="jf-menu">
                                 <summary aria-label="Menu">
                                     <i class="fa fa-bars jf-menu-open" aria-hidden="true"/>
@@ -39,8 +39,7 @@
                                         <a t-if="p['email']" t-attf-href="mailto:#{p['email']}" class="jf-button jf-button-primary jf-button-block">
                                             <span>Email me</span> <i class="fa fa-envelope-o" aria-hidden="true"/>
                                         </a>
-                                        <t t-call="job_finder.portfolio_cv_button"><t t-set="cv_class" t-value="'jf-button-block'"/></t>
-                                        <p t-if="is_cv_locked" class="jf-note">The CV download requires signing in.</p>
+                                        <t t-call="job_finder.portfolio_login_button"><t t-set="button_class" t-value="'jf-button-block'"/></t>
                                     </div>
                                 </div>
                             </details>
@@ -85,6 +84,18 @@
                t-attf-class="jf-lang-link #{'is-active' if lg.code == lang else ''}"
                t-out="lg.url_code.split('_')[0].upper()"/>
         </div>
+    </template>
+
+    <!-- Navigation: visitors sign in to Odoo; internal users open it. Portal users have no backend, so no button. -->
+    <template id="portfolio_login_button" name="Portfolio login button">
+        <a t-if="is_cv_locked" href="/web/login" t-attf-class="jf-button jf-button-outline #{button_class or ''}">
+            <i class="fa fa-sign-in" aria-hidden="true"/>
+            <span>Log in</span>
+        </a>
+        <a t-elif="is_internal_user" href="/odoo" t-attf-class="jf-button jf-button-outline #{button_class or ''}">
+            <i class="fa fa-th-large" aria-hidden="true"/>
+            <span>Open Odoo</span>
+        </a>
     </template>
 
     <!-- Visitors who are not signed in see a lock: the CV opens a sign-in page first. -->

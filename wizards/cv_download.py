@@ -16,5 +16,9 @@ class CvDownload(models.TransientModel):
     def action_download(self):
         self.ensure_one()
         return self.env.ref("job_finder.action_report_job_profile").report_action(
-            self.profile_id, data={"area_ids": (self.area_ids & self.profile_id.cv_area_ids).ids},
+            self.profile_id, data={
+                # The client downloads a report with data without ids in its URL: the profile goes in the data.
+                "profile_ids": self.profile_id.ids,
+                "area_ids": (self.area_ids & self.profile_id.cv_area_ids).ids,
+            },
         )

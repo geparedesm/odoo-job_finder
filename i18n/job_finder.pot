@@ -6,14 +6,19 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0-20260926\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-22 09:45+0000\n"
-"PO-Revision-Date: 2026-10-22 09:45+0000\n"
+"POT-Creation-Date: 2026-10-22 16:56+0000\n"
+"PO-Revision-Date: 2026-10-22 16:56+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
+
+#. module: job_finder
+#: model:ir.actions.report,print_report_name:job_finder.action_report_job_profile
+msgid "'%s - CV' % (object.full_name or 'Portfolio')"
+msgstr ""
 
 #. module: job_finder
 #: model_terms:ir.ui.view,arch_db:job_finder.cv_unavailable_page
@@ -108,6 +113,11 @@ msgid "<span>Download CV</span>"
 msgstr ""
 
 #. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.cv_choose_page
+msgid "<span>Download PDF</span> <i class=\"fa fa-download\" aria-hidden=\"true\"/>"
+msgstr ""
+
+#. module: job_finder
 #: model_terms:ir.ui.view,arch_db:job_finder.portfolio_layout
 msgid "<span>Email me</span> <i class=\"fa fa-envelope-o\" aria-hidden=\"true\"/>"
 msgstr ""
@@ -153,8 +163,8 @@ msgid ""
 msgstr ""
 
 #. module: job_finder
-#: model_terms:ir.ui.view,arch_db:job_finder.report_job_profile_role
-msgid "<span>Technologies / methods</span>:"
+#: model_terms:ir.ui.view,arch_db:job_finder.report_job_profile_project
+msgid "<span>Technologies</span>:"
 msgstr ""
 
 #. module: job_finder
@@ -162,36 +172,6 @@ msgstr ""
 msgid ""
 "<span>Visit project</span> <i class=\"fa fa-external-link\" aria-"
 "hidden=\"true\"/>"
-msgstr ""
-
-#. module: job_finder
-#: model_terms:ir.ui.view,arch_db:job_finder.report_job_profile
-msgid "<strong><span>Email</span>: </strong>"
-msgstr ""
-
-#. module: job_finder
-#: model_terms:ir.ui.view,arch_db:job_finder.report_job_profile
-msgid "<strong><span>GitHub</span>: </strong>"
-msgstr ""
-
-#. module: job_finder
-#: model_terms:ir.ui.view,arch_db:job_finder.report_job_profile
-msgid "<strong><span>LinkedIn</span>: </strong>"
-msgstr ""
-
-#. module: job_finder
-#: model_terms:ir.ui.view,arch_db:job_finder.report_job_profile
-msgid "<strong><span>Location</span>: </strong>"
-msgstr ""
-
-#. module: job_finder
-#: model_terms:ir.ui.view,arch_db:job_finder.report_job_profile
-msgid "<strong><span>Phone</span>: </strong>"
-msgstr ""
-
-#. module: job_finder
-#: model_terms:ir.ui.view,arch_db:job_finder.report_job_profile
-msgid "<strong><span>Website</span>: </strong>"
 msgstr ""
 
 #. module: job_finder
@@ -229,11 +209,6 @@ msgstr ""
 #: model:ir.model.fields.selection,name:job_finder.selection__job_finder_experience__category__research
 #: model:ir.model.fields.selection,name:job_finder.selection__job_finder_project__category__research
 msgid "Academic research"
-msgstr ""
-
-#. module: job_finder
-#: model_terms:ir.ui.view,arch_db:job_finder.report_job_profile
-msgid "Academic research and projects"
 msgstr ""
 
 #. module: job_finder
@@ -295,6 +270,12 @@ msgid "All"
 msgstr ""
 
 #. module: job_finder
+#. odoo-python
+#: code:addons/job_finder/models/cv_area_mixin.py:0
+msgid "An entry can only use the CV areas of its own profile."
+msgstr ""
+
+#. module: job_finder
 #: model:ir.model.fields,field_description:job_finder.field_job_profile__cv_parsed_date
 msgid "Analysis date"
 msgstr ""
@@ -328,9 +309,15 @@ msgid "Architecture"
 msgstr ""
 
 #. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_cv_area__name
 #: model:ir.model.fields,field_description:job_finder.field_job_finder_project__area
 #: model:ir.model.fields,field_description:job_finder.field_job_finder_skill_group__name
 msgid "Area"
+msgstr ""
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_cv_download__area_ids
+msgid "Areas"
 msgstr ""
 
 #. module: job_finder
@@ -349,6 +336,7 @@ msgid "B2 · Upper intermediate"
 msgstr ""
 
 #. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.cv_choose_page
 #: model_terms:ir.ui.view,arch_db:job_finder.cv_sign_in_page
 msgid "Back to portfolio"
 msgstr ""
@@ -393,8 +381,45 @@ msgid "CV (PDF)"
 msgstr ""
 
 #. module: job_finder
+#: model:ir.model,name:job_finder.model_job_finder_cv_area
+msgid "CV area"
+msgstr ""
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_cv_area_mixin__cv_area_ids
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_experience__cv_area_ids
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_project__cv_area_ids
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_skill_group__cv_area_ids
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_training__cv_area_ids
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_volunteering__cv_area_ids
+#: model:ir.model.fields,field_description:job_finder.field_job_profile__cv_area_ids
+#: model_terms:ir.ui.view,arch_db:job_finder.view_form
+msgid "CV areas"
+msgstr ""
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_cv_area__headline
+msgid "CV headline"
+msgstr ""
+
+#. module: job_finder
 #: model_terms:ir.ui.view,arch_db:job_finder.view_form
 msgid "CV import"
+msgstr ""
+
+#. module: job_finder
+#: model:ir.model,name:job_finder.model_report_job_finder_report_job_profile
+msgid "CV report"
+msgstr ""
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_cv_area__summary
+msgid "CV summary"
+msgstr ""
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_finder_cv_download_form
+msgid "Cancel"
 msgstr ""
 
 #. module: job_finder
@@ -411,6 +436,23 @@ msgstr ""
 #: model:ir.model.fields,field_description:job_finder.field_job_finder_experience__category
 #: model:ir.model.fields,field_description:job_finder.field_job_finder_project__category
 msgid "Category"
+msgstr ""
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.report_job_profile
+msgid "Certifications and training"
+msgstr ""
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_finder_cv_download_form
+msgid ""
+"Choose the areas of the job you apply for: the CV keeps the entries of those areas and the entries\n"
+"                    without areas. Leave it empty for the complete CV."
+msgstr ""
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.cv_choose_page
+msgid "Choose your CV"
 msgstr ""
 
 #. module: job_finder
@@ -446,7 +488,7 @@ msgstr ""
 
 #. module: job_finder
 #: model:ir.actions.report,name:job_finder.action_report_job_profile
-#: model_terms:ir.ui.view,arch_db:job_finder.report_job_profile
+#: model_terms:ir.ui.view,arch_db:job_finder.cv_choose_page
 msgid "Complete CV"
 msgstr ""
 
@@ -483,11 +525,6 @@ msgid "Contact"
 msgstr ""
 
 #. module: job_finder
-#: model_terms:ir.ui.view,arch_db:job_finder.report_job_profile
-msgid "Contact details"
-msgstr ""
-
-#. module: job_finder
 #: model:ir.model.fields,field_description:job_finder.field_job_profile__contact_heading
 msgid "Contact headline"
 msgstr ""
@@ -508,6 +545,17 @@ msgid "Cover"
 msgstr ""
 
 #. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.view_form
+msgid ""
+"Create the areas you apply for (Frontend, Backend, DevOps, Hospitality…) and tag the\n"
+"                                roles, projects, skills, trainings and volunteering of each one in their tabs. A CV for\n"
+"                                some areas keeps their entries and the untagged ones; education and languages are\n"
+"                                always included."
+msgstr ""
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_cv_area__create_uid
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_cv_download__create_uid
 #: model:ir.model.fields,field_description:job_finder.field_job_finder_education__create_uid
 #: model:ir.model.fields,field_description:job_finder.field_job_finder_experience__create_uid
 #: model:ir.model.fields,field_description:job_finder.field_job_finder_profile_figure__create_uid
@@ -524,6 +572,8 @@ msgid "Created by"
 msgstr ""
 
 #. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_cv_area__create_date
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_cv_download__create_date
 #: model:ir.model.fields,field_description:job_finder.field_job_finder_education__create_date
 #: model:ir.model.fields,field_description:job_finder.field_job_finder_experience__create_date
 #: model:ir.model.fields,field_description:job_finder.field_job_finder_profile_figure__create_date
@@ -547,6 +597,11 @@ msgstr ""
 #. module: job_finder
 #: model_terms:ir.ui.view,arch_db:job_finder.view_form
 msgid "Defaults to the first sentence of your summary"
+msgstr ""
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.view_form
+msgid "Defaults to your headline"
 msgstr ""
 
 #. module: job_finder
@@ -587,6 +642,9 @@ msgid "Device protocol layer: Direct communication with the terminals."
 msgstr ""
 
 #. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_cv_area__display_name
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_cv_area_mixin__display_name
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_cv_download__display_name
 #: model:ir.model.fields,field_description:job_finder.field_job_finder_education__display_name
 #: model:ir.model.fields,field_description:job_finder.field_job_finder_experience__display_name
 #: model:ir.model.fields,field_description:job_finder.field_job_finder_profile_figure__display_name
@@ -600,12 +658,21 @@ msgstr ""
 #: model:ir.model.fields,field_description:job_finder.field_job_finder_training__display_name
 #: model:ir.model.fields,field_description:job_finder.field_job_finder_volunteering__display_name
 #: model:ir.model.fields,field_description:job_finder.field_job_profile__display_name
+#: model:ir.model.fields,field_description:job_finder.field_report_job_finder_report_job_profile__display_name
 msgid "Display Name"
 msgstr ""
 
 #. module: job_finder
+#: model:ir.actions.act_window,name:job_finder.action_job_finder_cv_download
+#: model:ir.model,name:job_finder.model_job_finder_cv_download
 #: model_terms:ir.ui.view,arch_db:job_finder.view_form
-msgid "Download complete CV"
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_finder_cv_download_form
+msgid "Download CV"
+msgstr ""
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_finder_cv_download_form
+msgid "Download PDF"
 msgstr ""
 
 #. module: job_finder
@@ -640,6 +707,23 @@ msgstr ""
 #. module: job_finder
 #: model:ir.model.fields,field_description:job_finder.field_job_finder_education__year_end
 msgid "End year"
+msgstr ""
+
+#. module: job_finder
+#: model:ir.model.fields,help:job_finder.field_job_finder_cv_area_mixin__cv_area_ids
+#: model:ir.model.fields,help:job_finder.field_job_finder_experience__cv_area_ids
+#: model:ir.model.fields,help:job_finder.field_job_finder_project__cv_area_ids
+#: model:ir.model.fields,help:job_finder.field_job_finder_skill_group__cv_area_ids
+#: model:ir.model.fields,help:job_finder.field_job_finder_training__cv_area_ids
+#: model:ir.model.fields,help:job_finder.field_job_finder_volunteering__cv_area_ids
+msgid ""
+"Entries without areas appear in every CV; tagged entries only in the CVs of "
+"their areas."
+msgstr ""
+
+#. module: job_finder
+#: model:ir.model,name:job_finder.model_job_finder_cv_area_mixin
+msgid "Entry tagged with CV areas"
 msgstr ""
 
 #. module: job_finder
@@ -714,6 +798,11 @@ msgid "For example App downloads."
 msgstr ""
 
 #. module: job_finder
+#: model:ir.model.fields,help:job_finder.field_job_finder_cv_area__name
+msgid "For example Backend or Hospitality."
+msgstr ""
+
+#. module: job_finder
 #: model:ir.model.fields,help:job_finder.field_job_finder_project_step__name
 msgid "For example Microservices."
 msgstr ""
@@ -770,6 +859,13 @@ msgid "Headline"
 msgstr ""
 
 #. module: job_finder
+#: model:ir.model.fields,help:job_finder.field_job_finder_cv_area__headline
+msgid ""
+"Headline of a CV for this area, for example Backend Developer. Defaults to "
+"the profile headline."
+msgstr ""
+
+#. module: job_finder
 #: model:ir.model.fields,field_description:job_finder.field_job_finder_project_step__is_highlighted
 msgid "Highlighted"
 msgstr ""
@@ -786,6 +882,9 @@ msgid "I currently work here"
 msgstr ""
 
 #. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_cv_area__id
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_cv_area_mixin__id
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_cv_download__id
 #: model:ir.model.fields,field_description:job_finder.field_job_finder_education__id
 #: model:ir.model.fields,field_description:job_finder.field_job_finder_experience__id
 #: model:ir.model.fields,field_description:job_finder.field_job_finder_profile_figure__id
@@ -799,6 +898,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:job_finder.field_job_finder_training__id
 #: model:ir.model.fields,field_description:job_finder.field_job_finder_volunteering__id
 #: model:ir.model.fields,field_description:job_finder.field_job_profile__id
+#: model:ir.model.fields,field_description:job_finder.field_report_job_finder_report_job_profile__id
 msgid "ID"
 msgstr ""
 
@@ -876,6 +976,8 @@ msgid "Languages (imported text)"
 msgstr ""
 
 #. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_cv_area__write_uid
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_cv_download__write_uid
 #: model:ir.model.fields,field_description:job_finder.field_job_finder_education__write_uid
 #: model:ir.model.fields,field_description:job_finder.field_job_finder_experience__write_uid
 #: model:ir.model.fields,field_description:job_finder.field_job_finder_profile_figure__write_uid
@@ -892,6 +994,8 @@ msgid "Last Updated by"
 msgstr ""
 
 #. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_cv_area__write_date
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_cv_download__write_date
 #: model:ir.model.fields,field_description:job_finder.field_job_finder_education__write_date
 #: model:ir.model.fields,field_description:job_finder.field_job_finder_experience__write_date
 #: model:ir.model.fields,field_description:job_finder.field_job_finder_profile_figure__write_date
@@ -909,7 +1013,13 @@ msgstr ""
 
 #. module: job_finder
 #: model_terms:ir.ui.view,arch_db:job_finder.portfolio_page
+#: model_terms:ir.ui.view,arch_db:job_finder.report_job_profile
 msgid "Leadership and volunteering"
+msgstr ""
+
+#. module: job_finder
+#: model:ir.model.fields,help:job_finder.field_job_finder_cv_download__area_ids
+msgid "Leave empty for the complete CV."
 msgstr ""
 
 #. module: job_finder
@@ -1109,6 +1219,13 @@ msgid "Photo"
 msgstr ""
 
 #. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.cv_choose_page
+msgid ""
+"Pick the areas of the job you apply for. The CV keeps their entries and the\n"
+"                        general ones; without areas you get the complete CV."
+msgstr ""
+
+#. module: job_finder
 #. odoo-python
 #: code:addons/job_finder/models/job_profile.py:0
 #: model:ir.model.fields,field_description:job_finder.field_job_finder_project__platforms
@@ -1148,11 +1265,24 @@ msgid "Professional profile"
 msgstr ""
 
 #. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.report_job_profile
+msgid "Professional summary"
+msgstr ""
+
+#. module: job_finder
+#: model:ir.model.fields,help:job_finder.field_job_finder_cv_area__summary
+msgid ""
+"Professional summary of a CV for this area. Defaults to the profile summary."
+msgstr ""
+
+#. module: job_finder
 #: model:ir.model.fields.selection,name:job_finder.selection__job_finder_project__category__work
 msgid "Professional work"
 msgstr ""
 
 #. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_cv_area__profile_id
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_cv_download__profile_id
 #: model:ir.model.fields,field_description:job_finder.field_job_finder_education__profile_id
 #: model:ir.model.fields,field_description:job_finder.field_job_finder_experience__profile_id
 #: model:ir.model.fields,field_description:job_finder.field_job_finder_profile_figure__profile_id
@@ -1275,6 +1405,7 @@ msgstr ""
 
 #. module: job_finder
 #: model_terms:ir.ui.view,arch_db:job_finder.portfolio_page
+#: model_terms:ir.ui.view,arch_db:job_finder.report_job_profile
 msgid "Research and academic projects"
 msgstr ""
 
@@ -1336,6 +1467,7 @@ msgid "Seo name"
 msgstr ""
 
 #. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_cv_area__sequence
 #: model:ir.model.fields,field_description:job_finder.field_job_finder_education__sequence
 #: model:ir.model.fields,field_description:job_finder.field_job_finder_experience__sequence
 #: model:ir.model.fields,field_description:job_finder.field_job_finder_profile_figure__sequence
@@ -1448,7 +1580,6 @@ msgstr ""
 
 #. module: job_finder
 #: model:ir.model.fields,field_description:job_finder.field_job_profile__summary
-#: model_terms:ir.ui.view,arch_db:job_finder.report_job_profile
 #: model_terms:ir.ui.view,arch_db:job_finder.view_form
 msgid "Summary"
 msgstr ""
@@ -1525,7 +1656,6 @@ msgstr ""
 
 #. module: job_finder
 #: model:ir.model.fields,field_description:job_finder.field_job_profile__training_ids
-#: model_terms:ir.ui.view,arch_db:job_finder.report_job_profile
 #: model_terms:ir.ui.view,arch_db:job_finder.view_form
 msgid "Trainings"
 msgstr ""
@@ -1555,7 +1685,6 @@ msgstr ""
 
 #. module: job_finder
 #: model:ir.model.fields,field_description:job_finder.field_job_profile__volunteering_ids
-#: model_terms:ir.ui.view,arch_db:job_finder.report_job_profile
 #: model_terms:ir.ui.view,arch_db:job_finder.view_form
 #: model_terms:ir.ui.view,arch_db:job_finder.view_job_finder_volunteering_form
 msgid "Volunteering"

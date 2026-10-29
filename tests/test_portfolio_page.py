@@ -8,7 +8,7 @@ import unittest
 try:
     from odoo.tests import HttpCase, tagged
 except ImportError:
-    raise unittest.SkipTest("Odoo not available")
+    raise unittest.SkipTest("Odoo not available") from None
 
 ROOT = Path(__file__).resolve().parents[1]
 EXPECTED = json.loads((ROOT / "tests" / "fixtures" / "complete_cv_expected.json").read_text())

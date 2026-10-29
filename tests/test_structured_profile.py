@@ -10,8 +10,9 @@ try:
     from odoo.exceptions import AccessError, ValidationError
     from odoo.tests import TransactionCase, tagged
     from odoo.tools import mute_logger
+    from psycopg2 import IntegrityError
 except ImportError:
-    raise unittest.SkipTest("needs Odoo (--test-enable)")
+    raise unittest.SkipTest("needs Odoo (--test-enable)") from None
 
 ROOT = Path(__file__).resolve().parents[1]
 EXPECTED = json.loads((ROOT / "tests" / "fixtures" / "complete_cv_expected.json").read_text())
@@ -77,7 +78,7 @@ class TestStructuredProfile(TransactionCase):
         found = Technology._find_or_create(["python", "PYTHON", "Rust", "", "rust"])
         self.assertEqual(found.mapped("name"), ["Python", "Rust"])
         self.assertEqual(found[0], python)
-        with self.assertRaises(Exception), self.cr.savepoint(), mute_logger("odoo.sql_db"):
+        with self.assertRaises(IntegrityError), self.cr.savepoint(), mute_logger("odoo.sql_db"):
             Technology.create({"name": "RUST"})
 
     def test_period_labels(self):

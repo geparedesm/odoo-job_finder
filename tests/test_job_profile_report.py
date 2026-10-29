@@ -5,7 +5,7 @@ import unittest
 try:
     from odoo.tests import TransactionCase, tagged
 except ImportError:
-    raise unittest.SkipTest("needs Odoo (--test-enable)")
+    raise unittest.SkipTest("needs Odoo (--test-enable)") from None
 
 from lxml import etree
 from odoo.exceptions import AccessError

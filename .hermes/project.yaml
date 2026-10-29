@@ -3,14 +3,22 @@ version: 1
 project: {name: job_finder}
 toolchain: {profiles: [odoo]}
 commands:
-  build: "python -m compileall -q models tests"
+  build: "python -m compileall -q ."
   # Standard-library tests first (no Odoo), then the module installed and tested in a real Odoo 19.
   test: "/usr/bin/python3 -m unittest discover -s tests -v && ho-odoo-test job_finder"
+  # Quality Gate checks with the odoo toolchain's rules (ruff + pylint-odoo; bandit + access rules and routes).
+  lint: "ho-odoo-lint job_finder"
+  security: "ho-odoo-security job_finder"
+  # Types of the standard-library code only: mypy cannot follow Odoo's ORM.
+  typecheck: "mypy --no-incremental --cache-dir=/dev/null --python-version 3.10 --ignore-missing-imports models/cv_parser.py models/cv_structure.py models/portfolio_content.py"
 test_environment:
   compose_files: [.hermes/test-services.yaml]
   services: [postgres]
   startup_timeout_seconds: 180
-quality_gate: {build: true, tests: true, full_suite: true}
+quality_gate: {build: true, tests: true, full_suite: true, lint: true, typecheck: true, security_checks: true}
+# Access rules, groups and record rules, and the public portfolio routes raise a change's risk to HIGH.
+verification:
+  sensitive_paths: ["security/*", "controllers/*"]
 
 # Headless UI design; only a secret reference is versioned.
 secrets:

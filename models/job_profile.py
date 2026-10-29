@@ -515,7 +515,7 @@ class JobProfile(models.Model):
                     except Exception:
                         # A damaged page must not discard other readable pages.
                         continue
-            except Exception:
+            except Exception:  # pylint: disable=except-pass
                 # Invalid or unreadable PDFs still produce an empty debug cache.
                 pass
             text = "\n".join(page_texts)

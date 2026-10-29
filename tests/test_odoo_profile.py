@@ -11,7 +11,7 @@ from unittest.mock import patch
 try:
     from odoo.tests import TransactionCase, tagged
 except ImportError:  # plain `python -m unittest`: these need Odoo
-    raise unittest.SkipTest("needs a running Odoo (--test-enable)")
+    raise unittest.SkipTest("needs a running Odoo (--test-enable)") from None
 
 from psycopg2 import IntegrityError
 

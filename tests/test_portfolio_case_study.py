@@ -8,7 +8,7 @@ try:
     from odoo.exceptions import AccessError
     from odoo.tests import TransactionCase, tagged
 except ImportError:
-    raise unittest.SkipTest("Odoo not available")
+    raise unittest.SkipTest("Odoo not available") from None
 
 
 @tagged("post_install", "-at_install")

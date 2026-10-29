@@ -16,6 +16,7 @@ EXPECTED = json.loads((ROOT / "tests" / "fixtures" / "complete_cv_expected.json"
 
 class TestRoles(unittest.TestCase):
     def setUp(self):
+        super().setUp()
         self.roles = cv_structure.parse_roles(EXPECTED["experience"], "work")
 
     def test_every_role_with_company_dates_and_type(self):

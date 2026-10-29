@@ -133,7 +133,7 @@ def parse_cv_text(text: str) -> dict:
                 result["location"] = candidate
                 break
 
-    bodies = {field: [] for field in set(_SECTIONS.values())}
+    bodies: dict[str, list[str]] = {field: [] for field in set(_SECTIONS.values())}
     active = None
     full_name = result["full_name"].casefold()
     footer = re.compile(
@@ -147,7 +147,7 @@ def parse_cv_text(text: str) -> dict:
             if line.casefold() == full_name:
                 after_name = True
                 continue
-            if footer.fullmatch(line):
+            if footer is not None and footer.fullmatch(line):
                 after_name = False
                 continue
             if after_name:

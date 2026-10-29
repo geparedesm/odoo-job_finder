@@ -92,7 +92,7 @@ class CaseStudyPageTestCase(HttpCase):
                         }
                     }
                     console.log('test successful');
-                """, ready="document.querySelector('.jf-flow')")
+                """, ready="!!document.querySelector('.jf-flow')")
 
     def test_old_slug_redirects_to_the_current_one(self):
         response = self.url_open(f"/portfolio/project/old-name-{self.zkteco.id}", allow_redirects=False)

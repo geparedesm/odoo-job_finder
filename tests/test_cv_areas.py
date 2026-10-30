@@ -9,7 +9,7 @@ try:
     from odoo.exceptions import AccessError, ValidationError
     from odoo.tests import HttpCase, TransactionCase, tagged
 except ImportError:
-    raise unittest.SkipTest("Odoo not available")
+    raise unittest.SkipTest("Odoo not available") from None
 
 from lxml import etree
 

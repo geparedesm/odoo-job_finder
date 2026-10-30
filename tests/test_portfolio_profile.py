@@ -8,7 +8,7 @@ try:
     from odoo.tests import TransactionCase, tagged
     from odoo.tools import mute_logger
 except ImportError:
-    raise unittest.SkipTest("Odoo not available")
+    raise unittest.SkipTest("Odoo not available") from None
 
 
 @tagged("post_install", "-at_install")

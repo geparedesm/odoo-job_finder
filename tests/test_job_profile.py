@@ -27,6 +27,7 @@ class ValidationError(Exception):
 
 class TestJobProfile(unittest.TestCase):
     def setUp(self):
+        super().setUp()
         package = ModuleType("profile_test_models")
         package.__path__ = [str(ROOT / "models")]
         fields = SimpleNamespace(

@@ -20,4 +20,4 @@
     <menuitem id="menu_configuration" name="Configuration" parent="menu_root" sequence="90"/>
     <menuitem id="menu_technologies" name="Technologies" parent="menu_configuration"
               action="action_job_finder_technology" sequence="10"/>
-</odoo>
+<menuitem id="menu_offers" name="Offers" parent="menu_root" action="action_job_offer" sequence="5"/><menuitem id="menu_searches" name="Searches" parent="menu_configuration" action="action_job_search" sequence="5"/></odoo>

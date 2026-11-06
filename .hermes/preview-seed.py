@@ -31,7 +31,7 @@ def seed(env):
         searches = env["job_finder.job_search"].with_user(user)
         searches.action_propose_searches()
         search = searches.search([("profile_id", "=", profile.id), ("cv_area_id.name", "=", "Frontend")], limit=1)
-        search.is_remote = True
+        search.write({"is_remote": True, "cities": "Perth,Melbourne"})
         phrases = ["Applicants are not required to hold NV1 clearance", "NV1 clearance is not a requirement",
                    "Previous experience on NV1 projects is desirable", "Must hold NV1 clearance",
                    "Australian citizens, permanent residents or valid visa holders"]
@@ -39,6 +39,17 @@ def seed(env):
             search._ingest([{"id": f"synthetic-{suffix}-{index}", "title": "Junior Frontend Developer",
                             "description": phrase, "created": fields.Datetime.now().isoformat() + "Z",
                             "location": {"display_name": "Perth"}}])
+        scenarios = (
+            ("level-required", "Software Engineer — Baseline required", "Baseline required", "Perth"),
+            ("obtain-required", "Junior Frontend Developer", "Successful applicant must hold or be able to obtain an NV1 security clearance", "Perth"),
+            ("citizenship-required", "Junior Frontend Developer", "Must be an Australian citizen or permanent resident with full working rights", "Perth"),
+            ("waived", "Junior Frontend Developer", "NV1 clearance requirement has been waived", "Perth"),
+            ("melbourne", "Junior Frontend Developer", "Visa sponsorship available", "Melbourne"),
+            ("unconfigured-city", "Junior Frontend Developer", "Synthetic eligible offer", "Darwin"),
+        )
+        for key, title, snippet, city in scenarios:
+            search._ingest([{"id": f"synthetic-{suffix}-{key}", "title": title, "description": snippet,
+                            "created": fields.Datetime.now().isoformat() + "Z", "location": {"display_name": city}}])
         for index, state in enumerate(("saved", "applied", "interview", "offer", "rejected", "discarded")):
             key = f"synthetic-{suffix}-state-{index}"
             search._ingest([{"id": key, "title": "Junior Frontend Developer", "description": "Synthetic offer",

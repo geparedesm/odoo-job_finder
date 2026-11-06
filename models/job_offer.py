@@ -130,15 +130,24 @@ class JobOffer(models.Model):
         for technology in profile.skill_group_ids.technology_ids:
             technologies.setdefault(technology.name, 8)
         location = row.get("location", {}).get("display_name", "") if isinstance(row.get("location"), dict) else ""
+        location_data = row.get("location") if isinstance(row.get("location"), dict) else {}
+        location_areas = location_data.get("area", [])
+        if not isinstance(location_areas, list):
+            location_areas = []
+        location_areas = [area for area in location_areas if isinstance(area, str)]
+        targets = [city.strip() for city in (search.cities or "").split(",") if city.strip()]
+        if search.is_australia:
+            targets.append("Australia")
+        if search.is_remote:
+            targets.append("remote")
         area_terms = [search.cv_area_id.name, search.cv_area_id.headline]
         area_terms += [word for word in search.cv_area_id.name.split() if len(word) > 2]
         score, parts, reason = score_offer(row["title"], snippet, area_terms,
-                                           technologies, location)
+                                           technologies, " ".join([location, *location_areas]), target=targets)
         if not reason and score < profile.score_threshold:
             reason = "Below score threshold"
         reasons = {
-            "Australian citizenship required": self.env._("Australian citizenship required"),
-            "Permanent residency required": self.env._("Permanent residency required"),
+            "Australian citizenship or permanent residency required": self.env._("Australian citizenship or permanent residency required"),
             "Security clearance required": self.env._("Security clearance required"),
             "Excluded seniority": self.env._("Excluded seniority"),
             "Below score threshold": self.env._("Below score threshold"),

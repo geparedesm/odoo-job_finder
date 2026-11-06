@@ -156,8 +156,8 @@ Settings > Technical > Parameters > System Parameters. Never put credentials in
 source or preview data. Missing credentials give a configuration message without
 making a request. Every attempted request consumes the shared run budget; errors,
 HTTP 429 and exhausted budgets stop the run with credential-free diagnostics.
-Least-recently-served configurations run first so later configurations progress.
-Each location may paginate until a short page or budget exhaustion.
+Persisted sequence order and per-search location cursors ensure later configurations
+and modes progress. Each mode receives at most two pages per run.
 
 The client uses the documented `what`, `where`, `results_per_page`, `app_id` and
 `app_key` parameters on `/v1/api/jobs/au/search/{page}`. No salary, contract or
@@ -172,7 +172,7 @@ Each offer links to Adzuna and retains its provider link.
 Scoring is deterministic: area/headline title match +30; matching technologies
 +20 for roles current or ending within two years, +10 for older/undated projects,
 +8 for skill-only technologies (technology total capped at 38); junior, graduate
-or entry-level title +15; Perth or a remote mention +10; visa sponsorship +7.
+or entry-level title +15; configured location match +10; visa sponsorship +7.
 The additive breakdown is stored. Senior/lead/principal/head/manager/architect
 titles and actual citizenship, PR or clearance obligations get score zero and
 a discard reason. Negated, optional and descriptive mentions retain normal
@@ -227,3 +227,38 @@ normal ACLs; the evaluator receives none for these models.
 For isolated preview only, execute `.hermes/preview-seed.py` in an Odoo shell
 where `env` is provided. It creates reserved synthetic records idempotently and
 never creates API keys or contacts Adzuna.
+
+### Eligibility and location review corrections
+
+Citizenship and permanent-residency obligations share the discard reason
+**Australian citizenship or permanent residency required**. Full working rights
+are an exemption only when listed as an alternative, such as "citizen, permanent
+resident or have full work rights". They do not waive a requirement in "citizen
+or permanent resident with full working rights" or "citizenship required,
+applicants must also have full work rights".
+
+Clearance levels Baseline, NV1, NV2, Negative Vetting 1/2, PV/Positive Vetting and
+TSSC are recognised even without the word clearance when an obligation is
+expressed. Examples include "Baseline required", "Must hold an NV1" and
+"must hold or be able to obtain an NV1 security clearance". Conjunction lists
+remain intact. Negated, waived, inapplicable, optional and descriptive references
+retain normal scoring, including "requirement does not apply" and "has been
+waived". Ambiguous snippets remain subject to heuristic limitations.
+
+Location contributes 10 points for a complete normalised match on any configured
+city against Adzuna's display name or location area. An unconfigured city earns
+none. Australia-wide enables the location bonus for all offers returned by the
+Australian endpoint; Remote enables it for a remote location/title/snippet.
+A remote mention alone does not earn location points without that mode enabled.
+
+Each search persists its next location-mode cursor. Runs rotate through the
+configured cities, Australia-wide and Remote modes instead of restarting at
+Perth. Searches themselves are served in persisted sequence order (including
+when multiple runs happen within a second). A mode receives at most two pages
+per run and each search receives one mode per round, preventing a busy city from
+using all available pages. The cursor advances after each attempted request,
+including provider errors; budget and HTTP rate-limit stops remain logged.
+At budget one, every configured pair is reached within the number of active
+searches times the largest number of modes. Pagination intentionally restarts
+at page one when that mode is next served. Upgrading the module creates these
+cursor fields; no data migration or version bump is needed.

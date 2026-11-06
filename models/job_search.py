@@ -25,6 +25,8 @@ class JobSearch(models.Model):
     cities = fields.Char(string="Cities", default="Perth", help="One or more cities, separated by commas.")
     is_remote = fields.Boolean(string="Remote")
     is_australia = fields.Boolean(string="All of Australia")
+    last_run_sequence = fields.Integer(string="Last run sequence", default=0, readonly=True, copy=False)
+    location_cursor = fields.Integer(string="Next location mode", default=0, readonly=True, copy=False)
     last_run_at = fields.Datetime(string="Last run", readonly=True)
     last_run_info = fields.Char(string="Last run status", readonly=True)
 
@@ -81,29 +83,44 @@ class JobSearch(models.Model):
         except ValueError:
             raise UserError(self.env._("The Adzuna call limit must be an integer.")) from None
         client = AdzunaClient(app_id, app_key, limit)
-        for search in self.sorted(key=lambda record: (record.last_run_at or fields.Datetime.to_datetime("1900-01-01"), record.id)):
-            if client.calls >= limit:
-                _logger.info("Adzuna search stopped: call budget reached (%s calls)", client.calls)
-                break
-            modes = [(city.strip(), search.keywords) for city in (search.cities or "").split(",") if city.strip()]
+        queues = []
+        sequence = max(self.mapped("last_run_sequence"), default=0)
+        for search in self.sorted(key=lambda record: (record.last_run_sequence, record.id)):
+            modes = list(dict.fromkeys((city.strip(), search.keywords) for city in
+                                      (search.cities or "").split(",") if city.strip()))
             if search.is_australia:
                 modes.append(("", search.keywords))
             if search.is_remote:
                 modes.append(("", search.keywords + " remote"))
-            try:
-                for city, keywords in modes:
-                    if client.calls >= limit:
-                        break
-                    for page in range(1, limit + 1):
-                        rows = client.search(keywords, city, page)
-                        search._ingest(rows)
-                        if len(rows) < 20 or client.calls >= limit:
+            if modes:
+                start = search.location_cursor % len(modes)
+                queues.append((search, modes, [(start + offset) % len(modes) for offset in range(len(modes))]))
+        # One mode per search per round, with at most two pages per mode. A busy city cannot monopolise a run.
+        while client.calls < limit and any(indices for _, _, indices in queues):
+            for search, modes, indices in queues:
+                if not indices or client.calls >= limit:
+                    continue
+                index = indices.pop(0)
+                city, keywords = modes[index]
+                try:
+                    for page in range(1, 3):
+                        if client.calls >= limit:
                             break
-            except ProviderError as error:
-                search.write({"last_run_at": fields.Datetime.now(), "last_run_info": str(error)})
-                _logger.warning("Adzuna search stopped: %s", error)
-                break
-            search.write({"last_run_at": fields.Datetime.now(), "last_run_info": self.env._("Calls used: %s", client.calls)})
+                        try:
+                            rows = client.search(keywords, city, page)
+                        finally:
+                            # Advance even on a failed attempted call, preserving progress through rate-limit stops.
+                            sequence += 1
+                            search.write({"last_run_sequence": sequence, "location_cursor": (index + 1) % len(modes),
+                                          "last_run_at": fields.Datetime.now()})
+                        search._ingest(rows)
+                        if len(rows) < 20:
+                            break
+                except ProviderError as error:
+                    search.last_run_info = str(error)
+                    _logger.warning("Adzuna search stopped: %s", error)
+                    return True
+                search.last_run_info = self.env._("Calls used: %s", client.calls)
         if client.calls >= limit:
             _logger.info("Adzuna search stopped: call budget reached (%s calls)", client.calls)
         return True

@@ -3,51 +3,55 @@
 import re
 
 
-SUBJECTS = (
-    (r"(?:australian\s+citizen(?:ship|s)?|citizenship)", "Australian citizenship required"),
-    (r"(?:permanent\s+residen(?:t[s]?|cy|ce)|\bpr\b)", "Permanent residency required"),
-    (r"(?:(?:baseline|nv1|nv2)\s+)?(?:security\s+)?clearance", "Security clearance required"),
+CITIZENSHIP_REASON = "Australian citizenship or permanent residency required"
+CLEARANCE = r"\b(?:security\s+clearance|clearance|baseline|nv[12]|negative vetting(?: level)? [12]|pv|positive vetting|tssc)\b"
+CITIZENSHIP = r"\b(?:australian\s+citizen(?:ship|s)?|citizenship|permanent\s+residen(?:ts?|cy|ce)|pr)\b"
+OBLIGATION = r"\b(?:must|shall|should|required|requirement|mandatory|essential|needs? to|only|eligible for|able to obtain|ability to obtain|obtain and maintain)\b"
+OPTIONAL = r"\b(?:not (?:be )?required|not a requirement|not (?:necessary|needed|mandatory|essential)|requirement (?:does not|doesn't) apply|(?:has been |is )?waived|optional|desirable|advantage(?:ous)?|nice to have|preferred|bonus|highly regarded|previous experience (?:on|with|in))\b"
+ALTERNATIVE = (
+    r"(?:,|\bor\b|and/or)\s+(?:(?:those with|anyone with|have|hold|valid|a valid|full|unrestricted)\s+)*"
+    r"(?:visa holders?|work(?:ing)? rights|right to work)\b"
 )
 
 
 def eligibility_reason(text):
-    """Match obligations next to their subject; unrelated negations cannot erase them."""
-    clauses = re.split(r"[.;!?\n]|\b(?:but|however|although|and)\b", text.lower())
-    before_requirement = re.compile(
-        r"(?:\b(?:must|shall|should|need to|needs to|required to)\s+"
-        r"(?:(?:be|an?|the|eligible|for|hold|obtain|maintain|have|possess|current|valid|active)\s+){0,8}"
-        r"|\b(?:only|requires?|mandatory|essential|required)\s+(?:an?\s+)?)$"
-    )
-    after_requirement = re.compile(
-        r"^\s*(?:(?:is|are|will be)\s+)?(?:(?:strictly|a|an)\s+)?"
-        r"(?:required|mandatory|essential|requirement|only)\b"
+    """Keep eligibility lists intact and distinguish alternatives from extra conditions."""
+    clauses = re.split(
+        r"[.;!?\n•]|\s+—\s+|\b(?:but|however|although)\b|"
+        r",\s*(?=(?:applicants?\s+)?(?:must|shall|needs? to))|"
+        r",\s*(?=(?:australian citizenship|permanent residency)\s+is\s+required)", text.lower()
     )
     for clause in clauses:
-        for subject, reason in SUBJECTS:
-            for match in re.finditer(subject, clause):
-                before, after = clause[:match.start()], clause[match.end():].split(",", 1)[0]
-                prefix_match = before_requirement.search(before)
-                suffix_match = after_requirement.search(after)
-                if not prefix_match and not suffix_match:
-                    continue
-                if re.search(r"\b(?:no|without)\s+(?:an?\s+)?$", before):
-                    continue
-                if prefix_match and re.search(r"\b(?:not|never)\s+$", before[:prefix_match.start()]):
-                    continue
-                if re.match(r"^.{0,25}\b(?:not required|not a requirement|optional|desirable|preferred)\b", after):
-                    continue
-                if reason != "Security clearance required" and re.search(
-                    r"visa\s+holders?|work(?:ing)?\s+rights", clause
-                ):
-                    continue
-                return reason
+        subjects = [(match, reason) for pattern, reason in
+                    ((CLEARANCE, "Security clearance required"), (CITIZENSHIP, CITIZENSHIP_REASON))
+                    for match in re.finditer(pattern, clause)]
+        if not subjects or not re.search(OBLIGATION, clause):
+            continue
+        if re.search(OPTIONAL, clause):
+            continue
+        if re.search(r"\bno .{0,30}(?:clearance|citizenship|permanent residency|permanent residence|pr|nv[12]|baseline) (?:is )?(?:required|needed|necessary)\b", clause):
+            continue
+        for subject, reason in subjects:
+            if reason == CITIZENSHIP_REASON and re.search(ALTERNATIVE, clause[subject.end():]):
+                continue
+            return reason
     return ""
+
+
+def location_matches(location, target):
+    """Match complete normalised city names; Australia and remote are explicit modes."""
+    targets = [target] if isinstance(target, str) else target
+    def normalise(value):
+        return " ".join(re.findall(r"\w+", value.casefold()))
+    actual = " " + normalise(location) + " "
+    return any(normalise(city) == "australia" or
+               (normalise(city) and " " + normalise(city) + " " in actual) for city in targets)
 
 
 def score_offer(title, snippet, area_terms, technologies, location, target="Perth"):
     """Return score, additive components and an English reason key for translation."""
     text = f"{title} {snippet}".lower()
-    reason = eligibility_reason(text)
+    reason = eligibility_reason(f"{title}\n{snippet}")
     if re.search(r"\b(senior|lead|principal|head|manager|architect)\b", title.lower()):
         reason = "Excluded seniority"
     if reason:
@@ -57,7 +61,8 @@ def score_offer(title, snippet, area_terms, technologies, location, target="Pert
         "technologies": min(38, sum(weight for name, weight in technologies.items()
                                    if re.search(r"(?<!\w)" + re.escape(name.lower()) + r"(?!\w)", text))),
         "seniority": 15 if re.search(r"\b(junior|graduate|entry[ -]level)\b", title.lower()) else 0,
-        "location": 10 if target.lower() in location.lower() or "remote" in text else 0,
+        "location": 10 if location_matches(location, target) or
+        ("remote" in ([target] if isinstance(target, str) else target) and re.search(r"\bremote\b", text)) else 0,
         "sponsorship": 7 if re.search(r"visa\s+sponsorship", text) else 0,
     }
     return sum(parts.values()), parts, ""

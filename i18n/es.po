@@ -2440,3 +2440,18 @@ msgstr "Derecho a trabajar hasta"
 #: code:addons/job_finder/models/job_search.py:0
 msgid "Evaluators may use only the evaluation interface."
 msgstr "Los evaluadores solo pueden utilizar la interfaz de evaluación."
+
+#. module: job_finder
+#: code:addons/job_finder/models/job_offer.py:0
+msgid "Australian citizenship or permanent residency required"
+msgstr "Se requiere ciudadanía australiana o residencia permanente"
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_search__location_cursor
+msgid "Next location mode"
+msgstr "Siguiente modo de ubicación"
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_search__last_run_sequence
+msgid "Last run sequence"
+msgstr "Secuencia de la última ejecución"

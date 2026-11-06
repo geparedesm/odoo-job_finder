@@ -26,6 +26,7 @@ REQUIRED = (
     "NV1 required", "Baseline required", "Software Engineer — Baseline required", "Must hold an NV1",
     "Must hold Baseline", "Must hold NV1", "NV2 is mandatory",
     "Successful applicant must hold or be able to obtain an NV1 security clearance",
+    "must hold or be able to obtain an NV1 security clearance",
     "Must be able to obtain NV1 clearance", "must have the ability to obtain a Baseline clearance",
     "Must hold NV1 and NV2 clearance", "Must hold a NV1 or NV2 clearance", "must be eligible for clearance",
     "Baseline security clearance is essential", "Negative Vetting 1 clearance required",

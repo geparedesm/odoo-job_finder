@@ -148,6 +148,45 @@ class TestJobSearch(TransactionCase):
         self.assertEqual(len(calls), 16)
         self.assertEqual({page for _, _, page in calls}, {1, 2})
 
+    def test_single_search_resumes_after_provider_rate_limit(self):
+        from unittest.mock import MagicMock
+        from urllib.error import HTTPError
+        from urllib.parse import parse_qs, urlparse
+        from odoo.addons.job_finder.models import adzuna_client
+
+        self.search.write({"cities": "Perth,Melbourne", "is_australia": True, "is_remote": True})
+        params = self.env["ir.config_parameter"]
+        for key, value in (("app_id", "synthetic"), ("app_key", "synthetic"), ("call_limit", "1")):
+            params.set_param("job_finder.adzuna_" + key, value)
+        calls = []
+        response = MagicMock()
+        response.__enter__.return_value.read.return_value = b'{"results": []}'
+
+        def transport(request, timeout):
+            self.assertEqual(timeout, 20)
+            query = parse_qs(urlparse(request.full_url).query)
+            calls.append((query["what"][0], query.get("where", [""])[0]))
+            if len(calls) == 1:
+                raise HTTPError("https://example.invalid", 429, "Synthetic limit", {}, None)
+            return response
+
+        logger = "odoo.addons.job_finder.models.job_search"
+        with patch.object(adzuna_client, "urlopen", side_effect=transport):
+            with self.assertLogs(logger, level="WARNING") as logs:
+                self.search._run_searches()
+            self.assertIn("Provider rate limit reached", " ".join(logs.output))
+            self.search.invalidate_recordset(["location_cursor", "last_run_sequence"])
+            self.assertEqual(self.search.location_cursor, 1)
+            for _ in range(4):
+                with self.assertLogs(logger, level="INFO") as logs:
+                    self.search._run_searches()
+                self.assertIn("call budget reached", " ".join(logs.output))
+                self.search.invalidate_recordset(["location_cursor", "last_run_sequence"])
+        self.assertEqual(calls, [("Frontend", "Perth"), ("Frontend", "Melbourne"),
+                                 ("Frontend", ""), ("Frontend remote", ""), ("Frontend", "Perth")])
+        self.assertEqual(self.search.location_cursor, 1)
+        self.assertEqual(self.search.last_run_sequence, 5)
+
     def test_mocked_provider_matrix_and_locations(self):
         import json
         from odoo.addons.job_finder.models.adzuna_client import AdzunaClient

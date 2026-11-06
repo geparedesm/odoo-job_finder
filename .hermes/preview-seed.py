@@ -44,6 +44,8 @@ def seed(env):
             ("obtain-required", "Junior Frontend Developer", "Successful applicant must hold or be able to obtain an NV1 security clearance", "Perth"),
             ("citizenship-required", "Junior Frontend Developer", "Must be an Australian citizen or permanent resident with full working rights", "Perth"),
             ("waived", "Junior Frontend Developer", "NV1 clearance requirement has been waived", "Perth"),
+            ("negative-vetting", "Junior Frontend Developer", "Negative vetting required", "Perth"),
+            ("no-negative-vetting", "Junior Frontend Developer", "No negative vetting required", "Perth"),
             ("melbourne", "Junior Frontend Developer", "Visa sponsorship available", "Melbourne"),
             ("unconfigured-city", "Junior Frontend Developer", "Synthetic eligible offer", "Darwin"),
         )

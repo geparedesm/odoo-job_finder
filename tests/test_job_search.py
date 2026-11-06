@@ -149,6 +149,12 @@ class TestJobSearch(TransactionCase):
         self.assertEqual({page for _, _, page in calls}, {1, 2})
 
     def test_single_search_resumes_after_provider_rate_limit(self):
+        self._assert_single_search_rotation(rate_limited=True)
+
+    def test_single_search_rotates_all_modes_and_wraps(self):
+        self._assert_single_search_rotation(rate_limited=False)
+
+    def _assert_single_search_rotation(self, *, rate_limited):
         from unittest.mock import MagicMock
         from urllib.error import HTTPError
         from urllib.parse import parse_qs, urlparse
@@ -166,15 +172,16 @@ class TestJobSearch(TransactionCase):
             self.assertEqual(timeout, 20)
             query = parse_qs(urlparse(request.full_url).query)
             calls.append((query["what"][0], query.get("where", [""])[0]))
-            if len(calls) == 1:
+            if rate_limited and len(calls) == 1:
                 raise HTTPError("https://example.invalid", 429, "Synthetic limit", {}, None)
             return response
 
         logger = "odoo.addons.job_finder.models.job_search"
         with patch.object(adzuna_client, "urlopen", side_effect=transport):
-            with self.assertLogs(logger, level="WARNING") as logs:
+            with self.assertLogs(logger, level="WARNING" if rate_limited else "INFO") as logs:
                 self.search._run_searches()
-            self.assertIn("Provider rate limit reached", " ".join(logs.output))
+            expected = "Provider rate limit reached" if rate_limited else "call budget reached"
+            self.assertIn(expected, " ".join(logs.output))
             self.search.invalidate_recordset(["location_cursor", "last_run_sequence"])
             self.assertEqual(self.search.location_cursor, 1)
             for _ in range(4):

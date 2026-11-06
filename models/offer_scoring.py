@@ -4,7 +4,7 @@ import re
 
 
 CITIZENSHIP_REASON = "Australian citizenship or permanent residency required"
-CLEARANCE = r"\b(?:security\s+clearance|clearance|baseline|nv[12]|negative vetting(?: level)? [12]|pv|positive vetting|tssc)\b"
+CLEARANCE = r"\b(?:security\s+clearance|clearance|baseline|nv[12]|negative vetting(?:(?: level)? [12])?|pv|positive vetting|tssc)\b"
 CITIZENSHIP = r"\b(?:australian\s+citizen(?:ship|s)?|citizenship|permanent\s+residen(?:ts?|cy|ce)|pr)\b"
 OBLIGATION = r"\b(?:must|shall|should|required|requirement|mandatory|essential|needs? to|only|eligible for|able to obtain|ability to obtain|obtain and maintain)\b"
 OPTIONAL = r"\b(?:not (?:be )?required|not a requirement|not (?:necessary|needed|mandatory|essential)|requirement (?:does not|doesn't) apply|(?:has been |is )?waived|optional|desirable|advantage(?:ous)?|nice to have|preferred|bonus|highly regarded|previous experience (?:on|with|in))\b"
@@ -29,7 +29,7 @@ def eligibility_reason(text):
             continue
         if re.search(OPTIONAL, clause):
             continue
-        if re.search(r"\bno .{0,30}(?:clearance|citizenship|permanent residency|permanent residence|pr|nv[12]|baseline) (?:is )?(?:required|needed|necessary)\b", clause):
+        if re.search(rf"\bno .{{0,30}}(?:{CLEARANCE}|{CITIZENSHIP})\s+(?:is\s+)?(?:required|needed|necessary)\b", clause):
             continue
         for subject, reason in subjects:
             if reason == CITIZENSHIP_REASON and re.search(ALTERNATIVE, clause[subject.end():]):

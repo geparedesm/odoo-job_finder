@@ -237,7 +237,8 @@ resident or have full work rights". They do not waive a requirement in "citizen
 or permanent resident with full working rights" or "citizenship required,
 applicants must also have full work rights".
 
-Clearance levels Baseline, NV1, NV2, Negative Vetting 1/2, PV/Positive Vetting and
+Clearance levels Baseline, NV1, NV2, Negative Vetting (with or without level 1/2),
+PV/Positive Vetting and
 TSSC are recognised even without the word clearance when an obligation is
 expressed. Examples include "Baseline required", "Must hold an NV1" and
 "must hold or be able to obtain an NV1 security clearance". Conjunction lists
@@ -262,3 +263,6 @@ At budget one, every configured pair is reached within the number of active
 searches times the largest number of modes. Pagination intentionally restarts
 at page one when that mode is next served. Upgrading the module creates these
 cursor fields; no data migration or version bump is needed.
+
+Explicit negations such as "No PV required", "No TSSC required" and "No negative
+vetting required" remain eligible, just like negated NV1/NV2 requirements.

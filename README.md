@@ -241,8 +241,8 @@ Clearance levels Baseline, NV1, NV2, Negative Vetting (with or without level 1/2
 PV/Positive Vetting and
 TSSC are recognised even without the word clearance when an obligation is
 expressed. Examples include "Baseline required", "Must hold an NV1" and
-"must hold or be able to obtain an NV1 security clearance". Conjunction lists
-remain intact. Negated, waived, inapplicable, optional and descriptive references
+"must hold or be able to obtain an NV1 security clearance". Coordinated clearance
+lists are recognised. Negated, waived, inapplicable, optional and descriptive references
 retain normal scoring, including "requirement does not apply" and "has been
 waived". Ambiguous snippets remain subject to heuristic limitations.
 
@@ -266,3 +266,22 @@ cursor fields; no data migration or version bump is needed.
 
 Explicit negations such as "No PV required", "No TSSC required" and "No negative
 vetting required" remain eligible, just like negated NV1/NV2 requirements.
+
+### Independent eligibility requirements
+
+Eligibility obligations include requires, requiring, required to, needed and
+necessary, as well as must/mandatory/essential. Each sentence is divided into
+independent clauses at conjunctions and commas; coordinated eligibility lists
+and verb phrases such as "obtain and maintain" remain meaningful. Negation,
+waiver or a preference applies to the requirement it governs, so "React
+experience preferred and NV1 clearance required" is discarded, and "No security
+clearance required and Australian citizenship required" still discards for
+citizenship.
+
+Work rights waive citizenship/PR only through an explicit alternative such as
+"or", "alternatively" or "either ... or" within the eligibility list. Commas alone
+never establish an alternative: "Australian citizenship required, full work
+rights are also required" retains the citizenship requirement. The combined
+discard reason remains unchanged. A bare commercial/operational "clearance"
+(such as clearance of tickets or office furniture) is not a security eligibility
+subject; a security term, clearance level or "eligible for clearance" is needed.

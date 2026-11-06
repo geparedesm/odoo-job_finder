@@ -22,6 +22,10 @@ ELIGIBLE = (
     "NV1 projects", "Australian citizenship is preferred", "Permanent residency is not required",
     "No permanent residency required", "No PR required", "Optional NV1 clearance requirement",
     "No negative vetting required", "No PV required", "No TSSC required",
+    "Australian citizenship or permanent residency or full work rights required",
+    "Clearance sale of office furniture", "clearance of tickets", "Role requires clearance of tickets",
+    "Australian citizenship required, alternatively full work rights are accepted",
+    "No NV1 clearance required", "No NV1 or NV2 clearance required",
 )
 REQUIRED = (
     "NV1 required", "Baseline required", "Software Engineer — Baseline required", "Must hold an NV1",
@@ -42,6 +46,15 @@ REQUIRED = (
     "No security clearance required, Australian citizenship is required",
     "PV required", "Positive vetting is mandatory", "TSSC required", "Negative Vetting level 2 is required",
     "NV1 required. Must hold an NV1.", "Negative vetting required", "Must undergo negative vetting",
+    "This role requires Baseline clearance", "Requires an NV1 security clearance",
+    "Role requires Australian citizenship", "Applicants are required to hold NV2 clearance",
+    "Requiring permanent residency", "Australian citizenship needed", "NV1 clearance is necessary",
+    "React experience preferred and NV1 clearance required",
+    "No security clearance required and Australian citizenship required",
+    "Australian citizenship required, full work rights are also required",
+    "Australian citizenship required as well as full work rights",
+    "NV1 clearance preferred and NV2 clearance required",
+    "Must obtain and maintain NV1 clearance", "NV1 and NV2 clearance are required",
 )
 
 

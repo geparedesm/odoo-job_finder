@@ -4,37 +4,52 @@ import re
 
 
 CITIZENSHIP_REASON = "Australian citizenship or permanent residency required"
-CLEARANCE = r"\b(?:security\s+clearance|clearance|baseline|nv[12]|negative vetting(?:(?: level)? [12])?|pv|positive vetting|tssc)\b"
+CLEARANCE = r"\b(?:security\s+clearance|eligible\s+for\s+(?:a\s+)?clearance|baseline|nv[12]|negative vetting(?:(?: level)? [12])?|pv|positive vetting|tssc)\b"
 CITIZENSHIP = r"\b(?:australian\s+citizen(?:ship|s)?|citizenship|permanent\s+residen(?:ts?|cy|ce)|pr)\b"
-OBLIGATION = r"\b(?:must|shall|should|required|requirement|mandatory|essential|needs? to|only|eligible for|able to obtain|ability to obtain|obtain and maintain)\b"
+OBLIGATION = r"\b(?:must|shall|should|requir(?:es|ing|ed)|requirement|needed|necessary|mandatory|essential|needs? to|only|eligible for|able to obtain|ability to obtain|obtain and maintain)\b"
 OPTIONAL = r"\b(?:not (?:be )?required|not a requirement|not (?:necessary|needed|mandatory|essential)|requirement (?:does not|doesn't) apply|(?:has been |is )?waived|optional|desirable|advantage(?:ous)?|nice to have|preferred|bonus|highly regarded|previous experience (?:on|with|in))\b"
 ALTERNATIVE = (
-    r"(?:,|\bor\b|and/or)\s+(?:(?:those with|anyone with|have|hold|valid|a valid|full|unrestricted)\s+)*"
+    r"(?:\bor\b|\balternatively\b|and/or)\s+"
+    r"(?:(?:those with|anyone with|have|hold|valid|a valid|temporary|full|unrestricted)\s+)*"
     r"(?:visa holders?|work(?:ing)? rights|right to work)\b"
 )
 
 
+def _has_work_rights_alternative(requirement):
+    """A comma may separate list items, but cannot itself establish an alternative."""
+    for alternative in re.finditer(ALTERNATIVE, requirement):
+        tail = requirement[alternative.end():]
+        if re.match(r"\s+(?:are\s+)?also\s+(?:required|needed|necessary)\b", tail):
+            continue
+        for subject in re.finditer(CITIZENSHIP, requirement[:alternative.start()]):
+            between = requirement[subject.end():alternative.start()]
+            between = re.sub(CITIZENSHIP, "", between)
+            # Keep only eligibility-list connectors and predicates, never an unrelated requirement.
+            between = re.sub(r"\b(?:or|either|is|are|required|needed|necessary|mandatory|essential)\b|[,\s]", "", between)
+            if not between:
+                return True
+    return False
+
+
 def eligibility_reason(text):
-    """Keep eligibility lists intact and distinguish alternatives from extra conditions."""
-    clauses = re.split(
-        r"[.;!?\n•]|\s+—\s+|\b(?:but|however|although)\b|"
-        r",\s*(?=(?:applicants?\s+)?(?:must|shall|needs? to))|"
-        r",\s*(?=(?:australian citizenship|permanent residency)\s+is\s+required)", text.lower()
-    )
-    for clause in clauses:
-        subjects = [(match, reason) for pattern, reason in
-                    ((CLEARANCE, "Security clearance required"), (CITIZENSHIP, CITIZENSHIP_REASON))
-                    for match in re.finditer(pattern, clause)]
-        if not subjects or not re.search(OBLIGATION, clause):
-            continue
-        if re.search(OPTIONAL, clause):
-            continue
-        if re.search(rf"\bno .{{0,30}}(?:{CLEARANCE}|{CITIZENSHIP})\s+(?:is\s+)?(?:required|needed|necessary)\b", clause):
-            continue
-        for subject, reason in subjects:
-            if reason == CITIZENSHIP_REASON and re.search(ALTERNATIVE, clause[subject.end():]):
+    """Judge independent requirements separately while retaining genuine eligibility alternatives."""
+    requirements = re.split(r"[.;!?\n•]|\s+—\s+|\b(?:but|however|although)\b|(?<!obtain )(?<!/)\band\b(?!/)", text.lower())
+    for requirement in requirements:
+        alternative = _has_work_rights_alternative(requirement)
+        for clause in requirement.split(","):
+            subjects = [(match, reason) for pattern, reason in
+                        ((CLEARANCE, "Security clearance required"), (CITIZENSHIP, CITIZENSHIP_REASON))
+                        for match in re.finditer(pattern, clause)]
+            if not subjects or not re.search(OBLIGATION, clause):
                 continue
-            return reason
+            if re.search(OPTIONAL, clause):
+                continue
+            if re.search(rf"\bno .{{0,30}}(?:{CLEARANCE}|{CITIZENSHIP}|clearance)\s+(?:(?:is|are)\s+)?(?:required|needed|necessary)\b", clause):
+                continue
+            for _, reason in subjects:
+                if reason == CITIZENSHIP_REASON and alternative:
+                    continue
+                return reason
     return ""
 
 

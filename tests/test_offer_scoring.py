@@ -21,6 +21,7 @@ ELIGIBLE = (
     "We welcome temporary visa holders and permanent residents", "performance baseline", "Baseline CSS skills",
     "NV1 projects", "Australian citizenship is preferred", "Permanent residency is not required",
     "No permanent residency required", "No PR required", "Optional NV1 clearance requirement",
+    "No negative vetting required", "No PV required", "No TSSC required",
 )
 REQUIRED = (
     "NV1 required", "Baseline required", "Software Engineer — Baseline required", "Must hold an NV1",
@@ -40,7 +41,7 @@ REQUIRED = (
     "Australian citizenship is optional but must hold NV1 clearance",
     "No security clearance required, Australian citizenship is required",
     "PV required", "Positive vetting is mandatory", "TSSC required", "Negative Vetting level 2 is required",
-    "NV1 required. Must hold an NV1.",
+    "NV1 required. Must hold an NV1.", "Negative vetting required", "Must undergo negative vetting",
 )
 
 

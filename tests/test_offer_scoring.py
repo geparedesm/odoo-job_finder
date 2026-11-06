@@ -10,22 +10,36 @@ SCORER = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(SCORER)
 
 ELIGIBLE = (
-    "Applicants are not required to hold NV1 clearance",
-    "NV1 clearance is not a requirement",
-    "Previous experience on NV1 projects is desirable",
+    "Applicants are not required to hold NV1 clearance", "NV1 clearance is not a requirement",
+    "Previous experience on NV1 projects is desirable", "NV1 clearance requirement does not apply to this position",
+    "NV1 clearance requirement has been waived", "Baseline clearance is an advantage but not required",
+    "No security clearance needed", "No security clearance required",
+    "Australian citizens, permanent residents or valid visa holders with full work rights are welcome to apply",
+    "Must be an Australian citizen, permanent resident or have full work rights in Australia",
+    "Must have full working rights in Australia", "Visa sponsorship available",
     "Australian citizens, permanent residents or valid visa holders",
-    "We welcome temporary visa holders and permanent residents",
-    "No security clearance required", "performance baseline", "Baseline CSS skills", "NV1 projects",
-    "Australian citizenship is preferred", "Permanent residency is not required",
+    "We welcome temporary visa holders and permanent residents", "performance baseline", "Baseline CSS skills",
+    "NV1 projects", "Australian citizenship is preferred", "Permanent residency is not required",
+    "No permanent residency required", "No PR required", "Optional NV1 clearance requirement",
 )
 REQUIRED = (
-    "Must hold NV1 clearance", "Australian citizens only", "must be eligible for Baseline clearance",
-    "must be an Australian citizen", "Australian citizenship required", "PR required",
-    "must be a permanent resident", "must obtain security clearance", "NV2 clearance required",
+    "NV1 required", "Baseline required", "Software Engineer — Baseline required", "Must hold an NV1",
+    "Must hold Baseline", "Must hold NV1", "NV2 is mandatory",
+    "Successful applicant must hold or be able to obtain an NV1 security clearance",
+    "Must be able to obtain NV1 clearance", "must have the ability to obtain a Baseline clearance",
+    "Must hold NV1 and NV2 clearance", "Must hold a NV1 or NV2 clearance", "must be eligible for clearance",
+    "Baseline security clearance is essential", "Negative Vetting 1 clearance required",
+    "Must be an Australian citizen or permanent resident with full working rights",
+    "Australian citizenship required, applicants must also have full work rights",
+    "Australian citizens only", "Must be an Australian citizen", "PR required", "Permanent residency is mandatory",
+    "Must hold NV1 clearance", "must be eligible for Baseline clearance", "must be a permanent resident",
+    "must obtain security clearance", "NV2 clearance required",
     "NV1 clearance is not a requirement but Australian citizenship is required",
     "No experience required with mandatory NV1 clearance",
     "Australian citizenship is optional but must hold NV1 clearance",
     "No security clearance required, Australian citizenship is required",
+    "PV required", "Positive vetting is mandatory", "TSSC required", "Negative Vetting level 2 is required",
+    "NV1 required. Must hold an NV1.",
 )
 
 
@@ -34,9 +48,17 @@ class TestOfferScoring(unittest.TestCase):
         for text in ELIGIBLE:
             with self.subTest(text=text):
                 self.assertEqual(SCORER.eligibility_reason(text), "")
+                score, _, reason = SCORER.score_offer("Junior Frontend", text, ["Frontend"], {}, "Perth")
+                self.assertGreater(score, 0)
+                self.assertFalse(reason)
         for text in REQUIRED:
             with self.subTest(text=text):
-                self.assertTrue(SCORER.eligibility_reason(text))
+                expected = SCORER.CITIZENSHIP_REASON if any(word in text.lower() for word in
+                    ("citizen", "permanent resident", "pr required", "residency")) and "optional" not in text else "Security clearance required"
+                self.assertEqual(SCORER.eligibility_reason(text), expected)
+                score, _, reason = SCORER.score_offer("Junior Frontend", text, ["Frontend"], {}, "Perth")
+                self.assertEqual((score, reason), (0, expected))
+                self.assertEqual(SCORER.score_offer(text, "", [], {}, "")[2], expected)
 
     def test_components_and_seniority(self):
         score, parts, reason = SCORER.score_offer("Junior Frontend React", "visa sponsorship", ["Frontend"],
@@ -47,6 +69,22 @@ class TestOfferScoring(unittest.TestCase):
         for word in ("senior", "lead", "principal", "head", "manager", "architect"):
             self.assertEqual(SCORER.score_offer(word + " developer", "", [], {}, "")[0], 0)
             self.assertTrue(SCORER.score_offer(word + " developer", "", [], {}, "")[2])
+
+    def test_configured_locations(self):
+        cases = [("Melbourne, Victoria", ["Melbourne"], 10), ("Perth", ["Melbourne"], 0),
+                 ("Darwin", ["Australia"], 10), ("Remote", ["remote"], 10),
+                 ("Remote", ["Perth"], 0), ("North Perth", ["Perth"], 10),
+                 ("Perthshire", ["Perth"], 0), ("  MELBOURNE, AU", [" Melbourne "], 10)]
+        for location, target, expected in cases:
+            with self.subTest(location=location, target=target):
+                _, parts, _ = SCORER.score_offer("Junior Frontend", "", ["Frontend"], {}, location, target)
+                self.assertEqual(parts["location"], expected)
+        for targets, expected in ((["remote"], 10), (["Perth"], 0)):
+            _, parts, _ = SCORER.score_offer("Junior Frontend", "Remote role", ["Frontend"], {}, "", targets)
+            self.assertEqual(parts["location"], expected)
+        self.assertEqual(SCORER.score_offer("Baseline required", "Citizenship is optional", [], {}, "")[0], 0)
+        _, parts, _ = SCORER.score_offer("Junior Frontend", "Visa sponsorship available", ["Frontend"], {}, "Perth")
+        self.assertEqual(parts["sponsorship"], 7)
 
     def test_union_years(self):
         intervals = [(date(2020, 1, 1), date(2021, 1, 1)), (date(2020, 6, 1), date(2021, 1, 1)),

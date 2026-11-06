@@ -2388,3 +2388,18 @@ msgstr ""
 #: code:addons/job_finder/models/job_search.py:0
 msgid "Evaluators may use only the evaluation interface."
 msgstr ""
+
+#. module: job_finder
+#: code:addons/job_finder/models/job_offer.py:0
+msgid "Australian citizenship or permanent residency required"
+msgstr ""
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_search__location_cursor
+msgid "Next location mode"
+msgstr ""
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_search__last_run_sequence
+msgid "Last run sequence"
+msgstr ""

@@ -114,6 +114,74 @@ class TestJobSearch(TransactionCase):
             (self.search | second)._run_searches()
         self.assertEqual(calls, ["Frontend", "Backend"])
 
+    def test_location_rotation_and_page_cap(self):
+        from odoo.addons.job_finder.models.adzuna_client import AdzunaClient
+        self.search.write({"cities": "Perth,Melbourne", "is_australia": True, "is_remote": True})
+        area = self.env["job_finder.cv_area"].create({"profile_id": self.profile.id, "name": "Backend"})
+        second = self.search.copy({"cv_area_id": area.id, "keywords": "Backend"})
+        searches = self.search | second
+        params = self.env["ir.config_parameter"]
+        for key, value in (("app_id", "synthetic"), ("app_key", "synthetic"), ("call_limit", "1")):
+            params.set_param("job_finder.adzuna_" + key, value)
+        calls = []
+        def mocked(client, keywords, city="", page=1):
+            client.calls += 1
+            calls.append((keywords, city, page))
+            return []
+        with patch.object(AdzunaClient, "search", mocked):
+            for _ in range(8):
+                searches.invalidate_recordset(["location_cursor", "last_run_at", "last_run_sequence"])
+                with self.assertLogs("odoo.addons.job_finder.models.job_search", level="INFO") as logs:
+                    searches._run_searches()
+                self.assertIn("call budget reached", " ".join(logs.output))
+        expected = {(keyword + suffix, city, 1) for keyword in ("Frontend", "Backend")
+                    for city, suffix in (("Perth", ""), ("Melbourne", ""), ("", ""), ("", " remote"))}
+        self.assertEqual(set(calls), expected)
+        params.set_param("job_finder.adzuna_call_limit", "20")
+        calls.clear()
+        def full_page(client, keywords, city="", page=1):
+            client.calls += 1
+            calls.append((keywords, city, page))
+            return [self.row(str(index)) for index in range(20)]
+        with patch.object(AdzunaClient, "search", full_page):
+            searches._run_searches()
+        self.assertEqual(len(calls), 16)
+        self.assertEqual({page for _, _, page in calls}, {1, 2})
+
+    def test_mocked_provider_matrix_and_locations(self):
+        import json
+        from odoo.addons.job_finder.models.adzuna_client import AdzunaClient
+        self.search.write({"cities": "Melbourne", "is_remote": False})
+        params = self.env["ir.config_parameter"]
+        for key in ("app_id", "app_key"):
+            params.set_param("job_finder.adzuna_" + key, "synthetic")
+        params.set_param("job_finder.adzuna_call_limit", "20")
+        rows = [self.row(str(index), phrase) for index, phrase in enumerate(ELIGIBLE + REQUIRED)]
+        for row in rows:
+            row["location"] = {"display_name": "Victoria", "area": ["Australia", "Melbourne"]}
+        def mocked(client, keywords, city="", page=1):
+            client.calls += 1
+            return rows if page == 1 else []
+        with patch.object(AdzunaClient, "search", mocked):
+            self.search._run_searches()
+        for offer in self.offers.search([("profile_id", "=", self.profile.id)]):
+            if int(offer.adzuna_id) < len(ELIGIBLE):
+                self.assertEqual((offer.state, offer.ai_state), ("new", "pending"))
+                self.assertEqual(json.loads(offer.score_breakdown)["location"], 10)
+            else:
+                self.assertEqual((offer.state, offer.rule_score, offer.ai_state), ("discarded", 0, False))
+                self.assertTrue(offer.discard_reason)
+        self.assertEqual(self.offers.search_count([("profile_id", "=", self.profile.id)]), len(rows))
+        row = self.row("outside")
+        row["location"] = {"display_name": "Perth"}
+        self.search._ingest([row])
+        offer = self.offers.search([("adzuna_id", "=", "outside")])
+        self.assertEqual(json.loads(offer.score_breakdown)["location"], 0)
+        self.search.is_australia = True
+        row["id"] = "nationwide"
+        self.search._ingest([row])
+        self.assertEqual(json.loads(self.offers.search([("adzuna_id", "=", "nationwide")]).score_breakdown)["location"], 10)
+
     def test_proposals_preserve_edits(self):
         area = self.env["job_finder.cv_area"].create({"profile_id": self.profile.id, "name": "Robotics",
                                                     "headline": "Control Engineer"})

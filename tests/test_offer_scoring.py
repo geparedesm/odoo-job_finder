@@ -10,6 +10,11 @@ SCORER = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(SCORER)
 
 ELIGIBLE = (
+    "Customs clearance", "stock clearance sale", "height clearance",
+    "Must obtain customs clearance", "Height clearance is necessary",
+    "Australian citizenship, permanent residency or full work rights required",
+    "Australian citizenship or other full work rights required",
+    "Australian citizenship or any full work rights required",
     "Applicants are not required to hold NV1 clearance", "NV1 clearance is not a requirement",
     "Previous experience on NV1 projects is desirable", "NV1 clearance requirement does not apply to this position",
     "NV1 clearance requirement has been waived", "Baseline clearance is an advantage but not required",
@@ -28,6 +33,10 @@ ELIGIBLE = (
     "No NV1 clearance required", "No NV1 or NV2 clearance required",
 )
 REQUIRED = (
+    "NV1 clearance needed", "Australian citizenship is necessary", "Permanent residency is essential",
+    "Australian citizenship required and full work rights",
+    "AGSVA clearance required", "Eligible to obtain clearance",
+    "Security clearance required or full work rights",
     "NV1 required", "Baseline required", "Software Engineer — Baseline required", "Must hold an NV1",
     "Must hold Baseline", "Must hold NV1", "NV2 is mandatory",
     "Successful applicant must hold or be able to obtain an NV1 security clearance",

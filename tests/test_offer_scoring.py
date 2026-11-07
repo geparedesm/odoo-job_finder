@@ -17,7 +17,7 @@ ELIGIBLE = (
     "No need for NV1 clearance", "Must be an Australian citizen, permanent resident or hold a valid visa with full work rights",
     "Must be an Australian citizen or have a valid work visa",
     "Must be Australian citizen or PR, or hold a visa with full work rights",
-    "No NV1 and NV2 clearance required",
+    "No NV1 and NV2 clearance required", "No NV1, NV2 or Baseline clearance required",
 
     "Customs clearance", "stock clearance sale", "height clearance",
     "Must obtain customs clearance", "Height clearance is necessary",

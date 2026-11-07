@@ -10,7 +10,7 @@ try:
 except ImportError:
     raise unittest.SkipTest("Odoo not available") from None
 
-from .test_offer_scoring import ELIGIBLE, REQUIRED
+from .test_offer_scoring import MUST_DISCARD, MUST_NOT_DISCARD
 
 
 @tagged("post_install", "-at_install")
@@ -35,17 +35,36 @@ class TestJobSearch(TransactionCase):
                 "created": fields.Datetime.now().isoformat() + "Z", "location": {"display_name": "Perth"}}
 
     def test_ingestion_eligibility_and_dedup(self):
-        for index, phrase in enumerate(ELIGIBLE + REQUIRED):
+        for index, phrase in enumerate(MUST_NOT_DISCARD + tuple(text for text, _ in MUST_DISCARD)):
             self.search._ingest([self.row(str(index), phrase)])
         self.search._ingest([self.row("0")])
         records = self.offers.search([("profile_id", "=", self.profile.id)])
-        self.assertEqual(len(records), len(ELIGIBLE + REQUIRED))
+        self.assertEqual(len(records), len(MUST_NOT_DISCARD + tuple(text for text, _ in MUST_DISCARD)))
         for offer in records:
-            if int(offer.adzuna_id) < len(ELIGIBLE):
+            if int(offer.adzuna_id) < len(MUST_NOT_DISCARD):
                 self.assertEqual((offer.state, offer.ai_state), ("new", "pending"))
                 self.assertGreater(offer.rule_score, 0)
             else:
                 self.assertEqual((offer.state, offer.rule_score), ("discarded", 0))
+
+    def test_eligibility_evaluator_payload(self):
+        self.search._ingest([
+            self.row("required", "Must be an Australian citizen"),
+            self.row("mention", "Australian citizens, permanent residents or valid visa holders"),
+            self.row("plain"),
+        ])
+        records = self.offers.search([("profile_id", "=", self.profile.id)])
+        by_key = {offer.adzuna_id: offer for offer in records}
+        required = by_key["required"]
+        self.assertEqual((required.state, required.rule_score, required.ai_state), ("discarded", 0, False))
+        self.assertEqual(required.discard_reason, "Australian citizenship or permanent residency required")
+        mention = by_key["mention"]
+        self.assertEqual((mention.state, mention.ai_state), ("new", "pending"))
+        self.assertGreater(mention.rule_score, 0)
+        payload = {item["id"]: item for item in self.offers.with_user(self.evaluator).evaluator_pending(100)}
+        self.assertNotIn(required.id, payload)
+        self.assertTrue(payload[mention.id]["eligibility_mention"])
+        self.assertFalse(payload[by_key["plain"].id]["eligibility_mention"])
 
     def test_threshold_status_and_replay(self):
         self.search._ingest([self.row()])
@@ -202,7 +221,7 @@ class TestJobSearch(TransactionCase):
         for key in ("app_id", "app_key"):
             params.set_param("job_finder.adzuna_" + key, "synthetic")
         params.set_param("job_finder.adzuna_call_limit", "20")
-        rows = [self.row(str(index), phrase) for index, phrase in enumerate(ELIGIBLE + REQUIRED)]
+        rows = [self.row(str(index), phrase) for index, phrase in enumerate(MUST_NOT_DISCARD + tuple(text for text, _ in MUST_DISCARD))]
         for row in rows:
             row["location"] = {"display_name": "Victoria", "area": ["Australia", "Melbourne"]}
         def mocked(client, keywords, city="", page=1):
@@ -210,22 +229,11 @@ class TestJobSearch(TransactionCase):
             return rows if page == 1 else []
         with patch.object(AdzunaClient, "search", mocked):
             self.search._run_searches()
-        expected_reasons = {
-            "Must hold, or be able to obtain, an NV1 clearance": "Security clearance required",
-            "Australian citizenship required (NV1 clearance preferred)": "Australian citizenship or permanent residency required",
-            "React experience preferred with mandatory NV1 clearance": "Security clearance required",
-            "This role requires Baseline clearance": "Security clearance required",
-            "Requires an NV1 security clearance": "Security clearance required",
-            "Role requires Australian citizenship": "Australian citizenship or permanent residency required",
-            "Requiring permanent residency": "Australian citizenship or permanent residency required",
-            "React experience preferred and NV1 clearance required": "Security clearance required",
-            "No security clearance required and Australian citizenship required": "Australian citizenship or permanent residency required",
-            "Australian citizenship required, full work rights are also required": "Australian citizenship or permanent residency required",
-        }
+        expected_reasons = dict(MUST_DISCARD)
         for offer in self.offers.search([("profile_id", "=", self.profile.id)]):
             if offer.snippet in expected_reasons:
                 self.assertEqual(offer.discard_reason, expected_reasons[offer.snippet])
-            if int(offer.adzuna_id) < len(ELIGIBLE):
+            if int(offer.adzuna_id) < len(MUST_NOT_DISCARD):
                 self.assertEqual((offer.state, offer.ai_state), ("new", "pending"))
                 self.assertGreater(offer.rule_score, 0)
                 self.assertFalse(offer.discard_reason)

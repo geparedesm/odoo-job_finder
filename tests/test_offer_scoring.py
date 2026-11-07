@@ -9,97 +9,108 @@ SPEC = importlib.util.spec_from_file_location("offer_scoring", Path(__file__).pa
 SCORER = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(SCORER)
 
-ELIGIBLE = (
-    "No Baseline, NV1 or NV2 clearance required",
-    "Must be an Australian citizen or have full work rights in Australia",
-    "Applicants do not need to hold a Baseline clearance",
-    "There is no requirement for NV1 clearance", "You do not need to be an Australian citizen",
-    "Applicants will not need to hold NV1 clearance", "Applicant does not need to hold NV1 clearance",
-    "You don't need to hold NV1 clearance", "Applicant doesn't need to hold NV1 clearance",
-    "No need for NV1 clearance", "Must be an Australian citizen, permanent resident or hold a valid visa with full work rights",
-    "Must be an Australian citizen or have a valid work visa",
-    "Must be Australian citizen or PR, or hold a visa with full work rights",
-    "No NV1 and NV2 clearance required", "No NV1, NV2 or Baseline clearance required",
-
-    "Customs clearance", "stock clearance sale", "height clearance",
-    "Must obtain customs clearance", "Height clearance is necessary",
-    "Australian citizenship, permanent residency or full work rights required",
-    "Australian citizenship or other full work rights required",
-    "Australian citizenship or any full work rights required",
-    "Applicants are not required to hold NV1 clearance", "NV1 clearance is not a requirement",
-    "Previous experience on NV1 projects is desirable", "NV1 clearance requirement does not apply to this position",
-    "NV1 clearance requirement has been waived", "Baseline clearance is an advantage but not required",
-    "No security clearance needed", "No security clearance required",
-    "Australian citizens, permanent residents or valid visa holders with full work rights are welcome to apply",
-    "Must be an Australian citizen, permanent resident or have full work rights in Australia",
-    "Must have full working rights in Australia", "Visa sponsorship available",
-    "Australian citizens, permanent residents or valid visa holders",
-    "We welcome temporary visa holders and permanent residents", "performance baseline", "Baseline CSS skills",
-    "NV1 projects", "Australian citizenship is preferred", "Permanent residency is not required",
-    "No permanent residency required", "No PR required", "Optional NV1 clearance requirement",
-    "No negative vetting required", "No PV required", "No TSSC required",
-    "Australian citizenship or permanent residency or full work rights required",
-    "Clearance sale of office furniture", "clearance of tickets", "Role requires clearance of tickets",
-    "Australian citizenship required, alternatively full work rights are accepted",
-    "No NV1 clearance required", "No NV1 or NV2 clearance required",
+MUST_DISCARD = (
+    ('Must be an Australian citizen', SCORER.CITIZENSHIP_REASON),
+    ('Must be Australian citizens', SCORER.CITIZENSHIP_REASON),
+    ('Must be an Australian citizen or permanent resident', SCORER.CITIZENSHIP_REASON),
+    ('Must be an Australian permanent resident', SCORER.CITIZENSHIP_REASON),
+    ('Must have Australian citizenship', SCORER.CITIZENSHIP_REASON),
+    ('Must hold Australian citizenship', SCORER.CITIZENSHIP_REASON),
+    ('Must have permanent residency', SCORER.CITIZENSHIP_REASON),
+    ('Must hold Australian permanent residency', SCORER.CITIZENSHIP_REASON),
+    ('Australian citizenship is required', SCORER.CITIZENSHIP_REASON),
+    ('Australian citizenship or permanent residency mandatory', SCORER.CITIZENSHIP_REASON),
+    ('Permanent residency essential', SCORER.CITIZENSHIP_REASON),
+    ('Australian citizens only', SCORER.CITIZENSHIP_REASON),
+    ('Only Australian citizens', SCORER.CITIZENSHIP_REASON),
+    ('Must hold a current Baseline security clearance', "Security clearance required"),
+    ('Must have an active security clearance', "Security clearance required"),
+    ('NV1 clearance is required', "Security clearance required"),
+    ('Security clearance mandatory', "Security clearance required"),
+    ('Must be eligible to obtain an NV2 security clearance', "Security clearance required"),
+    ('Must be able to obtain a Negative Vetting 1 clearance', "Security clearance required"),
+    ('Negative Vetting 2 security clearance essential', "Security clearance required"),
+    ('PV clearance required', "Security clearance required"),
+    ('Positive Vetting clearance mandatory', "Security clearance required"),
+    ('Must hold NV1 clearance', "Security clearance required"),
+    ('Must be eligible for clearance', "Security clearance required"),
+    ('Must be able to obtain clearance', "Security clearance required"),
 )
-REQUIRED = (
-    "NV1 clearance required, citizenship preferred",
-    "Australian citizenship or permanent residency is required",
-    "Must hold, or be able to obtain, an NV1 clearance",
-    "Australian citizenship required (NV1 clearance preferred)",
-    "React experience preferred with mandatory NV1 clearance",
-
-    "NV1 clearance needed", "Australian citizenship is necessary", "Permanent residency is essential",
-    "Australian citizenship required and full work rights",
-    "AGSVA clearance required", "Eligible to obtain clearance",
-    "Security clearance required or full work rights",
-    "NV1 required", "Baseline required", "Software Engineer — Baseline required", "Must hold an NV1",
-    "Must hold Baseline", "Must hold NV1", "NV2 is mandatory",
-    "Successful applicant must hold or be able to obtain an NV1 security clearance",
-    "must hold or be able to obtain an NV1 security clearance",
-    "Must be able to obtain NV1 clearance", "must have the ability to obtain a Baseline clearance",
-    "Must hold NV1 and NV2 clearance", "Must hold a NV1 or NV2 clearance", "must be eligible for clearance",
-    "Baseline security clearance is essential", "Negative Vetting 1 clearance required",
-    "Must be an Australian citizen or permanent resident with full working rights",
-    "Australian citizenship required, applicants must also have full work rights",
-    "Australian citizens only", "Must be an Australian citizen", "PR required", "Permanent residency is mandatory",
-    "Must hold NV1 clearance", "must be eligible for Baseline clearance", "must be a permanent resident",
-    "must obtain security clearance", "NV2 clearance required",
-    "NV1 clearance is not a requirement but Australian citizenship is required",
-    "No experience required with mandatory NV1 clearance",
-    "Australian citizenship is optional but must hold NV1 clearance",
-    "No security clearance required, Australian citizenship is required",
-    "PV required", "Positive vetting is mandatory", "TSSC required", "Negative Vetting level 2 is required",
-    "NV1 required. Must hold an NV1.", "Negative vetting required", "Must undergo negative vetting",
-    "This role requires Baseline clearance", "Requires an NV1 security clearance",
-    "Role requires Australian citizenship", "Applicants are required to hold NV2 clearance",
-    "Requiring permanent residency", "Australian citizenship needed", "NV1 clearance is necessary",
-    "React experience preferred and NV1 clearance required",
-    "No security clearance required and Australian citizenship required",
-    "Australian citizenship required, full work rights are also required",
-    "Australian citizenship required as well as full work rights",
-    "NV1 clearance preferred and NV2 clearance required",
-    "Must obtain and maintain NV1 clearance", "NV1 and NV2 clearance are required",
+MUST_NOT_DISCARD = (
+    'You must raise a PR for every change',
+    'Must be comfortable with PR reviews',
+    'No requirement to hold a security clearance',
+    'Applicants are not required to hold NV1 clearance',
+    'NV1 clearance is not a requirement',
+    'Previous experience on NV1 projects is desirable',
+    'Must be an Australian citizen, PR, or hold a valid working visa',
+    'Australian citizenship or valid working visa required',
+    'Must be an Australian citizen or have the right to work in Australia',
+    'Baseline clearance is an advantage',
+    'Australian citizens, permanent residents or valid visa holders',
+    'Australian citizenship is preferred',
+    'performance baseline',
+    'Must be an Australian citizen or have full work rights',
+    'Must be an Australian citizen or have valid working rights',
+    'Security clearance required, not',
+    'Security clearance required, no',
+    'Security clearance required, without',
+    "Security clearance required, don't",
+    "Security clearance required, doesn't",
+    "Security clearance required, isn't",
+    "Security clearance required, aren't",
+    'Security clearance required, never',
+    'Security clearance required, desirable',
+    'Security clearance required, preferred',
+    'Security clearance required, advantage',
+    'Security clearance required, advantageous',
+    'Security clearance required, nice to have',
+    'Security clearance required, bonus',
+    'Security clearance required, highly regarded',
+    'Security clearance required, optional',
+    'Must hold NV1 clearance but no experience required',
+    'Australian citizenship required (optional)',
+    'Must be an Australian citizen or one two three four five visa',
+    'xmust be an Australian citizen',
+    'Australian citizenship requiredness',
 )
 
 
 class TestOfferScoring(unittest.TestCase):
     def test_eligibility(self):
-        for text in ELIGIBLE:
+        for text in MUST_NOT_DISCARD:
             with self.subTest(text=text):
                 self.assertEqual(SCORER.eligibility_reason(text), "")
                 score, _, reason = SCORER.score_offer("Junior Frontend", text, ["Frontend"], {}, "Perth")
                 self.assertGreater(score, 0)
                 self.assertFalse(reason)
-        for text in REQUIRED:
+        for text, expected in MUST_DISCARD:
             with self.subTest(text=text):
-                expected = SCORER.CITIZENSHIP_REASON if any(word in text.lower() for word in
-                    ("citizen", "permanent resident", "pr required", "residency")) and "optional" not in text and "citizenship preferred" not in text else "Security clearance required"
                 self.assertEqual(SCORER.eligibility_reason(text), expected)
                 score, _, reason = SCORER.score_offer("Junior Frontend", text, ["Frontend"], {}, "Perth")
                 self.assertEqual((score, reason), (0, expected))
                 self.assertEqual(SCORER.score_offer(text, "", [], {}, "")[2], expected)
+
+    def test_sentence_boundaries_and_case(self):
+        for separator in (".", ";", "!", "?", "\n", "\r"):
+            text = "No experience required" + separator + "NV1 CLEARANCE REQUIRED"
+            self.assertEqual(SCORER.eligibility_reason(text), "Security clearance required")
+        self.assertEqual(SCORER.eligibility_reason("We don’t require experience, security clearance required"), "")
+        self.assertEqual(SCORER.eligibility_reason(
+            "Must be an Australian citizen or one two three four five six visa"), SCORER.CITIZENSHIP_REASON)
+        self.assertEqual(SCORER.eligibility_reason(
+            "Security clearance required or valid visa"), "Security clearance required")
+
+    def test_eligibility_mention(self):
+        for text in ("citizen", "citizens", "citizenship", "permanent resident",
+                     "permanent residents", "permanent residency", "permanent residence",
+                     "clearance", "Baseline", "NV1", "NV2", "Negative Vetting 1",
+                     "Negative Vetting 2", "PV", "Positive Vetting"):
+            with self.subTest(text=text):
+                self.assertTrue(SCORER.eligibility_mention(text.upper()))
+        for text in ("You must raise a PR for every change", "Must be comfortable with PR reviews",
+                     "Junior Frontend", "citizenshipx", "NV12"):
+            self.assertFalse(SCORER.eligibility_mention(text))
 
     def test_components_and_seniority(self):
         score, parts, reason = SCORER.score_offer("Junior Frontend React", "visa sponsorship", ["Frontend"],
@@ -123,7 +134,6 @@ class TestOfferScoring(unittest.TestCase):
         for targets, expected in ((["remote"], 10), (["Perth"], 0)):
             _, parts, _ = SCORER.score_offer("Junior Frontend", "Remote role", ["Frontend"], {}, "", targets)
             self.assertEqual(parts["location"], expected)
-        self.assertEqual(SCORER.score_offer("Baseline required", "Citizenship is optional", [], {}, "")[0], 0)
         _, parts, _ = SCORER.score_offer("Junior Frontend", "Visa sponsorship available", ["Frontend"], {}, "Perth")
         self.assertEqual(parts["sponsorship"], 7)
 

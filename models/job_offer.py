@@ -8,7 +8,7 @@ from urllib.parse import urlparse
 from odoo import api, fields, models
 from odoo.exceptions import AccessError, ValidationError
 
-from .offer_scoring import score_offer, usage_years
+from .offer_scoring import eligibility_mention, score_offer, usage_years
 
 
 class JobOffer(models.Model):
@@ -216,6 +216,7 @@ class JobOffer(models.Model):
         # Evaluators have no CRUD ACL; expose only bounded queue payloads after checking their dedicated group.
         offers = self.sudo().search([("ai_state", "=", "pending"), ("state", "!=", "discarded")], limit=limit)
         return [{"id": offer.id, "title": offer.title, "snippet": offer.snippet, "rule_score": offer.rule_score,
+                 "eligibility_mention": eligibility_mention(f"{offer.title}\n{offer.snippet or ''}"),
                  "profile": offer._profile_summary()} for offer in offers]
 
     @api.model

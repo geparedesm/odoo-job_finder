@@ -174,10 +174,8 @@ Scoring is deterministic: area/headline title match +30; matching technologies
 +8 for skill-only technologies (technology total capped at 38); junior, graduate
 or entry-level title +15; configured location match +10; visa sponsorship +7.
 The additive breakdown is stored. Senior/lead/principal/head/manager/architect
-titles and actual citizenship, PR or clearance obligations get score zero and
-a discard reason. Negated, optional and descriptive mentions retain normal
-scoring, including the three NV1 regression examples. Ambiguous wording is kept
-for review. Score **>= threshold** qualifies as new/pending, independently of AI
+titles and the explicit eligibility statements below get score zero and
+a discard reason. Other eligibility mentions retain normal scoring for AI review. Score **>= threshold** qualifies as new/pending, independently of AI
 availability; lower scores are stored as discarded. The profile defaults to a
 subclass 485 visa with work rights through February 2028.
 
@@ -228,23 +226,55 @@ For isolated preview only, execute `.hermes/preview-seed.py` in an Odoo shell
 where `env` is provided. It creates reserved synthetic records idempotently and
 never creates API keys or contacts Adzuna.
 
-### Eligibility and location review corrections
+### Explicit eligibility statements
 
-Citizenship and permanent-residency obligations share the discard reason
-**Australian citizenship or permanent residency required**. Full working rights
-are an exemption only when listed as an alternative, such as "citizen, permanent
-resident or have full work rights". They do not waive a requirement in "citizen
-or permanent resident with full working rights" or "citizenship required,
-applicants must also have full work rights".
+Only these statements in the title or snippet cause an eligibility discard.
+Matching is case-insensitive and uses whole words. Parenthesised components below
+are optional; alternatives separated by slashes are interchangeable.
 
-Clearance levels Baseline, NV1, NV2, Negative Vetting (with or without level 1/2),
-PV/Positive Vetting and
-TSSC are recognised even without the word clearance when an obligation is
-expressed. Examples include "Baseline required", "Must hold an NV1" and
-"must hold or be able to obtain an NV1 security clearance". Coordinated clearance
-lists are recognised. Negated, waived, inapplicable, optional and descriptive references
-retain normal scoring, including "requirement does not apply" and "has been
-waived". Ambiguous snippets remain subject to heuristic limitations.
+Citizenship/residency statements use the reason **Australian citizenship or
+permanent residency required**:
+
+1. Must be an Australian citizen / must be Australian citizens.
+2. Must be an Australian citizen or permanent resident.
+3. Must be an Australian permanent resident.
+4. Must have/hold Australian citizenship.
+5. Must have/hold (Australian) permanent residency.
+6. Australian citizenship (is) required/mandatory/essential.
+7. Australian citizenship or permanent residency (is) required/mandatory/essential.
+8. Permanent residency (is) required/mandatory/essential.
+9. Australian citizens only / only Australian citizens.
+
+Clearance statements use **Security clearance required**. LEVEL means Baseline,
+NV1, NV2, Negative Vetting 1, Negative Vetting 2, PV or Positive Vetting:
+
+10. Must hold/have (a/an) (current/active/valid) LEVEL (security) clearance.
+11. Must hold/have (a/an) (current/active/valid) security clearance.
+12. LEVEL (security) clearance (is) required/mandatory/essential.
+13. Security clearance (is) required/mandatory/essential.
+14. Must be eligible to obtain/for (a/an) (LEVEL) (security) clearance.
+15. Must be able to obtain (a/an) (LEVEL) (security) clearance.
+
+Sentences split only on periods, semicolons, exclamation marks, question marks
+and line breaks. A sentence never discards if it contains not, no, without,
+don't, doesn't, isn't, aren't, never, desirable, preferred, advantage,
+advantageous, nice to have, bonus, highly regarded or optional. This applies to
+the entire sentence, including text separated by commas or conjunctions.
+
+A citizenship/residency statement is also exempt when the same sentence has
+“or” followed within six words by visa, work rights, working rights or right to
+work. That exemption does not cancel a clearance statement. Bare PR never means
+permanent residency. Visa sponsorship still adds seven points.
+
+Other wordings are deliberately retained, scored normally and, if they meet the
+score threshold, queued for AI evaluation. Pending payloads include the boolean
+`eligibility_mention`: true for whole-word citizen(s), citizenship, permanent
+resident(s)/residency/residence, clearance or LEVEL tokens, false otherwise
+(including bare PR). The evaluator must check these mentions and record findings
+in `ai_warnings`. This flag does not change the rule score. Missing a requirement
+outside the explicit list is intentional.
+
+### Location matching and rotation
 
 Location contributes 10 points for a complete normalised match on any configured
 city against Adzuna's display name or location area. An unconfigured city earns
@@ -263,29 +293,3 @@ At budget one, every configured pair is reached within the number of active
 searches times the largest number of modes. Pagination intentionally restarts
 at page one when that mode is next served. Upgrading the module creates these
 cursor fields; no data migration or version bump is needed.
-
-Explicit negations such as "No PV required", "No TSSC required" and "No negative
-vetting required" remain eligible, just like negated NV1/NV2 requirements.
-
-### Independent eligibility requirements
-
-Eligibility obligations include requires, requiring, required to, needed and
-necessary, as well as must/mandatory/essential. Each sentence is divided into
-independent clauses at conjunctions and commas; coordinated eligibility lists
-and inserted verb phrases such as "Must hold, or be able to obtain, an NV1
-clearance" retain their shared obligation. Parentheses and "with mandatory"
-separate independent requirements. Negation,
-waiver or a preference applies to the requirement it governs, so "React
-experience preferred and NV1 clearance required" is discarded, and "No security
-clearance required and Australian citizenship required" still discards for
-citizenship. "Do not need to", "no need for" and "no requirement for" also
-negate their own requirement, including coordinated NV1 and NV2 lists.
-
-Work rights waive citizenship/PR only through an explicit alternative such as
-"or", "alternatively" or "either ... or" within the eligibility list. Commas alone
-never establish an alternative. Alternatives include "or hold a valid visa"
-and "or have a valid work visa": "Australian citizenship required, full work
-rights are also required" retains the citizenship requirement. The combined
-discard reason remains unchanged. A bare commercial/operational "clearance"
-(such as clearance of tickets or office furniture) is not a security eligibility
-subject; a security term, clearance level or "eligible for clearance" is needed.

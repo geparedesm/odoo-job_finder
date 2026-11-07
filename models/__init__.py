@@ -14,3 +14,5 @@ from . import training
 from . import volunteering
 from . import spoken_language
 from . import cv_report
+
+from . import job_search_profile, job_search, job_offer

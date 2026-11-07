@@ -4,13 +4,13 @@ import re
 
 
 CITIZENSHIP_REASON = "Australian citizenship or permanent residency required"
-CLEARANCE = r"\b(?:security\s+clearance|eligible\s+for\s+(?:a\s+)?clearance|baseline|nv[12]|negative vetting(?:(?: level)? [12])?|pv|positive vetting|tssc)\b"
+CLEARANCE = r"\b(?:security\s+clearance|eligible\s+(?:for|to obtain)\s+(?:a\s+)?clearance|agsva\s+clearance|baseline|nv[12]|negative vetting(?:(?: level)? [12])?|pv|positive vetting|tssc)\b"
 CITIZENSHIP = r"\b(?:australian\s+citizen(?:ship|s)?|citizenship|permanent\s+residen(?:ts?|cy|ce)|pr)\b"
-OBLIGATION = r"\b(?:must|shall|should|requir(?:es|ing|ed)|requirement|needed|necessary|mandatory|essential|needs? to|only|eligible for|able to obtain|ability to obtain|obtain and maintain)\b"
+OBLIGATION = r"\b(?:must|shall|should|requir(?:es|ing|ed)|requirement|needed|necessary|mandatory|essential|needs? to|only|eligible (?:for|to obtain)|able to obtain|ability to obtain|obtain and maintain)\b"
 OPTIONAL = r"\b(?:not (?:be )?required|not a requirement|not (?:necessary|needed|mandatory|essential)|requirement (?:does not|doesn't) apply|(?:has been |is )?waived|optional|desirable|advantage(?:ous)?|nice to have|preferred|bonus|highly regarded|previous experience (?:on|with|in))\b"
 ALTERNATIVE = (
     r"(?:\bor\b|\balternatively\b|and/or)\s+"
-    r"(?:(?:those with|anyone with|have|hold|valid|a valid|temporary|full|unrestricted)\s+)*"
+    r"(?:(?:those with|anyone with|have|hold|other|any|valid|a valid|temporary|full|unrestricted)\s+)*"
     r"(?:visa holders?|work(?:ing)? rights|right to work)\b"
 )
 

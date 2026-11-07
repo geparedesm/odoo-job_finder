@@ -7,11 +7,11 @@ CITIZENSHIP_REASON = "Australian citizenship or permanent residency required"
 CLEARANCE = r"\b(?:security\s+clearance|eligible\s+(?:for|to obtain)\s+(?:a\s+)?clearance|agsva\s+clearance|baseline|nv[12]|negative vetting(?:(?: level)? [12])?|pv|positive vetting|tssc)\b"
 CITIZENSHIP = r"\b(?:australian\s+citizen(?:ship|s)?|citizenship|permanent\s+residen(?:ts?|cy|ce)|pr)\b"
 OBLIGATION = r"\b(?:must|shall|should|requir(?:es|ing|ed)|requirement|needed|necessary|mandatory|essential|needs? to|only|eligible (?:for|to obtain)|able to obtain|ability to obtain|obtain and maintain)\b"
-OPTIONAL = r"\b(?:not (?:be )?required|not a requirement|not (?:necessary|needed|mandatory|essential)|requirement (?:does not|doesn't) apply|(?:has been |is )?waived|optional|desirable|advantage(?:ous)?|nice to have|preferred|bonus|highly regarded|previous experience (?:on|with|in))\b"
+OPTIONAL = r"\b(?:(?:do|does|will) not need|don't need|doesn't need|no (?:need|requirement) for|not (?:be )?required|not a requirement|not (?:necessary|needed|mandatory|essential)|requirement (?:does not|doesn't) apply|(?:has been |is )?waived|optional|desirable|advantage(?:ous)?|nice to have|preferred|bonus|highly regarded|previous experience (?:on|with|in))\b"
 ALTERNATIVE = (
     r"(?:\bor\b|\balternatively\b|and/or)\s+"
-    r"(?:(?:those with|anyone with|have|hold|other|any|valid|a valid|temporary|full|unrestricted)\s+)*"
-    r"(?:visa holders?|work(?:ing)? rights|right to work)\b"
+    r"(?:(?:those with|anyone with|have|hold|a|work|other|any|valid|a valid|temporary|full|unrestricted)\s+)*"
+    r"(?:visa(?: holders?)?|work(?:ing)? rights|right to work)\b"
 )
 
 
@@ -31,25 +31,41 @@ def _has_work_rights_alternative(requirement):
     return False
 
 
+def _requirement_clauses(text):
+    """Preserve shared predicates and inserted verb phrases; split independent requirements."""
+    sentences = re.split(r"[.;!?\n•()]|\s+—\s+|\b(?:but|however|although)\b|\bwith (?=mandatory\b)", text.lower())
+    for sentence in sentences:
+        start = 0
+        for separator in re.finditer(r",|(?<!/)\band\b(?!/)", sentence):
+            left = sentence[start:separator.start()]
+            right = sentence[separator.end():]
+            # A list like "No NV1 and NV2 clearance required" has one shared
+            # predicate. An inserted "hold, or obtain, an NV1" does too.
+            if (re.search(OBLIGATION + "|" + OPTIONAL, left)
+                    and re.search(OBLIGATION + "|" + OPTIONAL, right)
+                    and re.search(CLEARANCE + "|" + CITIZENSHIP, left + right)):
+                yield left
+                start = separator.end()
+        yield sentence[start:]
+
+
 def eligibility_reason(text):
     """Judge independent requirements separately while retaining genuine eligibility alternatives."""
-    requirements = re.split(r"[.;!?\n•]|\s+—\s+|\b(?:but|however|although)\b|(?<!obtain )(?<!/)\band\b(?!/)", text.lower())
-    for requirement in requirements:
-        alternative = _has_work_rights_alternative(requirement)
-        for clause in requirement.split(","):
-            subjects = [(match, reason) for pattern, reason in
-                        ((CLEARANCE, "Security clearance required"), (CITIZENSHIP, CITIZENSHIP_REASON))
-                        for match in re.finditer(pattern, clause)]
-            if not subjects or not re.search(OBLIGATION, clause):
+    for clause in _requirement_clauses(text):
+        subjects = [(match, reason) for pattern, reason in
+                    ((CLEARANCE, "Security clearance required"), (CITIZENSHIP, CITIZENSHIP_REASON))
+                    for match in re.finditer(pattern, clause)]
+        if not subjects or not re.search(OBLIGATION, clause):
+            continue
+        if re.search(OPTIONAL, clause):
+            continue
+        if re.search(rf"\bno .{{0,30}}(?:{CLEARANCE}|{CITIZENSHIP}|clearance)\s+(?:(?:is|are)\s+)?(?:required|needed|necessary)\b", clause):
+            continue
+        alternative = _has_work_rights_alternative(clause)
+        for _, reason in subjects:
+            if reason == CITIZENSHIP_REASON and alternative:
                 continue
-            if re.search(OPTIONAL, clause):
-                continue
-            if re.search(rf"\bno .{{0,30}}(?:{CLEARANCE}|{CITIZENSHIP}|clearance)\s+(?:(?:is|are)\s+)?(?:required|needed|necessary)\b", clause):
-                continue
-            for _, reason in subjects:
-                if reason == CITIZENSHIP_REASON and alternative:
-                    continue
-                return reason
+            return reason
     return ""
 
 

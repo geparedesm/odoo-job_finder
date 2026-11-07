@@ -211,6 +211,9 @@ class TestJobSearch(TransactionCase):
         with patch.object(AdzunaClient, "search", mocked):
             self.search._run_searches()
         expected_reasons = {
+            "Must hold, or be able to obtain, an NV1 clearance": "Security clearance required",
+            "Australian citizenship required (NV1 clearance preferred)": "Australian citizenship or permanent residency required",
+            "React experience preferred with mandatory NV1 clearance": "Security clearance required",
             "This role requires Baseline clearance": "Security clearance required",
             "Requires an NV1 security clearance": "Security clearance required",
             "Role requires Australian citizenship": "Australian citizenship or permanent residency required",
@@ -224,6 +227,8 @@ class TestJobSearch(TransactionCase):
                 self.assertEqual(offer.discard_reason, expected_reasons[offer.snippet])
             if int(offer.adzuna_id) < len(ELIGIBLE):
                 self.assertEqual((offer.state, offer.ai_state), ("new", "pending"))
+                self.assertGreater(offer.rule_score, 0)
+                self.assertFalse(offer.discard_reason)
                 self.assertEqual(json.loads(offer.score_breakdown)["location"], 10)
             else:
                 self.assertEqual((offer.state, offer.rule_score, offer.ai_state), ("discarded", 0, False))

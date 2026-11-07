@@ -272,15 +272,19 @@ vetting required" remain eligible, just like negated NV1/NV2 requirements.
 Eligibility obligations include requires, requiring, required to, needed and
 necessary, as well as must/mandatory/essential. Each sentence is divided into
 independent clauses at conjunctions and commas; coordinated eligibility lists
-and verb phrases such as "obtain and maintain" remain meaningful. Negation,
+and inserted verb phrases such as "Must hold, or be able to obtain, an NV1
+clearance" retain their shared obligation. Parentheses and "with mandatory"
+separate independent requirements. Negation,
 waiver or a preference applies to the requirement it governs, so "React
 experience preferred and NV1 clearance required" is discarded, and "No security
 clearance required and Australian citizenship required" still discards for
-citizenship.
+citizenship. "Do not need to", "no need for" and "no requirement for" also
+negate their own requirement, including coordinated NV1 and NV2 lists.
 
 Work rights waive citizenship/PR only through an explicit alternative such as
 "or", "alternatively" or "either ... or" within the eligibility list. Commas alone
-never establish an alternative: "Australian citizenship required, full work
+never establish an alternative. Alternatives include "or hold a valid visa"
+and "or have a valid work visa": "Australian citizenship required, full work
 rights are also required" retains the citizenship requirement. The combined
 discard reason remains unchanged. A bare commercial/operational "clearance"
 (such as clearance of tickets or office furniture) is not a security eligibility

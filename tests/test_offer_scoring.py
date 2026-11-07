@@ -10,6 +10,15 @@ SCORER = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(SCORER)
 
 ELIGIBLE = (
+    "Applicants do not need to hold a Baseline clearance",
+    "There is no requirement for NV1 clearance", "You do not need to be an Australian citizen",
+    "Applicants will not need to hold NV1 clearance", "Applicant does not need to hold NV1 clearance",
+    "You don't need to hold NV1 clearance", "Applicant doesn't need to hold NV1 clearance",
+    "No need for NV1 clearance", "Must be an Australian citizen, permanent resident or hold a valid visa with full work rights",
+    "Must be an Australian citizen or have a valid work visa",
+    "Must be Australian citizen or PR, or hold a visa with full work rights",
+    "No NV1 and NV2 clearance required",
+
     "Customs clearance", "stock clearance sale", "height clearance",
     "Must obtain customs clearance", "Height clearance is necessary",
     "Australian citizenship, permanent residency or full work rights required",
@@ -33,6 +42,10 @@ ELIGIBLE = (
     "No NV1 clearance required", "No NV1 or NV2 clearance required",
 )
 REQUIRED = (
+    "Must hold, or be able to obtain, an NV1 clearance",
+    "Australian citizenship required (NV1 clearance preferred)",
+    "React experience preferred with mandatory NV1 clearance",
+
     "NV1 clearance needed", "Australian citizenship is necessary", "Permanent residency is essential",
     "Australian citizenship required and full work rights",
     "AGSVA clearance required", "Eligible to obtain clearance",

@@ -10,6 +10,8 @@ SCORER = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(SCORER)
 
 ELIGIBLE = (
+    "No Baseline, NV1 or NV2 clearance required",
+    "Must be an Australian citizen or have full work rights in Australia",
     "Applicants do not need to hold a Baseline clearance",
     "There is no requirement for NV1 clearance", "You do not need to be an Australian citizen",
     "Applicants will not need to hold NV1 clearance", "Applicant does not need to hold NV1 clearance",
@@ -42,6 +44,8 @@ ELIGIBLE = (
     "No NV1 clearance required", "No NV1 or NV2 clearance required",
 )
 REQUIRED = (
+    "NV1 clearance required, citizenship preferred",
+    "Australian citizenship or permanent residency is required",
     "Must hold, or be able to obtain, an NV1 clearance",
     "Australian citizenship required (NV1 clearance preferred)",
     "React experience preferred with mandatory NV1 clearance",
@@ -91,7 +95,7 @@ class TestOfferScoring(unittest.TestCase):
         for text in REQUIRED:
             with self.subTest(text=text):
                 expected = SCORER.CITIZENSHIP_REASON if any(word in text.lower() for word in
-                    ("citizen", "permanent resident", "pr required", "residency")) and "optional" not in text else "Security clearance required"
+                    ("citizen", "permanent resident", "pr required", "residency")) and "optional" not in text and "citizenship preferred" not in text else "Security clearance required"
                 self.assertEqual(SCORER.eligibility_reason(text), expected)
                 score, _, reason = SCORER.score_offer("Junior Frontend", text, ["Frontend"], {}, "Perth")
                 self.assertEqual((score, reason), (0, expected))

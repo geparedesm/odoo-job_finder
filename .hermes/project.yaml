@@ -9,8 +9,8 @@ commands:
   # Quality Gate checks with the odoo toolchain's rules (ruff + pylint-odoo; bandit + access rules and routes).
   lint: "ho-odoo-lint job_finder"
   security: "ho-odoo-security job_finder"
-  # Types of the standard-library code only: mypy cannot follow Odoo's ORM.
-  typecheck: "mypy --no-incremental --cache-dir=/dev/null --python-version 3.10 --ignore-missing-imports models/cv_parser.py models/cv_structure.py models/portfolio_content.py"
+  # mypy over the module with Odoo as Any (tests/ and migrations/ left out).
+  typecheck: "ho-odoo-typecheck job_finder"
 test_environment:
   compose_files: [.hermes/test-services.yaml]
   services: [postgres]

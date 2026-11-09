@@ -6,6 +6,7 @@
     "depends": ["base", "web", "website"],
     "external_dependencies": {"python": ["pypdf"]},
     "data": [
+        "security/job_search_security.xml",
         "security/ir.model.access.csv",
         "security/job_profile_security.xml",
         "data/website_data.xml",
@@ -14,6 +15,9 @@
         "wizards/cv_download_views.xml",
         "views/profile_item_views.xml",
         "views/job_profile_views.xml",
+        "views/job_search_views.xml",
+        "views/job_offer_views.xml",
+        "data/job_search_cron.xml",
         "views/job_profile_menus.xml",
         "views/portfolio_templates.xml",
     ],

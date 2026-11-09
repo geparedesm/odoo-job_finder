@@ -340,6 +340,7 @@ msgstr "Arquitectura"
 #: model:ir.model.fields,field_description:job_finder.field_job_finder_cv_area__name
 #: model:ir.model.fields,field_description:job_finder.field_job_finder_project__area
 #: model:ir.model.fields,field_description:job_finder.field_job_finder_skill_group__name
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_offer_search
 msgid "Area"
 msgstr "Área"
 
@@ -410,6 +411,8 @@ msgstr "CV en PDF"
 
 #. module: job_finder
 #: model:ir.model,name:job_finder.model_job_finder_cv_area
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__cv_area_id
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_search__cv_area_id
 msgid "CV area"
 msgstr "Área de CV"
 
@@ -447,6 +450,8 @@ msgstr "Resumen del CV"
 
 #. module: job_finder
 #: model_terms:ir.ui.view,arch_db:job_finder.view_job_finder_cv_download_form
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_offer_discard
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_offer_reject
 msgid "Cancel"
 msgstr "Cancelar"
 
@@ -463,6 +468,7 @@ msgstr "Eventual"
 #. module: job_finder
 #: model:ir.model.fields,field_description:job_finder.field_job_finder_experience__category
 #: model:ir.model.fields,field_description:job_finder.field_job_finder_project__category
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__category
 msgid "Category"
 msgstr "Categoría"
 
@@ -506,6 +512,7 @@ msgstr "Color"
 #. module: job_finder
 #. odoo-python
 #: code:addons/job_finder/models/job_profile.py:0
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__company
 msgid "Company"
 msgstr "Empresa"
 
@@ -1088,6 +1095,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:job_finder.field_job_finder_experience__location
 #: model:ir.model.fields,field_description:job_finder.field_job_finder_volunteering__location
 #: model:ir.model.fields,field_description:job_finder.field_job_profile__location
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__location
 msgid "Location"
 msgstr "Ubicación"
 
@@ -1220,6 +1228,7 @@ msgstr "Otra experiencia"
 
 #. module: job_finder
 #: model_terms:ir.ui.view,arch_db:job_finder.case_study_page
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_offer_form
 msgid "Overview"
 msgstr "Resumen"
 
@@ -1329,6 +1338,8 @@ msgstr "Trabajo profesional"
 #: model:ir.model.fields,field_description:job_finder.field_job_finder_spoken_language__profile_id
 #: model:ir.model.fields,field_description:job_finder.field_job_finder_training__profile_id
 #: model:ir.model.fields,field_description:job_finder.field_job_finder_volunteering__profile_id
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__profile_id
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_search__profile_id
 msgid "Profile"
 msgstr "Perfil"
 
@@ -1612,6 +1623,8 @@ msgstr "Año de inicio"
 #. module: job_finder
 #: model:ir.model.fields,field_description:job_finder.field_job_finder_education__status
 #: model:ir.model.fields,field_description:job_finder.field_job_finder_training__status
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__state
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_offer_search
 msgid "Status"
 msgstr "Estado"
 
@@ -1876,3 +1889,569 @@ msgstr "puestos"
 #: model_terms:ir.ui.view,arch_db:job_finder.cv_sign_in_page
 msgid "you@company.com"
 msgstr "tu@empresa.com"
+
+#. module: job_finder
+#: code:addons/job_finder/models/job_offer.py:0
+#: code:addons/job_finder/models/job_offer.py:0
+msgid "A discard reason is required."
+msgstr "Se requiere un motivo de descarte."
+
+#. module: job_finder
+#: code:addons/job_finder/models/job_offer.py:0
+#: code:addons/job_finder/models/job_offer.py:0
+msgid "A rejection reason is required."
+msgstr "Se requiere un motivo de rechazo."
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_offer_form
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_offer_form
+msgid "AI evaluation"
+msgstr "Evaluación de IA"
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__ai_score
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__ai_score
+msgid "AI score"
+msgstr "Puntuación de IA"
+
+#. module: job_finder
+#: code:addons/job_finder/models/job_offer.py:0
+#: code:addons/job_finder/models/job_offer.py:0
+msgid "AI score must be a finite number from 0 to 100."
+msgstr "La puntuación de IA debe ser un número finito entre 0 y 100."
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__ai_state
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__ai_state
+msgid "AI state"
+msgstr "Estado de IA"
+
+#. module: job_finder
+#: code:addons/job_finder/models/job_offer.py:0
+#: code:addons/job_finder/models/job_offer.py:0
+msgid "AI state must be done or error."
+msgstr "El estado de IA debe ser completado o error."
+
+#. module: job_finder
+#: code:addons/job_finder/models/job_offer.py:0
+#: code:addons/job_finder/models/job_offer.py:0
+msgid "AI text must be a string of at most 10000 characters."
+msgstr "El texto de IA debe tener como máximo 10000 caracteres."
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_search__is_active
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_search__is_active
+msgid "Active"
+msgstr "Activo"
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__source_url
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_offer_form
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_offer_list
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__source_url
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_offer_form
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_offer_list
+msgid "Adzuna"
+msgstr "Adzuna"
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__adzuna_id
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__adzuna_id
+msgid "Adzuna ID"
+msgstr "ID de Adzuna"
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_search__is_australia
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_search__is_australia
+msgid "All of Australia"
+msgstr "Toda Australia"
+
+#. module: job_finder
+#: model:ir.model.fields.selection,name:job_finder.selection__job_finder_job_offer__state__applied
+msgid "Applied"
+msgstr "Candidatura enviada"
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__applied_at
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__applied_at
+msgid "Applied date"
+msgstr "Fecha de candidatura"
+
+#. module: job_finder
+#: code:addons/job_finder/models/job_offer.py:0
+#: code:addons/job_finder/models/job_offer.py:0
+msgid "Australian citizenship required"
+msgstr "Se requiere ciudadanía australiana"
+
+#. module: job_finder
+#: code:addons/job_finder/models/job_offer.py:0
+#: code:addons/job_finder/models/job_offer.py:0
+msgid "Below score threshold"
+msgstr "Por debajo del umbral de puntuación"
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_search_form
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_search_form
+msgid "CV area searches"
+msgstr "Búsquedas por área de CV"
+
+#. module: job_finder
+#: code:addons/job_finder/models/job_search.py:0
+#: code:addons/job_finder/models/job_search.py:0
+msgid "Calls used: %s"
+msgstr "Llamadas utilizadas: %s"
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_search__cities
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_search__cities
+msgid "Cities"
+msgstr "Ciudades"
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_offer_search
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_offer_search
+msgid "City"
+msgstr "Ciudad"
+
+#. module: job_finder
+#: code:addons/job_finder/models/job_search.py:0
+#: code:addons/job_finder/models/job_search.py:0
+msgid "Configure the Adzuna app ID and app key in system parameters."
+msgstr "Configure el ID y la clave de Adzuna en los parámetros del sistema."
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__contract_time
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__contract_time
+msgid "Contract time"
+msgstr "Jornada"
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__contract_type
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__contract_type
+msgid "Contract type"
+msgstr "Tipo de contrato"
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_offer_discard
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_offer_form
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_offer_discard
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_offer_form
+msgid "Discard"
+msgstr "Descartar"
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_offer_discard
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_offer_discard
+msgid "Discard offer"
+msgstr "Descartar oferta"
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_offer_form
+msgid "Discard only actual citizenship, PR or clearance requirements. Negated, optional and project-experience mentions keep normal scoring."
+msgstr "Solo se descartan requisitos reales de ciudadanía, residencia permanente o habilitación. Las menciones negadas, opcionales o de experiencia en proyectos conservan la puntuación normal."
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__discard_reason
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__discard_reason
+msgid "Discard reason"
+msgstr "Motivo del descarte"
+
+#. module: job_finder
+#: model:ir.model.fields.selection,name:job_finder.selection__job_finder_job_offer__state__discarded
+msgid "Discarded"
+msgstr "Descartada"
+
+#. module: job_finder
+#: model:ir.model.fields.selection,name:job_finder.selection__job_finder_job_offer__ai_state__done
+msgid "Done"
+msgstr "Completada"
+
+#. module: job_finder
+#: model:ir.model.fields.selection,name:job_finder.selection__job_finder_job_offer__ai_state__error
+msgid "Error"
+msgstr "Error"
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__ai_evaluated_at
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__ai_evaluated_at
+msgid "Evaluated at"
+msgstr "Evaluado el"
+
+#. module: job_finder
+#: code:addons/job_finder/models/job_offer.py:0
+#: code:addons/job_finder/models/job_offer.py:0
+msgid "Excluded seniority"
+msgstr "Nivel de experiencia excluido"
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__ai_fit
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__ai_fit
+msgid "Fit"
+msgstr "Afinidad"
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__ai_gaps
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__ai_gaps
+msgid "Gaps"
+msgstr "Carencias"
+
+#. module: job_finder
+#: model:ir.model.fields.selection,name:job_finder.selection__job_finder_job_offer__state__interview
+msgid "Interview"
+msgstr "Entrevista"
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__interview_at
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__interview_at
+msgid "Interview date"
+msgstr "Fecha de entrevista"
+
+#. module: job_finder
+#: code:addons/job_finder/models/job_offer.py:0
+#: code:addons/job_finder/models/job_offer.py:0
+msgid "Invalid evaluator fields."
+msgstr "Campos del evaluador no válidos."
+
+#. module: job_finder
+#: code:addons/job_finder/models/job_offer.py:0
+#: code:addons/job_finder/models/job_offer.py:0
+msgid "Invalid evaluator input."
+msgstr "Entrada del evaluador no válida."
+
+#. module: job_finder
+#: code:addons/job_finder/models/job_search_profile.py:0
+#: code:addons/job_finder/models/job_search_profile.py:0
+msgid "Invalid search settings."
+msgstr "Configuración de búsqueda no válida."
+
+#. module: job_finder
+#: model:res.groups,name:job_finder.group_job_finder_evaluator
+msgid "Job Finder evaluator"
+msgstr "Evaluador de Job Finder"
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.view_profile_job_search
+#: model_terms:ir.ui.view,arch_db:job_finder.view_profile_job_search
+msgid "Job search"
+msgstr "Búsqueda de empleo"
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_search__keywords
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_search__keywords
+msgid "Keywords"
+msgstr "Palabras clave"
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_search__last_run_at
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_search_form
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_search__last_run_at
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_search_form
+msgid "Last run"
+msgstr "Última ejecución"
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_search__last_run_info
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_search__last_run_info
+msgid "Last run status"
+msgstr "Estado de la última ejecución"
+
+#. module: job_finder
+#: code:addons/job_finder/models/job_offer.py:0
+#: code:addons/job_finder/models/job_offer.py:0
+msgid "Limit must be an integer from 1 to 100."
+msgstr "El límite debe ser un entero entre 1 y 100."
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_profile__max_offer_age
+#: model:ir.model.fields,field_description:job_finder.field_job_profile__max_offer_age
+msgid "Max offer age (days)"
+msgstr "Antigüedad máxima de la oferta (días)"
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__salary_max
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__salary_max
+msgid "Maximum salary"
+msgstr "Salario máximo"
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__salary_min
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__salary_min
+msgid "Minimum salary"
+msgstr "Salario mínimo"
+
+#. module: job_finder
+#: model:ir.model.fields.selection,name:job_finder.selection__job_finder_job_offer__state__new
+msgid "New"
+msgstr "Nueva"
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_offer_form
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_offer_form
+msgid "Not evaluated"
+msgstr "Sin evaluar"
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__notes
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_offer_form
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__notes
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_offer_form
+msgid "Notes"
+msgstr "Notas"
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__title
+#: model:ir.model.fields.selection,name:job_finder.selection__job_finder_job_offer__state__offer
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__title
+msgid "Offer"
+msgstr "Oferta"
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__url
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__url
+msgid "Offer link"
+msgstr "Enlace de la oferta"
+
+#. module: job_finder
+#: code:addons/job_finder/models/job_offer.py:0
+#: code:addons/job_finder/models/job_offer.py:0
+msgid "Offer relations must belong to the same profile."
+msgstr "Las relaciones de la oferta deben pertenecer al mismo perfil."
+
+#. module: job_finder
+#: model:ir.actions.act_window,name:job_finder.action_job_offer
+msgid "Offers"
+msgstr "Ofertas"
+
+#. module: job_finder
+#: model:ir.model.fields,help:job_finder.field_job_finder_job_search__cities
+#: model:ir.model.fields,help:job_finder.field_job_finder_job_search__cities
+msgid "One or more cities, separated by commas."
+msgstr "Una o más ciudades, separadas por comas."
+
+#. module: job_finder
+#: code:addons/job_finder/models/job_offer.py:0
+#: code:addons/job_finder/models/job_offer.py:0
+msgid "Only Job Finder evaluators may use this interface."
+msgstr "Solo los evaluadores de Job Finder pueden utilizar esta interfaz."
+
+#. module: job_finder
+#: code:addons/job_finder/models/job_offer.py:0
+#: code:addons/job_finder/models/job_offer.py:0
+msgid "Only pending offers can be evaluated."
+msgstr "Solo se pueden evaluar ofertas pendientes."
+
+#. module: job_finder
+#: model:ir.model.fields.selection,name:job_finder.selection__job_finder_job_offer__ai_state__pending
+msgid "Pending"
+msgstr "Pendiente"
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_offer_search
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_offer_search
+msgid "Pending AI"
+msgstr "IA pendiente"
+
+#. module: job_finder
+#: code:addons/job_finder/models/job_offer.py:0
+#: code:addons/job_finder/models/job_offer.py:0
+msgid "Permanent residency required"
+msgstr "Se requiere residencia permanente"
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__posted_at
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__posted_at
+msgid "Posted date"
+msgstr "Fecha de publicación"
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__is_salary_predicted
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__is_salary_predicted
+msgid "Predicted salary"
+msgstr "Salario estimado"
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_offer_list
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_search_list
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_offer_list
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_search_list
+msgid "Propose searches"
+msgstr "Proponer búsquedas"
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_offer_form
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_offer_reject
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_offer_form
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_offer_reject
+msgid "Reject"
+msgstr "Rechazar"
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_offer_reject
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_offer_reject
+msgid "Reject offer"
+msgstr "Rechazar oferta"
+
+#. module: job_finder
+#: model:ir.model.fields.selection,name:job_finder.selection__job_finder_job_offer__state__rejected
+msgid "Rejected"
+msgstr "Rechazada"
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__rejection_reason
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__rejection_reason
+msgid "Rejection reason"
+msgstr "Motivo del rechazo"
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_search__is_remote
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_search__is_remote
+msgid "Remote"
+msgstr "Remoto"
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__rule_score
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_offer_form
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__rule_score
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_offer_form
+msgid "Rule score"
+msgstr "Puntuación por reglas"
+
+#. module: job_finder
+#: model:ir.model.fields.selection,name:job_finder.selection__job_finder_job_offer__state__saved
+msgid "Saved"
+msgstr "Guardada"
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__score_breakdown
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_offer_form
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__score_breakdown
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_offer_form
+msgid "Score breakdown"
+msgstr "Desglose de puntuación"
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_profile__score_threshold
+#: model:ir.model.fields,field_description:job_finder.field_job_profile__score_threshold
+msgid "Score threshold"
+msgstr "Umbral de puntuación"
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_offer_search
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_offer_search
+msgid "Score: 40+"
+msgstr "Puntuación: 40+"
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__search_id
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__search_id
+msgid "Search"
+msgstr "Búsqueda"
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_search_form
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_search_form
+msgid "Search Locations"
+msgstr "Ubicaciones de búsqueda"
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_offer_list
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_search_form
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_search_list
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_offer_list
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_search_form
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_search_list
+msgid "Search now"
+msgstr "Buscar ahora"
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.view_profile_job_search
+#: model_terms:ir.ui.view,arch_db:job_finder.view_profile_job_search
+msgid "Search settings"
+msgstr "Configuración de búsqueda"
+
+#. module: job_finder
+#: model:ir.actions.act_window,name:job_finder.action_job_search
+msgid "Searches"
+msgstr "Búsquedas"
+
+#. module: job_finder
+#: code:addons/job_finder/models/job_offer.py:0
+#: code:addons/job_finder/models/job_offer.py:0
+msgid "Security clearance required"
+msgstr "Se requiere habilitación de seguridad"
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__snippet
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__snippet
+msgid "Snippet"
+msgstr "Extracto"
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__status_changed_at
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__status_changed_at
+msgid "Status changed"
+msgstr "Cambio de estado"
+
+#. module: job_finder
+#: code:addons/job_finder/models/job_search.py:0
+#: code:addons/job_finder/models/job_search.py:0
+msgid "The Adzuna call limit must be an integer."
+msgstr "El límite de llamadas a Adzuna debe ser un entero."
+
+#. module: job_finder
+#: code:addons/job_finder/models/job_offer.py:0
+#: code:addons/job_finder/models/job_offer.py:0
+msgid "The offer area must match its search."
+msgstr "El área de la oferta debe coincidir con su búsqueda."
+
+#. module: job_finder
+#: code:addons/job_finder/models/job_search.py:0
+#: code:addons/job_finder/models/job_search.py:0
+msgid "The search and area must belong to the same profile."
+msgstr "La búsqueda y el área deben pertenecer al mismo perfil."
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.view_profile_job_search
+#: model_terms:ir.ui.view,arch_db:job_finder.view_profile_job_search
+msgid "Visa & work rights"
+msgstr "Visado y derecho a trabajar"
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_profile__visa_status
+#: model:ir.model.fields,field_description:job_finder.field_job_profile__visa_status
+msgid "Visa status"
+msgstr "Estado del visado"
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__ai_warnings
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_offer__ai_warnings
+msgid "Warnings"
+msgstr "Advertencias"
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_profile__work_rights_until
+#: model:ir.model.fields,field_description:job_finder.field_job_profile__work_rights_until
+msgid "Work rights until"
+msgstr "Derecho a trabajar hasta"
+
+#. module: job_finder
+#: code:addons/job_finder/models/job_offer.py:0
+#: code:addons/job_finder/models/job_offer.py:0
+#: code:addons/job_finder/models/job_search.py:0
+msgid "Evaluators may use only the evaluation interface."
+msgstr "Los evaluadores solo pueden utilizar la interfaz de evaluación."
+
+#. module: job_finder
+#: code:addons/job_finder/models/job_offer.py:0
+msgid "Australian citizenship or permanent residency required"
+msgstr "Se requiere ciudadanía australiana o residencia permanente"
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_search__location_cursor
+msgid "Next location mode"
+msgstr "Siguiente modo de ubicación"
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_job_search__last_run_sequence
+msgid "Last run sequence"
+msgstr "Secuencia de la última ejecución"

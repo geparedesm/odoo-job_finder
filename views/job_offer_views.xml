@@ -1,0 +1,152 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <record id="view_job_offer_list" model="ir.ui.view">
+        <field name="name">job.offer.list</field>
+        <field name="model">job_finder.job_offer</field>
+        <field name="arch" type="xml">
+            <list default_order="rule_score desc,id desc">
+                <header>
+                    <button name="action_propose_searches" string="Propose searches" type="object" display="always"/>
+                    <button name="action_search_now" string="Search now" type="object" display="always" class="oe_highlight"/>
+                </header>
+                <field name="rule_score" decoration-success="rule_score &gt;= 70" decoration-warning="rule_score &gt;= 40 and rule_score &lt; 70" decoration-danger="rule_score &lt; 40"/>
+                <field name="title"/>
+                <field name="company"/>
+                <field name="cv_area_id"/>
+                <field name="location"/>
+                <field name="salary_min"/>
+                <field name="salary_max"/>
+                <field name="state" widget="badge"/>
+                <field name="source_url" widget="url" text="Adzuna"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_job_offer_search" model="ir.ui.view">
+        <field name="name">job.offer.search</field>
+        <field name="model">job_finder.job_offer</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="title"/>
+                <field name="state"/>
+                <field name="cv_area_id"/>
+                <field name="location" string="City"/>
+                <field name="rule_score"/>
+                <filter name="qualifying" string="Score: 40+" domain="[('rule_score', '&gt;=', 40)]"/>
+                <filter name="pending" string="Pending AI" domain="[('ai_state', '=', 'pending')]"/>
+                <group>
+                    <filter name="status" string="Status" context="{'group_by':'state'}"/>
+                    <filter name="area" string="Area" context="{'group_by':'cv_area_id'}"/>
+                    <filter name="city" string="City" context="{'group_by':'location'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="view_job_offer_form" model="ir.ui.view">
+        <field name="name">job.offer.form</field>
+        <field name="model">job_finder.job_offer</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_discard" type="object" string="Discard"/>
+                    <button name="action_reject" type="object" string="Reject"/>
+                    <field name="state" widget="statusbar" statusbar_visible="new,saved,applied,interview,offer" options="{'clickable': True}"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="title"/>
+                        </h1>
+                        <field name="company"/>
+                        <field name="location"/>
+                        <field name="source_url" widget="url" text="Adzuna"/>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="profile_id"/>
+                            <field name="contract_type"/>
+                            <field name="contract_time"/>
+                            <field name="salary_min"/>
+                            <field name="salary_max"/>
+                            <field name="is_salary_predicted"/>
+                            <field name="category"/>
+                            <field name="cv_area_id"/>
+                            <field name="search_id"/>
+                            <field name="posted_at"/>
+                            <field name="url" widget="url"/>
+                        </group>
+                        <group string="Rule score">
+                            <field name="rule_score"/>
+                            <field name="score_breakdown"/>
+                            <field name="notes"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Overview">
+                            <field name="snippet"/>
+                            <p>Discard only actual citizenship, PR or clearance requirements. Negated, optional and project-experience mentions keep normal scoring.</p>
+                        </page>
+                        <page string="Score breakdown">
+                            <field name="score_breakdown"/>
+                        </page>
+                        <page string="AI evaluation">
+                            <field name="ai_state"/>
+                            <p invisible="ai_evaluated_at">Not evaluated</p>
+                            <group>
+                                <field name="ai_score"/>
+                                <field name="ai_fit" placeholder="Not evaluated"/>
+                                <field name="ai_gaps" placeholder="Not evaluated"/>
+                                <field name="ai_warnings" placeholder="Not evaluated"/>
+                                <field name="ai_evaluated_at"/>
+                            </group>
+                        </page>
+                        <page string="Notes">
+                            <group>
+                                <field name="notes"/>
+                                <field name="discard_reason"/>
+                                <field name="rejection_reason"/>
+                                <field name="status_changed_at"/>
+                                <field name="applied_at"/>
+                                <field name="interview_at"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="action_job_offer" model="ir.actions.act_window">
+        <field name="name">Offers</field>
+        <field name="res_model">job_finder.job_offer</field>
+        <field name="view_mode">list,form</field>
+    </record>
+    <record id="view_job_offer_discard" model="ir.ui.view">
+        <field name="name">job.offer.discard</field>
+        <field name="model">job_finder.job_offer</field>
+        <field name="arch" type="xml">
+            <form string="Discard offer">
+                <group>
+                    <field name="discard_reason" required="1"/>
+                </group>
+                <footer>
+                    <button name="action_confirm_discard" type="object" string="Discard" class="oe_highlight"/>
+                    <button string="Cancel" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="view_job_offer_reject" model="ir.ui.view">
+        <field name="name">job.offer.reject</field>
+        <field name="model">job_finder.job_offer</field>
+        <field name="arch" type="xml">
+            <form string="Reject offer">
+                <group>
+                    <field name="rejection_reason" required="1"/>
+                </group>
+                <footer>
+                    <button name="action_confirm_reject" type="object" string="Reject" class="oe_highlight"/>
+                    <button string="Cancel" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

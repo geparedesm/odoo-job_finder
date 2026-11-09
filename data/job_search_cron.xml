@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo noupdate="1">
+    <record id="cron_job_search_daily" model="ir.cron">
+        <field name="name">Job Finder: daily Adzuna search</field>
+        <field name="model_id" ref="model_job_finder_job_search"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_search()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+    </record>
+</odoo>

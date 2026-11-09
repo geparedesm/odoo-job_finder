@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <record id="group_job_finder_evaluator" model="res.groups">
+        <field name="name">Job Finder evaluator</field>
+    </record>
+</odoo>

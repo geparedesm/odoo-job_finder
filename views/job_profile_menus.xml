@@ -17,6 +17,8 @@
     <menuitem id="menu_my_profile" name="My Profile"
               parent="menu_root" action="action_open_my_profile"
               sequence="10"/>
+    <menuitem id="menu_job_finder_applications" name="My Applications"
+              parent="menu_root" action="action_job_finder_application" sequence="20"/>
     <menuitem id="menu_configuration" name="Configuration" parent="menu_root" sequence="90"/>
     <menuitem id="menu_technologies" name="Technologies" parent="menu_configuration"
               action="action_job_finder_technology" sequence="10"/>

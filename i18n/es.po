@@ -506,6 +506,7 @@ msgstr "Color"
 #. module: job_finder
 #. odoo-python
 #: code:addons/job_finder/models/job_profile.py:0
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_application__company
 msgid "Company"
 msgstr "Empresa"
 
@@ -1612,6 +1613,8 @@ msgstr "Año de inicio"
 #. module: job_finder
 #: model:ir.model.fields,field_description:job_finder.field_job_finder_education__status
 #: model:ir.model.fields,field_description:job_finder.field_job_finder_training__status
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_application__status
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_finder_application_search
 msgid "Status"
 msgstr "Estado"
 
@@ -1876,3 +1879,76 @@ msgstr "puestos"
 #: model_terms:ir.ui.view,arch_db:job_finder.cv_sign_in_page
 msgid "you@company.com"
 msgstr "tu@empresa.com"
+
+#. module: job_finder
+#: model:ir.ui.menu,name:job_finder.menu_job_finder_applications
+#: model:ir.actions.act_window,name:job_finder.action_job_finder_application
+#: code:addons/job_finder/models/application.py:0
+#. odoo-python
+msgid "My Applications"
+msgstr "Mis postulaciones"
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_finder_application_list
+msgid "Add application"
+msgstr "Agregar postulación"
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_finder_application_form
+msgid "Contacts, next steps or anything you want to remember"
+msgstr "Contactos, próximos pasos o cualquier detalle que quieras recordar"
+
+#. module: job_finder
+#: model_terms:ir.actions.act_window,help:job_finder.action_job_finder_application
+msgid "Record your first application"
+msgstr "Registra tu primera postulación"
+
+#. module: job_finder
+#: model_terms:ir.actions.act_window,help:job_finder.action_job_finder_application
+msgid "Click \"Add application\" to note the company, position, date and status. You can then filter your applications by status."
+msgstr "Pulsa «Agregar postulación» para anotar la empresa, el puesto, la fecha y el estado. Después podrás filtrar tus postulaciones por estado."
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_application__position
+msgid "Position"
+msgstr "Puesto"
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_application__date_applied
+msgid "Application date"
+msgstr "Fecha de postulación"
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_application__notes
+msgid "Notes"
+msgstr "Notas"
+
+#. module: job_finder
+#: model:ir.model.fields.selection,name:job_finder.selection__job_finder_application__status__sent
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_finder_application_search
+msgid "Sent"
+msgstr "Enviada"
+
+#. module: job_finder
+#: model:ir.model.fields.selection,name:job_finder.selection__job_finder_application__status__under_review
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_finder_application_search
+msgid "Under review"
+msgstr "En revisión"
+
+#. module: job_finder
+#: model:ir.model.fields.selection,name:job_finder.selection__job_finder_application__status__interview
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_finder_application_search
+msgid "Interview"
+msgstr "Entrevista"
+
+#. module: job_finder
+#: model:ir.model.fields.selection,name:job_finder.selection__job_finder_application__status__rejected
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_finder_application_search
+msgid "Rejected"
+msgstr "Rechazada"
+
+#. module: job_finder
+#: model:ir.model.fields.selection,name:job_finder.selection__job_finder_application__status__offer_received
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_finder_application_search
+msgid "Offer received"
+msgstr "Oferta recibida"

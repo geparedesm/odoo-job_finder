@@ -5,6 +5,8 @@ try:
 except ImportError:  # pylint: disable=except-pass
     pass  # plain unittest discovers the standard-library tests itself
 else:
+    from . import test_application  # noqa: F401
+    from . import test_application_views  # noqa: F401
     from . import test_case_study_page  # noqa: F401
     from . import test_cv_areas  # noqa: F401
     from . import test_job_profile_report  # noqa: F401

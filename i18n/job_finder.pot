@@ -478,6 +478,7 @@ msgstr ""
 #. module: job_finder
 #. odoo-python
 #: code:addons/job_finder/models/job_profile.py:0
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_application__company
 msgid "Company"
 msgstr ""
 
@@ -1570,6 +1571,8 @@ msgstr ""
 #. module: job_finder
 #: model:ir.model.fields,field_description:job_finder.field_job_finder_education__status
 #: model:ir.model.fields,field_description:job_finder.field_job_finder_training__status
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_application__status
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_finder_application_search
 msgid "Status"
 msgstr ""
 
@@ -1823,4 +1826,77 @@ msgstr ""
 #. module: job_finder
 #: model_terms:ir.ui.view,arch_db:job_finder.cv_sign_in_page
 msgid "you@company.com"
+msgstr ""
+
+#. module: job_finder
+#: model:ir.ui.menu,name:job_finder.menu_job_finder_applications
+#: model:ir.actions.act_window,name:job_finder.action_job_finder_application
+#: code:addons/job_finder/models/application.py:0
+#. odoo-python
+msgid "My Applications"
+msgstr ""
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_finder_application_list
+msgid "Add application"
+msgstr ""
+
+#. module: job_finder
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_finder_application_form
+msgid "Contacts, next steps or anything you want to remember"
+msgstr ""
+
+#. module: job_finder
+#: model_terms:ir.actions.act_window,help:job_finder.action_job_finder_application
+msgid "Record your first application"
+msgstr ""
+
+#. module: job_finder
+#: model_terms:ir.actions.act_window,help:job_finder.action_job_finder_application
+msgid "Click \"Add application\" to note the company, position, date and status. You can then filter your applications by status."
+msgstr ""
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_application__position
+msgid "Position"
+msgstr ""
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_application__date_applied
+msgid "Application date"
+msgstr ""
+
+#. module: job_finder
+#: model:ir.model.fields,field_description:job_finder.field_job_finder_application__notes
+msgid "Notes"
+msgstr ""
+
+#. module: job_finder
+#: model:ir.model.fields.selection,name:job_finder.selection__job_finder_application__status__sent
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_finder_application_search
+msgid "Sent"
+msgstr ""
+
+#. module: job_finder
+#: model:ir.model.fields.selection,name:job_finder.selection__job_finder_application__status__under_review
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_finder_application_search
+msgid "Under review"
+msgstr ""
+
+#. module: job_finder
+#: model:ir.model.fields.selection,name:job_finder.selection__job_finder_application__status__interview
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_finder_application_search
+msgid "Interview"
+msgstr ""
+
+#. module: job_finder
+#: model:ir.model.fields.selection,name:job_finder.selection__job_finder_application__status__rejected
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_finder_application_search
+msgid "Rejected"
+msgstr ""
+
+#. module: job_finder
+#: model:ir.model.fields.selection,name:job_finder.selection__job_finder_application__status__offer_received
+#: model_terms:ir.ui.view,arch_db:job_finder.view_job_finder_application_search
+msgid "Offer received"
 msgstr ""

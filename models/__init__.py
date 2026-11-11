@@ -14,3 +14,4 @@ from . import training
 from . import volunteering
 from . import spoken_language
 from . import cv_report
+from . import application

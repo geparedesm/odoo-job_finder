@@ -14,10 +14,14 @@
         "wizards/cv_download_views.xml",
         "views/profile_item_views.xml",
         "views/job_profile_views.xml",
+        "views/application_views.xml",
         "views/job_profile_menus.xml",
         "views/portfolio_templates.xml",
     ],
     "assets": {
+        "web.assets_tests": [
+            "job_finder/static/tests/tours/application_tour.js",
+        ],
         "web.assets_frontend": [
             "job_finder/static/src/scss/portfolio.scss",
         ],

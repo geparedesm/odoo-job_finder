@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_job_finder_application_list" model="ir.ui.view">
+        <field name="name">job_finder.application.list</field>
+        <field name="model">job_finder.application</field>
+        <field name="arch" type="xml">
+            <list create="0" default_order="date_applied desc, id desc">
+                <header>
+                    <button name="action_open_application_form" type="object" string="Add application"
+                            class="btn-primary" display="always"/>
+                </header>
+                <field name="company"/>
+                <field name="position"/>
+                <field name="date_applied"/>
+                <field name="status" widget="badge"
+                       decoration-info="status == 'sent'"
+                       decoration-warning="status == 'under_review'"
+                       decoration-primary="status == 'interview'"
+                       decoration-danger="status == 'rejected'"
+                       decoration-success="status == 'offer_received'"/>
+                <field name="notes" optional="show"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_job_finder_application_form" model="ir.ui.view">
+        <field name="name">job_finder.application.form</field>
+        <field name="model">job_finder.application</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="company"/>
+                            <field name="position"/>
+                        </group>
+                        <group>
+                            <field name="date_applied"/>
+                            <field name="status"/>
+                        </group>
+                    </group>
+                    <label for="notes"/>
+                    <field name="notes" placeholder="Contacts, next steps or anything you want to remember"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="view_job_finder_application_search" model="ir.ui.view">
+        <field name="name">job_finder.application.search</field>
+        <field name="model">job_finder.application</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="company"/>
+                <field name="position"/>
+                <filter name="filter_sent" string="Sent" domain="[('status', '=', 'sent')]"/>
+                <filter name="filter_under_review" string="Under review" domain="[('status', '=', 'under_review')]"/>
+                <filter name="filter_interview" string="Interview" domain="[('status', '=', 'interview')]"/>
+                <filter name="filter_rejected" string="Rejected" domain="[('status', '=', 'rejected')]"/>
+                <filter name="filter_offer_received" string="Offer received" domain="[('status', '=', 'offer_received')]"/>
+                <separator/>
+                <filter name="group_by_status" string="Status" context="{'group_by': 'status'}"/>
+            </search>
+        </field>
+    </record>
+    <record id="action_job_finder_application" model="ir.actions.act_window">
+        <field name="name">My Applications</field>
+        <field name="res_model">job_finder.application</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="view_job_finder_application_list"/>
+        <field name="search_view_id" ref="view_job_finder_application_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Record your first application</p>
+            <p>Click "Add application" to note the company, position, date and status. You can then filter your applications by status.</p>
+        </field>
+    </record>
+</odoo>

@@ -30,6 +30,17 @@ class Application(models.Model):
     )
     notes = fields.Text(string="Notes")
 
+    def action_open_application_form(self):
+        """Open a blank application form from the list header."""
+        return {
+            "type": "ir.actions.act_window",
+            "name": self.env._("My Applications"),
+            "res_model": self._name,
+            "view_mode": "form",
+            "views": [(False, "form")],
+            "target": "current",
+        }
+
     @api.depends("company", "position")
     def _compute_display_name(self):
         for application in self:

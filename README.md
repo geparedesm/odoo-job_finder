@@ -148,3 +148,12 @@ The date defaults to today and the status to Sent. The other statuses are Under 
 Rejected and Offer received. Records sort by application date, newest first. Internal users can
 create, read, update and delete their own applications; administrators can manage all applications.
 This backend model does not yet add an application screen.
+
+## My Applications
+
+Open **Job Finder → My Applications** and click **Add application** to record the
+company, position, application date and status. The date defaults to today and the
+status to Sent; notes are optional. Applications appear newest first, with colored
+status badges and an optional Notes column. Search by company or position, filter
+by any of the five statuses, or group by Status. Users see their own applications;
+administrators can manage all applications.
